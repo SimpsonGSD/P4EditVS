@@ -15,7 +15,8 @@
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>P4EditVS.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
@@ -79,7 +80,6 @@
       <SubType>Designer</SubType>
     </VSCTCompile>
     <Content Include="index.html" />
-    <Content Include="P4EditVS.ico" />
     <Content Include="Resources\cmdImages.bmp">
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
