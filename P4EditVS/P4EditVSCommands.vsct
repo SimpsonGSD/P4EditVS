@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h"/>
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h"/>
+  
+  <Commands package="guidP4EditVS">
+
+    <!-- Inside this section we have different sub-sections: one for the menus, another
+    for the menu groups, one for the buttons (the actual commands), one for the combos
+    and the last one for the bitmaps used. Each element is identified by a command id that
+    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
+    called "command set" and is used to group different command inside a logically related
+    group; your package should define its own command set in order to avoid collisions
+    with command ids defined by other packages. -->
+    
+    <Menus>
+      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+    </Menus>
+
+    <!-- In this section you can define new menu groups. A menu group is a container for
+         other menus or buttons (commands); from a visual point of view you can see the
+         group as the part of a menu contained between two lines. The parent of a group
+         must be a menu. -->
+    <Groups>
+      <Group guid="guidP4EditVSCmdSet" id="guidMenuGroup" priority="0x0600">
+        <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
+      </Group>
+    </Groups>
+
+    <!--Buttons section. -->
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <!--To define a menu group you have to specify its ID, the parent menu and its display priority.
+          The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
+          the CommandFlag node.
+          You can add more than one CommandFlag node e.g.:
+              <CommandFlag>DefaultInvisible</CommandFlag>
+              <CommandFlag>DynamicVisibility</CommandFlag>
+          If you do not want an image next to your command, remove the Icon node /> -->
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0100" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpCheckout"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Loading...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0101" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Revert If Unchanged</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevert" priority="0x0102" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpRevert"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Revert</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <Bitmaps>
+      <Bitmap guid="guidImages" href="Resources\cmdImages.bmp"
+              usedList="bmpCheckout, bmpRevertIfUnchanged, bmpRevert"/>
+    </Bitmaps>
+    
+  </Commands>
+
+  <Symbols>
+    <!-- package -->
+    <GuidSymbol name="guidP4EditVS" value="{d6a4db63-698d-4d16-bbc0-944fe52f83db}" />
+
+    <!-- top level View menu commands -->
+    <GuidSymbol name="guidP4EditVSCmdSet" value="{bcd15dfb-5150-4bde-a3d0-520343ba88c5}">
+      <IDSymbol name="guidTopLevelMenu" value="0x1024"/>
+      <IDSymbol name="guidMenuGroup" value="0x1023" />
+      <IDSymbol name="cmdidCheckout" value="0x0100" />
+      <IDSymbol name="cmdidRevertIfUnchanged" value="0x0101" />
+      <IDSymbol name="cmdidRevert" value="0x0103" />
+    </GuidSymbol>
+    
+    <!-- images -->
+    <GuidSymbol name="guidImages" value="{38854134-5584-4848-9A4B-B6A3C4E28B4C}">
+      <IDSymbol name="bmpCheckout" value="1" />
+      <IDSymbol name="bmpRevert" value="2" />
+      <IDSymbol name="bmpRevertIfUnchanged" value="3" />
+    </GuidSymbol>
+
+  </Symbols>
+  
+</CommandTable>
