@@ -128,6 +128,12 @@ namespace P4EditVS
                 EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2; 
                 if (applicationObject != null)
                 {
+                    if (applicationObject.ActiveDocument == null)
+                    {
+                        myCommand.Enabled = false;
+                        return;
+                    }
+
                     // Cache the file name here so it doesn't change between now and executing the command (if that can even happen)
                     activeFile = applicationObject.ActiveDocument.FullName;
 
