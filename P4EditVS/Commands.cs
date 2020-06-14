@@ -128,33 +128,66 @@ namespace P4EditVS
                 EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2; 
                 if (applicationObject != null)
                 {
-                    if (applicationObject.ActiveDocument == null)
+                    string guiFileName = "";
+                    bool isProjectFile = false;
+
+                    var selectedItems = applicationObject.SelectedItems;
+                    if (selectedItems.Count > 0)
                     {
-                        myCommand.Enabled = false;
-                        return;
+                        // Only 1 selected item supported
+                        var selectedFile = selectedItems.Item(1);
+                        
+                        // Is selected item a project?
+                        if (selectedFile.Project != null)
+                        {
+                            guiFileName = selectedFile.Project.Name;
+                            activeFile = selectedFile.Project.FullName;
+                            isProjectFile = true;
+                        }
+                        else if (selectedFile.ProjectItem != null)
+                        {
+                            guiFileName = selectedFile.ProjectItem.Name;
+                            activeFile = selectedFile.ProjectItem.Document.FullName;
+                        }
+                        // If we still have something selected and it's not a project item or project it must be the solution (?)
+                        else
+                        {
+                            guiFileName = applicationObject.Solution.FileName;
+                            activeFile = applicationObject.Solution.FullName;
+                        }
+                    }
+                    else
+                    {
+                        if (applicationObject.ActiveDocument == null)
+                        {
+                            myCommand.Enabled = false;
+                            return;
+                        }
+
+                        // Cache the file name here so it doesn't change between now and executing the command (if that can even happen)
+                        activeFile = applicationObject.ActiveDocument.FullName;
+                        guiFileName = applicationObject.ActiveDocument.Name;
                     }
 
-                    // Cache the file name here so it doesn't change between now and executing the command (if that can even happen)
-                    activeFile = applicationObject.ActiveDocument.FullName;
-
+                    // Build menu string based on command ID and whether to enable it based on file type/state
                     switch (myCommand.CommandID.ID)
                     {
                         case CheckoutCommandId:
                             {
-                                myCommand.Text = string.Format("Checkout {0}", applicationObject.ActiveDocument.Name);
-                                myCommand.Enabled = applicationObject.ActiveDocument.ReadOnly;
+                                myCommand.Text = string.Format("Checkout {0}", guiFileName);
+                                myCommand.Enabled = applicationObject.ActiveDocument.ReadOnly || isProjectFile;
                             }
                             break;
                         case RevertIfUnchangedCommandId:
                             {
-                                myCommand.Text = string.Format("Revert If Unchanged {0}", applicationObject.ActiveDocument.Name);
-                                myCommand.Enabled = !applicationObject.ActiveDocument.ReadOnly;
+                                myCommand.Text = string.Format("Revert If Unchanged {0}", guiFileName);
+                                myCommand.Enabled = !applicationObject.ActiveDocument.ReadOnly || isProjectFile;
                             }
                             break;
                         case RevertCommandId:
                             {
-                                myCommand.Text = string.Format("Revert {0}", applicationObject.ActiveDocument.Name);
-                                myCommand.Enabled = !applicationObject.ActiveDocument.ReadOnly;
+                                myCommand.Text = string.Format("Revert {0}", guiFileName);
+                                myCommand.Enabled = !applicationObject.ActiveDocument.ReadOnly || isProjectFile;
                             }
                             break;
                         default:
@@ -175,7 +208,7 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             P4EditVS package = this.package as P4EditVS;
-            if(!package.ValidateUserSettings())
+            if(!package.ValidateUserSettings() || activeFile == "")
             {
                 return;
             }

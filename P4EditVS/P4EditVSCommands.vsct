@@ -19,6 +19,27 @@
     
     <Menus>
       <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_SCC"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_SCC"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_ITEM_SCC"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
         <Strings>
           <ButtonText>P4EditVS</ButtonText>
