@@ -21,6 +21,9 @@ namespace P4EditVS
         public const int CheckoutCommandId = 0x0100;
         public const int RevertIfUnchangedCommandId = 0x0101;
         public const int RevertCommandId = 0x0103;
+        public const int CtxtCheckoutCommandId = 0x0104;
+        public const int CtxtRevertIfUnchangedCommandId = 0x0105;
+        public const int CtxtRevertCommandId = 0x0106;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -32,7 +35,7 @@ namespace P4EditVS
         /// </summary>
         private readonly AsyncPackage package;
 
-        private string activeFile;
+        private string mCachedFilePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Commands"/> class.
@@ -45,6 +48,8 @@ namespace P4EditVS
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
+            // Top level menu buttons
+            
             // Checkout
             {
                 var menuCommandID = new CommandID(CommandSet, CheckoutCommandId);
@@ -66,6 +71,34 @@ namespace P4EditVS
                 var menuCommandID = new CommandID(CommandSet, RevertCommandId);
                 var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
                 menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatus);
+                menuItem.Text = "Revert";
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+
+            // Context menu buttons
+
+            // Checkout
+            {
+                var menuCommandID = new CommandID(CommandSet, CtxtCheckoutCommandId);
+                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
+                commandService.AddCommand(menuItem);
+            }
+            // Revert if unchanged
+            {
+                var menuCommandID = new CommandID(CommandSet, CtxtRevertIfUnchangedCommandId);
+                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
+                menuItem.Text = "Revert If Unchanged";
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+            // Revert
+            {
+                var menuCommandID = new CommandID(CommandSet, CtxtRevertCommandId);
+                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
                 menuItem.Text = "Revert";
                 menuItem.Visible = true;
                 commandService.AddCommand(menuItem);
@@ -129,71 +162,127 @@ namespace P4EditVS
                 if (applicationObject != null)
                 {
                     string guiFileName = "";
-                    bool isProjectFile = false;
+                    bool isReadOnly = false;
+                    bool validSelection = true;
+
+                    if (applicationObject.ActiveDocument != null)
+                    {
+                        mCachedFilePath = applicationObject.ActiveDocument.FullName;
+                        guiFileName = applicationObject.ActiveDocument.Name;
+                        isReadOnly = applicationObject.ActiveDocument.ReadOnly;
+                    }
+                    else
+                    {
+                        validSelection = false;
+                    }
+                    
+                    if (validSelection)
+                    {
+                        // Build menu string based on command ID and whether to enable it based on file type/state
+                        ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
+                    }
+                    else
+                    {
+                        // Invalid selection clear cached path and disable buttons
+                        mCachedFilePath = "";
+                        myCommand.Enabled = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called before menu button is shown so we can update text and active state
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnBeforeQueryStatusCtxt(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var myCommand = sender as OleMenuCommand;
+            if (null != myCommand)
+            {
+                EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
+                if (applicationObject != null)
+                {
+                    string guiFileName = "";
+                    bool isReadOnly = false;
+                    bool validSelection = true;
 
                     var selectedItems = applicationObject.SelectedItems;
                     if (selectedItems.Count > 0)
                     {
                         // Only 1 selected item supported
                         var selectedFile = selectedItems.Item(1);
-                        
+
                         // Is selected item a project?
                         if (selectedFile.Project != null)
                         {
-                            guiFileName = selectedFile.Project.Name;
-                            activeFile = selectedFile.Project.FullName;
-                            isProjectFile = true;
+                            mCachedFilePath = selectedFile.Project.FullName;
                         }
                         else if (selectedFile.ProjectItem != null)
                         {
-                            guiFileName = selectedFile.ProjectItem.Name;
-                            activeFile = selectedFile.ProjectItem.Document.FullName;
+                            if (selectedFile.ProjectItem.FileCount == 1)
+                            {
+                                mCachedFilePath = selectedFile.ProjectItem.FileNames[0];
+                            }
+                            else
+                            {
+                                validSelection = false;
+                            }
                         }
                         // If we still have something selected and it's not a project item or project it must be the solution (?)
                         else
                         {
-                            guiFileName = applicationObject.Solution.FileName;
-                            activeFile = applicationObject.Solution.FullName;
+                            mCachedFilePath = applicationObject.Solution.FullName;
                         }
+                    }
+
+                    if (validSelection)
+                    {
+                        System.IO.FileInfo info = new System.IO.FileInfo(mCachedFilePath);
+                        isReadOnly = info.IsReadOnly;
+                        guiFileName = info.Name;
+                        // Build menu string based on command ID and whether to enable it based on file type/state
+                        ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
                     }
                     else
                     {
-                        if (applicationObject.ActiveDocument == null)
-                        {
-                            myCommand.Enabled = false;
-                            return;
-                        }
-
-                        // Cache the file name here so it doesn't change between now and executing the command (if that can even happen)
-                        activeFile = applicationObject.ActiveDocument.FullName;
-                        guiFileName = applicationObject.ActiveDocument.Name;
-                    }
-
-                    // Build menu string based on command ID and whether to enable it based on file type/state
-                    switch (myCommand.CommandID.ID)
-                    {
-                        case CheckoutCommandId:
-                            {
-                                myCommand.Text = string.Format("Checkout {0}", guiFileName);
-                                myCommand.Enabled = applicationObject.ActiveDocument.ReadOnly || isProjectFile;
-                            }
-                            break;
-                        case RevertIfUnchangedCommandId:
-                            {
-                                myCommand.Text = string.Format("Revert If Unchanged {0}", guiFileName);
-                                myCommand.Enabled = !applicationObject.ActiveDocument.ReadOnly || isProjectFile;
-                            }
-                            break;
-                        case RevertCommandId:
-                            {
-                                myCommand.Text = string.Format("Revert {0}", guiFileName);
-                                myCommand.Enabled = !applicationObject.ActiveDocument.ReadOnly || isProjectFile;
-                            }
-                            break;
-                        default:
-                            break;
+                        // Invalid selection clear cached path and disable buttons
+                        mCachedFilePath = "";
+                        myCommand.Enabled = false;
                     }
                 }
+            }
+        }
+
+        void ConfigureCmdButton(OleMenuCommand command, string name, bool isReadOnly)
+        {
+            switch (command.CommandID.ID)
+            {
+                case CheckoutCommandId:
+                case CtxtCheckoutCommandId:
+                    {
+                        command.Text = string.Format("Checkout {0}", name);
+                        command.Enabled = isReadOnly;
+                    }
+                    break;
+                case RevertIfUnchangedCommandId:
+                case CtxtRevertIfUnchangedCommandId:
+                    {
+                        command.Text = string.Format("Revert If Unchanged {0}", name);
+                        command.Enabled = !isReadOnly;
+                    }
+                    break;
+                case RevertCommandId:
+                case CtxtRevertCommandId:
+                    {
+                        command.Text = string.Format("Revert {0}", name);
+                        command.Enabled = !isReadOnly;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -208,7 +297,7 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             P4EditVS package = this.package as P4EditVS;
-            if(!package.ValidateUserSettings() || activeFile == "")
+            if(!package.ValidateUserSettings() || mCachedFilePath == "")
             {
                 return;
             }
@@ -225,16 +314,19 @@ namespace P4EditVS
                 switch (myCommand.CommandID.ID)
                 {
                     case CheckoutCommandId:
+                    case CtxtCheckoutCommandId:
                         {
-                            commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, activeFile);
+                            commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, mCachedFilePath);
                         }
                         break;
                     case RevertIfUnchangedCommandId:
+                    case CtxtRevertIfUnchangedCommandId:
                         {
-                            commandline = string.Format("p4 {0} revert -a {1}", globalOptions, activeFile);
+                            commandline = string.Format("p4 {0} revert -a {1}", globalOptions, mCachedFilePath);
                         }
                         break;
                     case RevertCommandId:
+                    case CtxtRevertCommandId:
                         {
                             IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
 
@@ -246,7 +338,7 @@ namespace P4EditVS
 
                             if(shouldRevert)
                             {
-                                commandline = string.Format("p4 {0} revert {1}", globalOptions, activeFile);
+                                commandline = string.Format("p4 {0} revert {1}", globalOptions, mCachedFilePath);
                             }
                         }
                         break;

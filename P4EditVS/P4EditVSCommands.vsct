@@ -19,33 +19,35 @@
     
     <Menus>
       <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_SCC"/>
-        <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
-        </Strings>
-      </Menu>
-      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_SCC"/>
-        <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
-        </Strings>
-      </Menu>
-      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
-        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_ITEM_SCC"/>
-        <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
-        </Strings>
-      </Menu>
-      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
         <Strings>
           <ButtonText>P4EditVS</ButtonText>
           <CommandName>P4EditVS</CommandName>
         </Strings>
       </Menu>
+
+      <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_EXPLORE"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+      <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_EXPLORE"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+      <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
+        <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_ITEM_SCC"/>
+        <Strings>
+          <ButtonText>P4EditVS</ButtonText>
+          <CommandName>P4EditVS</CommandName>
+        </Strings>
+      </Menu>
+
     </Menus>
 
     <!-- In this section you can define new menu groups. A menu group is a container for
@@ -56,7 +58,11 @@
       <Group guid="guidP4EditVSCmdSet" id="guidMenuGroup" priority="0x0600">
         <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
       </Group>
+      <Group guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" priority="0x0600">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenu"/>
+      </Group>
     </Groups>
+    
 
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
@@ -69,6 +75,9 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
+      
+      <!--Top Level Menu Buttons-->
+      
       <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0100" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpCheckout"/>
@@ -102,6 +111,43 @@
           <ButtonText>Revert</ButtonText>
         </Strings>
       </Button>
+
+      <!--Context Menu Buttons-->
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpCheckout"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Loading...</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtRevertIfUnchanged" priority="0x0101" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Revert If Unchanged</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtRevert" priority="0x0102" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpRevert"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Revert</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
 
     <Bitmaps>
@@ -117,11 +163,16 @@
 
     <!-- top level View menu commands -->
     <GuidSymbol name="guidP4EditVSCmdSet" value="{bcd15dfb-5150-4bde-a3d0-520343ba88c5}">
-      <IDSymbol name="guidTopLevelMenu" value="0x1024"/>
       <IDSymbol name="guidMenuGroup" value="0x1023" />
+      <IDSymbol name="guidTopLevelMenu" value="0x1024"/>
+      <IDSymbol name="guidCtxtMenuGroup" value="0x1025" />
+      <IDSymbol name="guidCtxtMenu" value="0x1026"/>
       <IDSymbol name="cmdidCheckout" value="0x0100" />
       <IDSymbol name="cmdidRevertIfUnchanged" value="0x0101" />
       <IDSymbol name="cmdidRevert" value="0x0103" />
+      <IDSymbol name="cmdidCtxtCheckout" value="0x0104" />
+      <IDSymbol name="cmdidCtxtRevertIfUnchanged" value="0x0105" />
+      <IDSymbol name="cmdidCtxtRevert" value="0x0106" />
     </GuidSymbol>
     
     <!-- images -->
@@ -129,6 +180,9 @@
       <IDSymbol name="bmpCheckout" value="1" />
       <IDSymbol name="bmpRevert" value="2" />
       <IDSymbol name="bmpRevertIfUnchanged" value="3" />
+    </GuidSymbol>
+    <GuidSymbol name="guidIcons" value="{CCA21650-7FA4-4AB9-9214-5822BFC66C62}">
+      <IDSymbol name="p4editvs" value="1" />
     </GuidSymbol>
 
   </Symbols>
