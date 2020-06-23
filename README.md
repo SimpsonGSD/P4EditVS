@@ -1,8 +1,11 @@
 # P4EditVS
 
+Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
+
+Use menu bar or solution explorer context menu.
+
 ![alt text](Screenshot.png "Example")
 
-Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
 Supported Commands
 * Checkout
