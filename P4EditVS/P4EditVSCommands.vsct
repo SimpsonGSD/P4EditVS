@@ -24,8 +24,7 @@
           <ButtonText>P4EditVS</ButtonText>
           <CommandName>P4EditVS</CommandName>
         </Strings>
-      </Menu>
-
+      </Menu>    
       <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_EXPLORE"/>
         <Strings>
@@ -61,6 +60,9 @@
       <Group guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" priority="0x0600">
         <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenu"/>
       </Group>
+      <Group guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" priority="0x0600">
+        <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
+      </Group>
     </Groups>
     
 
@@ -77,8 +79,8 @@
           If you do not want an image next to your command, remove the Icon node /> -->
       
       <!--Top Level Menu Buttons-->
-      
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0100" type="Button">
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpCheckout"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -88,7 +90,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0101" type="Button">
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0102" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -100,7 +102,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevert" priority="0x0102" type="Button">
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevert" priority="0x0103" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpRevert"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
@@ -112,6 +114,66 @@
         </Strings>
       </Button>
 
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace1" priority="0x0104" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+          <CommandFlag>DefaultDisabled</CommandFlag>
+          <CommandFlag>DefaultInvisible</CommandFlag>
+          <CommandFlag>DynamicVisibility</CommandFlag>
+          <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Workspace1</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace2" priority="0x0104" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Workspace2</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace3" priority="0x0105" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Workspace3</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace4" priority="0x0106" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Workspace4</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace5" priority="0x0107" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Workspace5</ButtonText>
+        </Strings>
+      </Button>
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace6" priority="0x0108" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Workspace6</ButtonText>
+        </Strings>
+      </Button>
       <!--Context Menu Buttons-->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
@@ -167,12 +229,20 @@
       <IDSymbol name="guidTopLevelMenu" value="0x1024"/>
       <IDSymbol name="guidCtxtMenuGroup" value="0x1025" />
       <IDSymbol name="guidCtxtMenu" value="0x1026"/>
+      <IDSymbol name="guidWorkspaceMenuGroup" value="0x1027" />
+      <IDSymbol name="guidWorkspaceMenu" value="0x1028" />
       <IDSymbol name="cmdidCheckout" value="0x0100" />
       <IDSymbol name="cmdidRevertIfUnchanged" value="0x0101" />
       <IDSymbol name="cmdidRevert" value="0x0103" />
       <IDSymbol name="cmdidCtxtCheckout" value="0x0104" />
       <IDSymbol name="cmdidCtxtRevertIfUnchanged" value="0x0105" />
       <IDSymbol name="cmdidCtxtRevert" value="0x0106" />
+      <IDSymbol name="cmdidWorkspace1" value="0x0107" />
+      <IDSymbol name="cmdidWorkspace2" value="0x0108" />
+      <IDSymbol name="cmdidWorkspace3" value="0x0109" />
+      <IDSymbol name="cmdidWorkspace4" value="0x010A" />
+      <IDSymbol name="cmdidWorkspace5" value="0x010B" />
+      <IDSymbol name="cmdidWorkspace6" value="0x010C" />
     </GuidSymbol>
     
     <!-- images -->

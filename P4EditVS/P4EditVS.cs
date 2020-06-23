@@ -48,21 +48,14 @@ namespace P4EditVS
         /// </summary>
         public const string PackageGuidString = "d6a4db63-698d-4d16-bbc0-944fe52f83db";
 
-       //public string ServerAddress
-       //{
-       //    get
-       //    {
-       //        OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-       //        return page.ServerAddress;
-       //    }
-       //}
+        private int mSelectedWorkspace = 0;
+        public int SelectedWorkspace { get => mSelectedWorkspace; set => mSelectedWorkspace = value; }
 
         public string ClientName
         {
             get
             {
-                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                return page.ClientName;
+                return GetWorkspaceName(mSelectedWorkspace);
             }
         }
 
@@ -71,8 +64,46 @@ namespace P4EditVS
             get
             {
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                return page.UserName;
+                // This is truly awful
+                switch (mSelectedWorkspace)
+                {
+                    case 0:
+                        return page.UserName;
+                    case 1:
+                        return page.UserName2;
+                    case 2:
+                        return page.UserName3;
+                    case 3:         
+                        return page.UserName4;
+                    case 4:         
+                        return page.UserName5;
+                    case 5:         
+                        return page.UserName6;
+                }
+                throw new IndexOutOfRangeException();
             }
+        }
+
+        public string GetWorkspaceName(int index)
+        {
+            OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+            // This is truly awful
+            switch (index)
+            {
+                case 0:
+                    return page.ClientName;
+                case 1:
+                    return page.ClientName2;
+                case 2:
+                    return page.ClientName3;
+                case 3:
+                    return page.ClientName4;
+                case 4:
+                    return page.ClientName5;
+                case 5:
+                    return page.ClientName6;
+            }
+            throw new IndexOutOfRangeException();
         }
 
         /// <summary>
@@ -144,39 +175,133 @@ namespace P4EditVS
 
     public class OptionPageGrid : DialogPage
     {
-       // private string mServerAddress = "";
-       //
-       // [Category("Perforce Settings")]
-       // [DisplayName("Perforce Server Address")]
-       // [Description("Address of Perforce server. E.g. 127.0.0.1:1666")]
-       // public string ServerAddress
-       // {
-       //     get { return mServerAddress; }
-       //     set { mServerAddress = value; }
-       // }
+        // This seems like a terrible way to do it
 
         private string mUserName = "";
+        private string mClientName = "";
 
-        [Category("Perforce Settings")]
+        [Category("Workspace 1")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName
         {
             get { return mUserName; }
-            set { mUserName = value; }
+            set { mUserName = value.Trim(); }
         }
 
-        private string mClientName = "";
-
-        [Category("Perforce Settings")]
+        [Category("Workspace 1")]
         [DisplayName("Perforce Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName
         {
             get { return mClientName; }
-            set { mClientName = value; }
+            set { mClientName = value.Trim(); }
         }
+
+        private string mUserName2 = "";
+        private string mClientName2 = "";
+
+        [Category("Workspace 2")]
+        [DisplayName("Perforce User Name")]
+        [Description("User name")]
+        public string UserName2
+        {
+            get { return mUserName2; }
+            set { mUserName2 = value.Trim(); }
+        }
+
+        [Category("Workspace 2")]
+        [DisplayName("Perforce Client Name")]
+        [Description("Client name, i.e. workspace name")]
+        public string ClientName2
+        {
+            get { return mClientName2; }
+            set { mClientName2 = value.Trim(); }
+        }
+
+        private string mUserName3 = "";
+        private string mClientName3 = "";
+
+        [Category("Workspace 3")]
+        [DisplayName("Perforce User Name")]
+        [Description("User name")]
+        public string UserName3
+        {
+            get { return mUserName3; }
+            set { mUserName3 = value.Trim(); }
+        }
+
+        [Category("Workspace 3")]
+        [DisplayName("Perforce Client Name")]
+        [Description("Client name, i.e. workspace name")]
+        public string ClientName3
+        {
+            get { return mClientName3; }
+            set { mClientName3 = value.Trim(); }
+        }
+
+        private string mUserName4 = "";
+        private string mClientName4 = "";
+
+        [Category("Workspace 4")]
+        [DisplayName("Perforce User Name")]
+        [Description("User name")]
+        public string UserName4
+        {
+            get { return mUserName4; }
+            set { mUserName4 = value.Trim(); }
+        }
+
+        [Category("Workspace 4")]
+        [DisplayName("Perforce Client Name")]
+        [Description("Client name, i.e. workspace name")]
+        public string ClientName4
+        {
+            get { return mClientName4; }
+            set { mClientName4 = value.Trim(); }
+        }
+
+        private string mUserName5 = "";
+        private string mClientName5 = "";
+
+        [Category("Workspace 5")]
+        [DisplayName("Perforce User Name")]
+        [Description("User name")]
+        public string UserName5
+        {
+            get { return mUserName5; }
+            set { mUserName5 = value.Trim(); }
+        }
+
+        [Category("Workspace 5")]
+        [DisplayName("Perforce Client Name")]
+        [Description("Client name, i.e. workspace name")]
+        public string ClientName5
+        {
+            get { return mClientName5; }
+            set { mClientName5 = value.Trim(); }
+        }
+
+        private string mUserName6 = "";
+        private string mClientName6 = "";
+
+        [Category("Workspace 6")]
+        [DisplayName("Perforce User Name")]
+        [Description("User name")]
+        public string UserName6
+        {
+            get { return mUserName6; }
+            set { mUserName6 = value.Trim(); }
+        }
+
+        [Category("Workspace 6")]
+        [DisplayName("Perforce Client Name")]
+        [Description("Client name, i.e. workspace name")]
+        public string ClientName6
+        {
+            get { return mClientName6; }
+            set { mClientName6 = value.Trim(); }
+        }
+
     }
-
-
 }

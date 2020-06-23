@@ -24,6 +24,12 @@ namespace P4EditVS
         public const int CtxtCheckoutCommandId = 0x0104;
         public const int CtxtRevertIfUnchangedCommandId = 0x0105;
         public const int CtxtRevertCommandId = 0x0106;
+        public const int Workspace1CommandId = 0x0107;
+        public const int Workspace2CommandId = 0x0108;
+        public const int Workspace3CommandId = 0x0109;
+        public const int Workspace4CommandId = 0x010A;
+        public const int Workspace5CommandId = 0x010B;
+        public const int Workspace6CommandId = 0x010C;
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -49,7 +55,6 @@ namespace P4EditVS
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             // Top level menu buttons
-            
             // Checkout
             {
                 var menuCommandID = new CommandID(CommandSet, CheckoutCommandId);
@@ -72,6 +77,56 @@ namespace P4EditVS
                 var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
                 menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatus);
                 menuItem.Text = "Revert";
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+
+            // Workspace selection
+            // Workspace1
+            {
+                var menuCommandID = new CommandID(CommandSet, Workspace1CommandId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+            // Workspace2
+            {
+                var menuCommandID = new CommandID(CommandSet, Workspace2CommandId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+            // Workspace3
+            {
+                var menuCommandID = new CommandID(CommandSet, Workspace3CommandId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+            // Workspace4
+            {
+                var menuCommandID = new CommandID(CommandSet, Workspace4CommandId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+            // Workspace5
+            {
+                var menuCommandID = new CommandID(CommandSet, Workspace5CommandId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
+                menuItem.Visible = true;
+                commandService.AddCommand(menuItem);
+            }
+            // Workspace6
+            {
+                var menuCommandID = new CommandID(CommandSet, Workspace6CommandId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
                 menuItem.Visible = true;
                 commandService.AddCommand(menuItem);
             }
@@ -357,6 +412,77 @@ namespace P4EditVS
                     process.Start();
                 }
             }
+        }
+
+        /// <summary>
+        /// Called before menu button is shown so we can update text and active state
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnBeforeQueryStatusWorkspace(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            P4EditVS package = this.package as P4EditVS;
+            var myCommand = sender as OleMenuCommand;
+            if (null != myCommand)
+            {
+                int workspaceIndex = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
+                myCommand.Checked = (package.SelectedWorkspace == workspaceIndex);
+                string text = package.GetWorkspaceName(workspaceIndex);
+                myCommand.Enabled = (text != "");
+                myCommand.Visible = myCommand.Enabled;
+                myCommand.Text = text;
+            }
+        }
+
+        /// <summary>
+        /// This function is the callback used to execute the command when the menu item is clicked.
+        /// See the constructor to see how the menu item is associated with this function using
+        /// OleMenuCommandService service and MenuCommand class.
+        /// </summary>
+        /// <param name="sender">Event sender.</param>
+        /// <param name="e">Event args.</param>
+        private void ExecuteWorkspace(object sender, EventArgs e)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            P4EditVS package = this.package as P4EditVS;
+            var myCommand = sender as OleMenuCommand;
+            if (null != myCommand)
+            {
+                int workspaceId = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
+                package.SelectedWorkspace = workspaceId;
+                myCommand.Checked = true;
+            }
+        }
+
+        private int GetWorkspaceIndexForCommandId(int commandId)
+        {
+            int index;
+            switch (commandId)
+            {
+                case Workspace1CommandId:
+                    index = 0;
+                    break;
+                case Workspace2CommandId:
+                    index = 1;
+                    break;
+                case Workspace3CommandId:
+                    index = 2;
+                    break;
+                case Workspace4CommandId:
+                    index = 3;
+                    break;
+                case Workspace5CommandId:       
+                    index = 4; 
+                    break;
+                case Workspace6CommandId:
+                    index = 5;
+                    break;
+                default:
+                    throw new IndexOutOfRangeException();
+
+            }
+            return index;
         }
     }
 }
