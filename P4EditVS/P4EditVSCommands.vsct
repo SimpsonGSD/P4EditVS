@@ -85,8 +85,9 @@
         <Icon guid="guidImages" id="bmpCheckout"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
-          <ButtonText>Loading...</ButtonText>
+          <ButtonText>Checkout</ButtonText>
         </Strings>
       </Button>
 
@@ -97,7 +98,9 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
+          <CommandName>RevertIfUnchangedActiveFile</CommandName>
           <ButtonText>Revert If Unchanged</ButtonText>
         </Strings>
       </Button>
@@ -109,8 +112,59 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Revert</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidDiff" priority="0x0104" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpDiff"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Diff</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidHistory" priority="0x0105" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpHistory"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>History</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidTimelapseView" priority="0x0106" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Timelapse View</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevisionGraph" priority="0x0107" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Revision Graph</ButtonText>
         </Strings>
       </Button>
 
@@ -120,6 +174,7 @@
           <CommandFlag>DefaultInvisible</CommandFlag>
           <CommandFlag>DynamicVisibility</CommandFlag>
           <CommandFlag>TextChanges</CommandFlag>
+          <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace1</ButtonText>
         </Strings>
@@ -130,6 +185,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace2</ButtonText>
         </Strings>
@@ -140,6 +196,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace3</ButtonText>
         </Strings>
@@ -150,6 +207,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace4</ButtonText>
         </Strings>
@@ -160,6 +218,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace5</ButtonText>
         </Strings>
@@ -170,10 +229,12 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace6</ButtonText>
         </Strings>
       </Button>
+      
       <!--Context Menu Buttons-->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
@@ -181,8 +242,9 @@
         <Icon guid="guidImages" id="bmpCheckout"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
-          <ButtonText>Loading...</ButtonText>
+          <ButtonText>Checkout</ButtonText>
         </Strings>
       </Button>
 
@@ -193,6 +255,7 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Revert If Unchanged</ButtonText>
         </Strings>
@@ -205,8 +268,59 @@
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Revert</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtDiff" priority="0x0103" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpDiff"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Diff</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtHistory" priority="0x0104" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpRevert"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>History</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtTimelapseView" priority="0x0105" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Timelapse View</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtRevisionGraph" priority="0x0106" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Revision Graph</ButtonText>
         </Strings>
       </Button>
 
@@ -214,7 +328,7 @@
 
     <Bitmaps>
       <Bitmap guid="guidImages" href="Resources\cmdImages.bmp"
-              usedList="bmpCheckout, bmpRevertIfUnchanged, bmpRevert"/>
+              usedList="bmpCheckout, bmpRevertIfUnchanged, bmpRevert, bmpHistory, bmpDiff"/>
     </Bitmaps>
     
   </Commands>
@@ -243,6 +357,14 @@
       <IDSymbol name="cmdidWorkspace4" value="0x010A" />
       <IDSymbol name="cmdidWorkspace5" value="0x010B" />
       <IDSymbol name="cmdidWorkspace6" value="0x010C" />
+      <IDSymbol name="cmdidDiff" value="0x010D" />
+      <IDSymbol name="cmdidCtxtDiff" value="0x010E" />
+      <IDSymbol name="cmdidHistory" value="0x010F" />
+      <IDSymbol name="cmdidCtxtHistory" value="0x0110" />
+      <IDSymbol name="cmdidRevisionGraph" value="0x0111" />
+      <IDSymbol name="cmdidCtxtRevisionGraph" value="0x0112" />
+      <IDSymbol name="cmdidTimelapseView" value="0x0113" />
+      <IDSymbol name="cmdidCtxtTimelapseView" value="0x0114" />
     </GuidSymbol>
     
     <!-- images -->
@@ -250,6 +372,8 @@
       <IDSymbol name="bmpCheckout" value="1" />
       <IDSymbol name="bmpRevert" value="2" />
       <IDSymbol name="bmpRevertIfUnchanged" value="3" />
+      <IDSymbol name="bmpHistory" value="4" />
+      <IDSymbol name="bmpDiff" value="5" />
     </GuidSymbol>
     <GuidSymbol name="guidIcons" value="{CCA21650-7FA4-4AB9-9214-5822BFC66C62}">
       <IDSymbol name="p4editvs" value="1" />

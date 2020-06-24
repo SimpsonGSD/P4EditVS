@@ -30,6 +30,18 @@ namespace P4EditVS
         public const int Workspace4CommandId = 0x010A;
         public const int Workspace5CommandId = 0x010B;
         public const int Workspace6CommandId = 0x010C;
+        public const int DiffCommandId = 0x010D;
+        public const int CtxtDiffCommandId = 0x010E;
+        public const int HistoryCommandId = 0x010F;
+        public const int CtxtHistoryCommandId = 0x0110;
+        public const int RevisionGraphCommandId = 0x0111;
+        public const int CtxtRevisionGraphCommandId = 0x0112;
+        public const int TimelapseViewCommandId = 0x0113;
+        public const int CtxtTimelapseViewCommandId = 0x0114;
+
+        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId };
+        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId };
+        public readonly int[] WorkspaceCommandIds = { Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -54,107 +66,29 @@ namespace P4EditVS
             this.package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
-            // Top level menu buttons
-            // Checkout
+            foreach (var cmdId in CommandIds)
             {
-                var menuCommandID = new CommandID(CommandSet, CheckoutCommandId);
+                var menuCommandID = new CommandID(CommandSet, cmdId);
                 var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
                 menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatus);
-                commandService.AddCommand(menuItem);
-            }
-            // Revert if unchanged
-            {
-                var menuCommandID = new CommandID(CommandSet, RevertIfUnchangedCommandId);
-                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatus);
-                menuItem.Text = "Revert If Unchanged";
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Revert
-            {
-                var menuCommandID = new CommandID(CommandSet, RevertCommandId);
-                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatus);
-                menuItem.Text = "Revert";
                 menuItem.Visible = true;
                 commandService.AddCommand(menuItem);
             }
 
-            // Workspace selection
-            // Workspace1
+            foreach (var cmdId in CtxtCommandIds)
             {
-                var menuCommandID = new CommandID(CommandSet, Workspace1CommandId);
-                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Workspace2
-            {
-                var menuCommandID = new CommandID(CommandSet, Workspace2CommandId);
-                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Workspace3
-            {
-                var menuCommandID = new CommandID(CommandSet, Workspace3CommandId);
-                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Workspace4
-            {
-                var menuCommandID = new CommandID(CommandSet, Workspace4CommandId);
-                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Workspace5
-            {
-                var menuCommandID = new CommandID(CommandSet, Workspace5CommandId);
-                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Workspace6
-            {
-                var menuCommandID = new CommandID(CommandSet, Workspace6CommandId);
-                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
+                var menuCommandID = new CommandID(CommandSet, cmdId);
+                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
                 menuItem.Visible = true;
                 commandService.AddCommand(menuItem);
             }
 
-            // Context menu buttons
-
-            // Checkout
+            foreach (var cmdId in WorkspaceCommandIds)
             {
-                var menuCommandID = new CommandID(CommandSet, CtxtCheckoutCommandId);
-                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
-                commandService.AddCommand(menuItem);
-            }
-            // Revert if unchanged
-            {
-                var menuCommandID = new CommandID(CommandSet, CtxtRevertIfUnchangedCommandId);
-                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
-                menuItem.Text = "Revert If Unchanged";
-                menuItem.Visible = true;
-                commandService.AddCommand(menuItem);
-            }
-            // Revert
-            {
-                var menuCommandID = new CommandID(CommandSet, CtxtRevertCommandId);
-                var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
-                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusCtxt);
-                menuItem.Text = "Revert";
+                var menuCommandID = new CommandID(CommandSet, cmdId);
+                var menuItem = new OleMenuCommand(this.ExecuteWorkspace, menuCommandID);
+                menuItem.BeforeQueryStatus += new EventHandler(OnBeforeQueryStatusWorkspace);
                 menuItem.Visible = true;
                 commandService.AddCommand(menuItem);
             }
@@ -336,6 +270,34 @@ namespace P4EditVS
                         command.Enabled = !isReadOnly;
                     }
                     break;
+                case DiffCommandId:
+                case CtxtDiffCommandId:
+                    {
+                        command.Text = string.Format("Diff Against Have Revision {0}", name);
+                        command.Enabled = !isReadOnly;
+                    }
+                    break;
+                case HistoryCommandId:
+                case CtxtHistoryCommandId:
+                    {
+                        command.Text = string.Format("History {0}", name);
+                        command.Enabled = true;
+                    }
+                    break;
+                case TimelapseViewCommandId:
+                case CtxtTimelapseViewCommandId:
+                    {
+                        command.Text = string.Format("Time-lapse View {0}", name);
+                        command.Enabled = true;
+                    }
+                    break;
+                case RevisionGraphCommandId:
+                case CtxtRevisionGraphCommandId:
+                    {
+                        command.Text = string.Format("Revision Graph {0}", name);
+                        command.Enabled = true;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -385,8 +347,9 @@ namespace P4EditVS
                         {
                             IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
 
+                            string message = string.Format("This will discard all changes. Are you sure you wish to revert {0}?", mCachedFilePath);
                             bool shouldRevert = VsShellUtilities.PromptYesNo(
-                                "Are you sure you wish to revert and discard changes?",
+                                message,
                                 "P4EditVS: Revert",
                                 OLEMSGICON.OLEMSGICON_WARNING,
                                 uiShell);
@@ -395,6 +358,30 @@ namespace P4EditVS
                             {
                                 commandline = string.Format("p4 {0} revert {1}", globalOptions, mCachedFilePath);
                             }
+                        }
+                        break;
+                    case DiffCommandId:
+                    case CtxtDiffCommandId:
+                        {
+                            commandline = string.Format("p4v {0} -cmd \"diffhave {1}\"", globalOptions, mCachedFilePath);
+                        }
+                        break;
+                    case HistoryCommandId:
+                    case CtxtHistoryCommandId:
+                        {
+                            commandline = string.Format("p4v {0} -cmd \"history {1}\"", globalOptions, mCachedFilePath);
+                        }
+                        break;
+                    case TimelapseViewCommandId:
+                    case CtxtTimelapseViewCommandId:
+                        {
+                            commandline = string.Format("p4v {0} -cmd \"timelapse {1}\"", globalOptions, mCachedFilePath);
+                        }
+                        break;
+                    case RevisionGraphCommandId:
+                    case CtxtRevisionGraphCommandId:
+                        {
+                            commandline = string.Format("p4v {0} -cmd \"revgraph {1}\"", globalOptions, mCachedFilePath);
                         }
                         break;
                     default:

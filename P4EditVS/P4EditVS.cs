@@ -84,6 +84,31 @@ namespace P4EditVS
             }
         }
 
+        public string Server
+        {
+            get
+            {
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                // This is truly awful
+                switch (mSelectedWorkspace)
+                {
+                    case 0:
+                        return page.Server;
+                    case 1:
+                        return page.Server2;
+                    case 2:         
+                        return page.Server3;
+                    case 3:         
+                        return page.Server4;
+                    case 4:         
+                        return page.Server5;
+                    case 5:         
+                        return page.Server6;
+                }
+                throw new IndexOutOfRangeException();
+            }
+        }
+
         public string GetWorkspaceName(int index)
         {
             OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
@@ -136,7 +161,7 @@ namespace P4EditVS
 
         public string GetGlobalP4CmdLineOptions()
         {
-            return string.Format("-c {0} -u {1}", ClientName, UserName);
+            return string.Format("-c {0} -u {1} -p {2}", ClientName, UserName, Server);
         }
 
         public bool ValidateUserSettings()
@@ -167,6 +192,19 @@ namespace P4EditVS
                 return false;
             }
 
+            if (Server == "")
+            {
+                VsShellUtilities.ShowMessageBox(
+                this,
+                "Server is empty. This must be set under Tools->Options->P4EditVS->Settings",
+                "Invalid Settings",
+                OLEMSGICON.OLEMSGICON_INFO,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+
+                return false;
+            }
+
             return true;
         }
 
@@ -179,6 +217,7 @@ namespace P4EditVS
 
         private string mUserName = "";
         private string mClientName = "";
+        private string mServer = "";
 
         [Category("Workspace 1")]
         [DisplayName("Perforce User Name")]
@@ -198,8 +237,18 @@ namespace P4EditVS
             set { mClientName = value.Trim(); }
         }
 
+        [Category("Workspace 1")]
+        [DisplayName("Perforce Server")]
+        [Description("e.g. localhost:1666")]
+        public string Server
+        {
+            get { return mServer; }
+            set { mServer = value.Trim(); }
+        }
+
         private string mUserName2 = "";
         private string mClientName2 = "";
+        private string mServer2 = "";
 
         [Category("Workspace 2")]
         [DisplayName("Perforce User Name")]
@@ -219,8 +268,18 @@ namespace P4EditVS
             set { mClientName2 = value.Trim(); }
         }
 
+        [Category("Workspace 2")]
+        [DisplayName("Perforce Server")]
+        [Description("e.g. localhost:1666")]
+        public string Server2
+        {
+            get { return mServer2; }
+            set { mServer2 = value.Trim(); }
+        }
+
         private string mUserName3 = "";
         private string mClientName3 = "";
+        private string mServer3 = "";
 
         [Category("Workspace 3")]
         [DisplayName("Perforce User Name")]
@@ -240,8 +299,18 @@ namespace P4EditVS
             set { mClientName3 = value.Trim(); }
         }
 
+        [Category("Workspace 3")]
+        [DisplayName("Perforce Server")]
+        [Description("e.g. localhost:1666")]
+        public string Server3
+        {
+            get { return mServer3; }
+            set { mServer3 = value.Trim(); }
+        }
+
         private string mUserName4 = "";
         private string mClientName4 = "";
+        private string mServer4 = "";
 
         [Category("Workspace 4")]
         [DisplayName("Perforce User Name")]
@@ -261,8 +330,18 @@ namespace P4EditVS
             set { mClientName4 = value.Trim(); }
         }
 
+        [Category("Workspace 4")]
+        [DisplayName("Perforce Server")]
+        [Description("e.g. localhost:1666")]
+        public string Server4
+        {
+            get { return mServer4; }
+            set { mServer4 = value.Trim(); }
+        }
+
         private string mUserName5 = "";
         private string mClientName5 = "";
+        private string mServer5 = "";
 
         [Category("Workspace 5")]
         [DisplayName("Perforce User Name")]
@@ -282,8 +361,18 @@ namespace P4EditVS
             set { mClientName5 = value.Trim(); }
         }
 
+        [Category("Workspace 5")]
+        [DisplayName("Perforce Server")]
+        [Description("e.g. localhost:1666")]
+        public string Server5
+        {
+            get { return mServer5; }
+            set { mServer5 = value.Trim(); }
+        }
+
         private string mUserName6 = "";
         private string mClientName6 = "";
+        private string mServer6 = "";
 
         [Category("Workspace 6")]
         [DisplayName("Perforce User Name")]
@@ -301,6 +390,15 @@ namespace P4EditVS
         {
             get { return mClientName6; }
             set { mClientName6 = value.Trim(); }
+        }
+
+        [Category("Workspace 6")]
+        [DisplayName("Perforce Server")]
+        [Description("e.g. localhost:1666")]
+        public string Server6
+        {
+            get { return mServer6; }
+            set { mServer6 = value.Trim(); }
         }
 
     }
