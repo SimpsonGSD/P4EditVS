@@ -14,7 +14,7 @@ Supported Commands
 
 Notes
 * p4.exe must be accessible by commandline.
-* Currently only 1 workspace setting supported at once.
+* Up to 6 workspace settings supported.
 * The extension does not send or collect any information, settings are only stored locally. 
 * This extension silently fails as it does not receive any information from the Perforce server, it only issues commands to it.
 * Checkout/revert state is only determined by file read-only flag.
