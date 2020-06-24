@@ -252,49 +252,50 @@ namespace P4EditVS
                 case CheckoutCommandId:
                 case CtxtCheckoutCommandId:
                     {
-                        command.Text = string.Format("Checkout {0}", name);
+                        // This is first command in the menu so rather than bloating the whole thing just display the filename at the top to the right
                         command.Enabled = isReadOnly;
+                        command.Text = command.Enabled ? string.Format("Checkout\t\t\t{0}", name) : "Checkout";
                     }
                     break;
                 case RevertIfUnchangedCommandId:
                 case CtxtRevertIfUnchangedCommandId:
                     {
-                        command.Text = string.Format("Revert If Unchanged {0}", name);
                         command.Enabled = !isReadOnly;
+                        command.Text = command.Enabled ? string.Format("Revert If Unchanged\t\t{0}", name) : "Revert If Unchanged";
                     }
                     break;
                 case RevertCommandId:
                 case CtxtRevertCommandId:
                     {
-                        command.Text = string.Format("Revert {0}", name);
+                        command.Text = "Revert";
                         command.Enabled = !isReadOnly;
                     }
                     break;
                 case DiffCommandId:
                 case CtxtDiffCommandId:
                     {
-                        command.Text = string.Format("Diff Against Have Revision {0}", name);
+                        command.Text = "Diff Against Have Revision";
                         command.Enabled = !isReadOnly;
                     }
                     break;
                 case HistoryCommandId:
                 case CtxtHistoryCommandId:
                     {
-                        command.Text = string.Format("History {0}", name);
+                        command.Text = "History";
                         command.Enabled = true;
                     }
                     break;
                 case TimelapseViewCommandId:
                 case CtxtTimelapseViewCommandId:
                     {
-                        command.Text = string.Format("Time-lapse View {0}", name);
+                        command.Text = "Time-lapse View";
                         command.Enabled = true;
                     }
                     break;
                 case RevisionGraphCommandId:
                 case CtxtRevisionGraphCommandId:
                     {
-                        command.Text = string.Format("Revision Graph {0}", name);
+                        command.Text = "Revision Graph";
                         command.Enabled = true;
                     }
                     break;
