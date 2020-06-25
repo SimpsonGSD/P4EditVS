@@ -289,7 +289,7 @@
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtHistory" priority="0x0104" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
-        <Icon guid="guidImages" id="bmpRevert"/>
+        <Icon guid="guidImages" id="bmpHistory"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
