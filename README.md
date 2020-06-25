@@ -16,7 +16,7 @@ Supported Commands
 
 Notes
 * p4.exe must be accessible from PATH for checkout/revert.
-* p4v.exe must be accessbily from PATH for history/diff/timelapse view/revision graph.
+* p4v.exe must be accessible from PATH for history/diff/timelapse view/revision graph.
 * Up to 6 workspace settings supported.
 * The extension does not send or collect any information, settings are only stored locally. 
 * This extension silently fails as it does not receive any information from the Perforce server, it only issues commands to it.
