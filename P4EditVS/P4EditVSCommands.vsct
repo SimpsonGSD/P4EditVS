@@ -6,7 +6,7 @@
 
   <!--This header contains the command ids for the menus provided by the shell. -->
   <Extern href="vsshlids.h"/>
-  
+
   <Commands package="guidP4EditVS">
 
     <!-- Inside this section we have different sub-sections: one for the menus, another
@@ -16,7 +16,7 @@
     called "command set" and is used to group different command inside a logically related
     group; your package should define its own command set in order to avoid collisions
     with command ids defined by other packages. -->
-    
+
     <Menus>
       <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
@@ -24,7 +24,7 @@
           <ButtonText>P4EditVS</ButtonText>
           <CommandName>P4EditVS</CommandName>
         </Strings>
-      </Menu>    
+      </Menu>
       <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_EXPLORE"/>
         <Strings>
@@ -64,7 +64,7 @@
         <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
       </Group>
     </Groups>
-    
+
 
     <!--Buttons section. -->
     <!--This section defines the elements the user can interact with, like a menu command or a button
@@ -77,7 +77,7 @@
               <CommandFlag>DefaultInvisible</CommandFlag>
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
-      
+
       <!--Top Level Menu Buttons-->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
@@ -168,13 +168,25 @@
         </Strings>
       </Button>
 
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspaceUseEnvironment" priority="0x0104" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Use Environment</ButtonText>
+        </Strings>
+      </Button>
       <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace1" priority="0x0104" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
-          <CommandFlag>DefaultDisabled</CommandFlag>
-          <CommandFlag>DefaultInvisible</CommandFlag>
-          <CommandFlag>DynamicVisibility</CommandFlag>
-          <CommandFlag>TextChanges</CommandFlag>
-          <CommandFlag>DontCache</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
         <Strings>
           <ButtonText>Workspace1</ButtonText>
         </Strings>
@@ -234,7 +246,7 @@
           <ButtonText>Workspace6</ButtonText>
         </Strings>
       </Button>
-      
+
       <!--Context Menu Buttons-->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
@@ -330,7 +342,7 @@
       <Bitmap guid="guidImages" href="Resources\cmdImages.bmp"
               usedList="bmpCheckout, bmpRevertIfUnchanged, bmpRevert, bmpHistory, bmpDiff"/>
     </Bitmaps>
-    
+
   </Commands>
 
   <Symbols>
@@ -365,8 +377,9 @@
       <IDSymbol name="cmdidCtxtRevisionGraph" value="0x0112" />
       <IDSymbol name="cmdidTimelapseView" value="0x0113" />
       <IDSymbol name="cmdidCtxtTimelapseView" value="0x0114" />
+      <IDSymbol name="cmdidWorkspaceUseEnvironment" value="0x115" />
     </GuidSymbol>
-    
+
     <!-- images -->
     <GuidSymbol name="guidImages" value="{38854134-5584-4848-9A4B-B6A3C4E28B4C}">
       <IDSymbol name="bmpCheckout" value="1" />
@@ -380,5 +393,5 @@
     </GuidSymbol>
 
   </Symbols>
-  
+
 </CommandTable>

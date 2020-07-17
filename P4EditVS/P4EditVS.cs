@@ -73,11 +73,11 @@ namespace P4EditVS
                         return page.UserName2;
                     case 2:
                         return page.UserName3;
-                    case 3:         
+                    case 3:
                         return page.UserName4;
-                    case 4:         
+                    case 4:
                         return page.UserName5;
-                    case 5:         
+                    case 5:
                         return page.UserName6;
                 }
                 throw new IndexOutOfRangeException();
@@ -96,13 +96,13 @@ namespace P4EditVS
                         return page.Server;
                     case 1:
                         return page.Server2;
-                    case 2:         
+                    case 2:
                         return page.Server3;
-                    case 3:         
+                    case 3:
                         return page.Server4;
-                    case 4:         
+                    case 4:
                         return page.Server5;
-                    case 5:         
+                    case 5:
                         return page.Server6;
                 }
                 throw new IndexOutOfRangeException();
@@ -115,6 +115,10 @@ namespace P4EditVS
             // This is truly awful
             switch (index)
             {
+                case -1:
+                    if (page.AllowEnvironment) return "(Use environment)";
+                    else return "";
+
                 case 0:
                     return page.ClientName;
                 case 1:
@@ -161,12 +165,20 @@ namespace P4EditVS
 
         public string GetGlobalP4CmdLineOptions()
         {
-            return string.Format("-c {0} -u {1} -p {2}", ClientName, UserName, Server);
+            if (mSelectedWorkspace == -1)
+            {
+                return "";
+            }
+            else
+            {
+                // 
+                return string.Format("-c {0} -u {1} -p {2}", ClientName, UserName, Server);
+            }
         }
 
         public bool ValidateUserSettings()
         {
-            if(ClientName == "")
+            if (ClientName == "")
             {
                 VsShellUtilities.ShowMessageBox(
                 this,
@@ -177,6 +189,16 @@ namespace P4EditVS
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
                 return false;
+            }
+
+            // If Allow Use Environment is disabled, and the environment is the
+            // selected workspace, the previous check will fail.
+            //
+            // So if things got this far, and the environment is the selected
+            // workspace, it's all good. User name and server quite unnecessary.
+            if (mSelectedWorkspace == -1)
+            {
+                return true;
             }
 
             if (UserName == "")
@@ -214,6 +236,17 @@ namespace P4EditVS
     public class OptionPageGrid : DialogPage
     {
         // This seems like a terrible way to do it
+
+        private bool mAllowEnvironment = false;
+
+        [Category("Environment")]
+        [DisplayName("Allow Environment")]
+        [Description("Allow use of environment for workspace/connection settings. (See p4v, Connection > Environment Settings...; or see \"p4 set\")")]
+        public bool AllowEnvironment
+        {
+            get { return mAllowEnvironment; }
+            set { mAllowEnvironment = value; }
+        }
 
         private string mUserName = "";
         private string mClientName = "";
