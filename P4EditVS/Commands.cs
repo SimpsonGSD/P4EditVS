@@ -364,25 +364,25 @@ namespace P4EditVS
                     case DiffCommandId:
                     case CtxtDiffCommandId:
                         {
-                            commandline = string.Format("p4v {0} -cmd \"diffhave {1}\"", globalOptions, mCachedFilePath);
+                            commandline = string.Format("p4vc {0} diffhave {1}", globalOptions, mCachedFilePath);
                         }
                         break;
                     case HistoryCommandId:
                     case CtxtHistoryCommandId:
                         {
-                            commandline = string.Format("p4v {0} -cmd \"history {1}\"", globalOptions, mCachedFilePath);
+                            commandline = string.Format("p4vc {0} history {1}", globalOptions, mCachedFilePath);
                         }
                         break;
                     case TimelapseViewCommandId:
                     case CtxtTimelapseViewCommandId:
                         {
-                            commandline = string.Format("p4v {0} -cmd \"timelapse {1}\"", globalOptions, mCachedFilePath);
+                            commandline = string.Format("p4vc {0} timelapse {1}", globalOptions, mCachedFilePath);
                         }
                         break;
                     case RevisionGraphCommandId:
                     case CtxtRevisionGraphCommandId:
                         {
-                            commandline = string.Format("p4v {0} -cmd \"revgraph {1}\"", globalOptions, mCachedFilePath);
+                            commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, mCachedFilePath);
                         }
                         break;
                     default:
