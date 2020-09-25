@@ -17,6 +17,8 @@ Set `Allow Environment` to `True` to enable a 7th workspace in the
 with no additional parameters. You just get whatever settings are set
 with `p4 set` and/or `Connection` > `Environment Settings...` in p4v.
 
+The selected workspace is saved in the suo file for each solution.
+
 # Supported Commands
 
 * Checkout

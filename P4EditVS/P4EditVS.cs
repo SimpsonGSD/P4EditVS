@@ -14,8 +14,32 @@ using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
 using System.ComponentModel;
 
+// The documentation for IVsPersistSolutionOpts is... not good. There's some use
+// here:
+// https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs
+
 namespace P4EditVS
 {
+    /// <summary>
+    /// Values saved to the .suo file.
+    /// </summary>
+    /// <remarks>
+    /// Since it's convenient, this stuff is serialized using the XmlSerializer.
+    /// So anything in here needs to be compatible with that.
+    ///
+    /// If the suo doesn't contain a SolutionOptions, the default values here
+    /// will be used. 
+    /// </remarks>
+    public class SolutionOptions
+    {
+        // Index of workspace to use.
+        public int WorkspaceIndex = 0;
+
+        // For debugging purposes, when you're staring at a mostly
+        // incomprehensible hex dump of the .suo file.
+        public string Now = DateTime.Now.ToString();
+    }
+
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
     /// </summary>
@@ -36,13 +60,15 @@ namespace P4EditVS
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     //[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.None)]
     [Guid(P4EditVS.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideOptionPage(typeof(OptionPageGrid), "P4EditVS", "Settings", 0, 0, true)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class P4EditVS : AsyncPackage
+    public sealed class P4EditVS : AsyncPackage, IVsPersistSolutionOpts
     {
+        private const string SolutionUserOptionsKey = "P4EditVS";
+
         /// <summary>
         /// P4EditVS GUID string.
         /// </summary>
@@ -144,6 +170,35 @@ namespace P4EditVS
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
+            Trace.WriteLine(string.Format("Hello from P4EditVS"));
+        }
+
+        /// <summary>
+        /// Create a SolutionOptions object for the current settings.
+        /// </summary>
+        /// <remarks>
+        /// The SolutionOptions object is written to the .suo file.
+        /// </remarks>
+        /// <returns></returns>
+        private SolutionOptions GetSolutionOptions()
+        {
+            var options = new SolutionOptions();
+
+            options.WorkspaceIndex = SelectedWorkspace;
+
+            return options;
+        }
+
+        /// <summary>
+        /// Set the current settings from a SolutionOptions object.
+        /// </summary>
+        /// <remarks>
+        /// The SolutionOptions is just whatever was in the .suo file.
+        /// </remarks>
+        /// <param name="options"></param>
+        private void SetSolutionOptions(SolutionOptions options)
+        {
+            if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) SelectedWorkspace = options.WorkspaceIndex;
         }
 
         #region Package Members
@@ -228,6 +283,152 @@ namespace P4EditVS
             }
 
             return true;
+        }
+
+        //
+        // Summary:
+        //     Saves user options for a given solution.
+        //
+        // Parameters:
+        //   pPersistence:
+        //     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
+        //     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
+        //     method for each stream name it wants to write to the user options file.
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        public int SaveUserOptions(IVsSolutionPersistence pPersistence)
+        {
+            Trace.WriteLine(String.Format("P4EditVS SaveUserOptions"));
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            // https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs#L300
+            //
+            // This function gets called by the shell when the SUO file is
+            // saved. The provider calls the shell back to let it know which
+            // options keys it will use in the suo file. The shell will create a
+            // stream for the section of interest, and will call back the
+            // provider on IVsPersistSolutionProps.WriteUserOptions() to save
+            // specific options under the specified key.
+
+            pPersistence.SavePackageUserOpts(this, SolutionUserOptionsKey);
+            return VSConstants.S_OK;
+        }
+
+        //
+        // Summary:
+        //     Loads user options for a given solution.
+        //
+        // Parameters:
+        //   pPersistence:
+        //     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
+        //     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
+        //     method for each stream name it wants to read from the user options (.opt) file.
+        //
+        //   grfLoadOpts:
+        //     [in] User options whose value is taken from the Microsoft.VisualStudio.Shell.Interop.__VSLOADUSEROPTS
+        //     DWORD.
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
+        {
+            Trace.WriteLine(String.Format("P4EditVS LoadUserOptions (grfLoadOpts={0})", grfLoadOpts));
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            // https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs#L359
+            //
+            // Note this can be during opening a new solution, or may be during
+            // merging of 2 solutions. The provider calls the shell back to let
+            // it know which options keys from the suo file were written by this
+            // provider. If the shell will find in the suo file a section that
+            // belong to this package, it will create a stream, and will call
+            // back the provider on IVsPersistSolutionProps.ReadUserOptions() to
+            // read specific options under that option key.
+
+            pPersistence.LoadPackageUserOpts(this, SolutionUserOptionsKey);
+            return VSConstants.S_OK;
+        }
+
+        //
+        // Summary:
+        //     Writes user options for a given solution.
+        //
+        // Parameters:
+        //   pOptionsStream:
+        //     [in] Pointer to the IStream interface to which the VSPackage should write the
+        //     user-specific options.
+        //
+        //   pszKey:
+        //     [in] Name of the stream, as provided by the VSPackage by means of the method
+        //     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        public int WriteUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
+        {
+            Trace.WriteLine(String.Format("P4EditVS WriteUserOptions (key=\"{0}\")", pszKey));
+
+            // https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs#L318
+            //
+            // This function gets called by the shell to let the package write
+            // user options under the specified key. The key was declared in
+            // SaveUserOptions(), when the shell started saving the suo file.
+            var stream = new DataStreamFromComStream(pOptionsStream);
+
+            var options = GetSolutionOptions();
+
+            Misc.WriteXml(stream, options);
+
+            return VSConstants.S_OK;
+        }
+
+        //
+        // Summary:
+        //     Reads user options for a given solution.
+        //
+        // Parameters:
+        //   pOptionsStream:
+        //     [in] Pointer to the IStream interface from which the VSPackage should read the
+        //     user-specific options.
+        //
+        //   pszKey:
+        //     [in] Name of the stream, as provided by the VSPackage by means of the method
+        //     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
+        {
+            Trace.WriteLine(String.Format("P4EditVS ReadUserOptions (key=\"{0}\")", pszKey));
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            // https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs#L376
+            //
+            // This function is called by the shell if the
+            // _strSolutionUserOptionsKey section declared in LoadUserOptions()
+            // as being written by this package has been found in the suo file. 
+            // Note this can be during opening a new solution, or may be during
+            // merging of 2 solutions. A good source control provider may need
+            // to persist this data until OnAfterOpenSolution or
+            // OnAfterMergeSolution is called
+
+            var stream = new DataStreamFromComStream(pOptionsStream);
+
+            var options = new SolutionOptions();
+
+            if (stream.Length > 0) options = Misc.ReadXmlOrCreateDefault<SolutionOptions>(stream);
+
+            SetSolutionOptions(options);
+
+            return VSConstants.S_OK;
         }
 
         #endregion
