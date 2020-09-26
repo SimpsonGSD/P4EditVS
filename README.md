@@ -4,6 +4,11 @@ Simple, lightweight Visual Studio extension that allows you to checkout and reve
 
 ![alt text](Screenshot.png "Example")
 
+# Requirements
+
+You'll need a relatively recent version of the Perforce client with
+`p4vc` installed. Version `2020.2/2013107` is known to work.
+
 # Configuration
 
 Visit `Tools` > `Options`, `P4EditVS` section.
