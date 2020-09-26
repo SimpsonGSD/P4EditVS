@@ -127,7 +127,9 @@ namespace P4EditVS
 
                     process.StandardInput.Close();//^Z
 
-                    if (process.WaitForExit(30000))
+                    // Should really be able to configure the timeout! MaxValue
+                    // is probably safest in the absence of that.
+                    if (process.WaitForExit(Int32.MaxValue))
                         good = true;
                     else
                         process.Kill();
