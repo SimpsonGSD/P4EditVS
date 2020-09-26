@@ -8,6 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 using EnvDTE;
 using System.IO;
+using System.Collections.Generic;
 
 namespace P4EditVS
 {
@@ -53,9 +54,12 @@ namespace P4EditVS
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly AsyncPackage package;
+        private readonly AsyncPackage _package;
 
-        private string mCachedFilePath;
+		/// <summary>
+		/// Files selected to apply source control commands to.
+		/// </summary>
+        private List<string> _selectedFiles = new List<string>();
 
         private StreamWriter _outputWindow;
 
@@ -67,7 +71,7 @@ namespace P4EditVS
         /// <param name="commandService">Command service to add command to, not null.</param>
         private Commands(AsyncPackage package, OleMenuCommandService commandService)
         {
-            this.package = package ?? throw new ArgumentNullException(nameof(package));
+            _package = package ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
             foreach (var cmdId in CommandIds)
@@ -120,7 +124,7 @@ namespace P4EditVS
         {
             get
             {
-                return this.package;
+                return _package;
             }
         }
 
@@ -128,7 +132,7 @@ namespace P4EditVS
         {
             get
             {
-                return this.package;
+                return _package;
             }
         }
 
@@ -160,32 +164,23 @@ namespace P4EditVS
                 EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
                 if (applicationObject != null)
                 {
-                    string guiFileName = "";
-                    bool isReadOnly = false;
-                    bool validSelection = true;
-
+					// reset selection
+					_selectedFiles.Clear();
+					
                     if (applicationObject.ActiveDocument != null)
                     {
-                        mCachedFilePath = applicationObject.ActiveDocument.FullName;
-                        guiFileName = applicationObject.ActiveDocument.Name;
-                        isReadOnly = applicationObject.ActiveDocument.ReadOnly;
-                    }
-                    else
-                    {
-                        validSelection = false;
-                    }
+						_selectedFiles.Add(applicationObject.ActiveDocument.FullName);
 
-                    if (validSelection)
-                    {
-                        // Build menu string based on command ID and whether to enable it based on file type/state
-                        ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
-                    }
+                        string guiFileName = applicationObject.ActiveDocument.Name;
+                        bool isReadOnly = applicationObject.ActiveDocument.ReadOnly;
+						// Build menu string based on command ID and whether to enable it based on file type/state
+						ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
+					}
                     else
                     {
-                        // Invalid selection clear cached path and disable buttons
-                        mCachedFilePath = "";
-                        myCommand.Enabled = false;
-                    }
+						// Invalid selection clear cached path and disable buttons
+						myCommand.Enabled = false;
+					}
                 }
             }
         }
@@ -197,16 +192,23 @@ namespace P4EditVS
         /// <param name="e"></param>
         private void OnBeforeQueryStatusCtxt(object sender, EventArgs e)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+			Action<List<string>, string> AddSelectedFile = (selectedFile, file) =>
+			{
+				if (File.Exists(file))
+				{
+					_selectedFiles.Add(file);
+				}
+			};
+
+			ThreadHelper.ThrowIfNotOnUIThread();
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
                 EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
                 if (applicationObject != null)
                 {
-                    string guiFileName = "";
-                    bool isReadOnly = false;
-                    bool validSelection = true;
+					// reset selection
+					_selectedFiles.Clear();
 
                     var selectedItems = applicationObject.SelectedItems;
                     if (selectedItems.Count > 0)
@@ -217,38 +219,45 @@ namespace P4EditVS
                         // Is selected item a project?
                         if (selectedFile.Project != null)
                         {
-                            mCachedFilePath = selectedFile.Project.FullName;
+							AddSelectedFile(_selectedFiles, selectedFile.Project.FullName);
+
+							// Get all files for projects such as .filter files
+							foreach( ProjectItem projectItem in selectedFile.Project.ProjectItems)
+							{ 
+								AddSelectedFile(_selectedFiles, projectItem.FileNames[0]);
+							}
                         }
+						// Must be a source file
                         else if (selectedFile.ProjectItem != null)
                         {
-                            if (selectedFile.ProjectItem.FileCount == 1)
-                            {
-                                mCachedFilePath = selectedFile.ProjectItem.FileNames[0];
-                            }
-                            else
-                            {
-                                validSelection = false;
-                            }
-                        }
+							// Add all paths in case there's multiple file paths associated
+							for (short fileIdx = 0; fileIdx < selectedFile.ProjectItem.FileCount; fileIdx++)
+							{
+								AddSelectedFile(_selectedFiles, selectedFile.ProjectItem.FileNames[fileIdx]);
+							}
+
+							// Some files have multiple files such as C# forms have a .cs and .resx files so pick these up here
+							foreach (ProjectItem projectItem in selectedFile.ProjectItem.ProjectItems)
+							{
+								AddSelectedFile(_selectedFiles, projectItem.FileNames[0]);
+							}
+						}
                         // If we still have something selected and it's not a project item or project it must be the solution (?)
                         else
                         {
-                            mCachedFilePath = applicationObject.Solution.FullName;
+							AddSelectedFile(_selectedFiles, applicationObject.Solution.FullName);
                         }
                     }
 
-                    if (validSelection)
+                    if (_selectedFiles.Count > 0)
                     {
-                        System.IO.FileInfo info = new System.IO.FileInfo(mCachedFilePath);
-                        isReadOnly = info.IsReadOnly;
-                        guiFileName = info.Name;
+                        System.IO.FileInfo info = new System.IO.FileInfo(_selectedFiles[0]);
                         // Build menu string based on command ID and whether to enable it based on file type/state
-                        ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
+                        ConfigureCmdButton(myCommand, info.Name, info.IsReadOnly);
                     }
                     else
                     {
-                        // Invalid selection clear cached path and disable buttons
-                        mCachedFilePath = "";
+						// Invalid selection disable buttons
                         myCommand.Enabled = false;
                     }
                 }
@@ -324,8 +333,8 @@ namespace P4EditVS
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            P4EditVS package = this.package as P4EditVS;
-            if (!package.ValidateUserSettings() || mCachedFilePath == "")
+            P4EditVS package = _package as P4EditVS;
+            if (!package.ValidateUserSettings() || _selectedFiles.Count == 0)
             {
                 return;
             }
@@ -337,81 +346,84 @@ namespace P4EditVS
             EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
             if (applicationObject != null)
             {
-                string commandline = "";
+				foreach (string filePath in _selectedFiles)
+				{
+					string commandline = "";
 
-                switch (myCommand.CommandID.ID)
-                {
-                    case CheckoutCommandId:
-                    case CtxtCheckoutCommandId:
-                        {
-                            commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, mCachedFilePath);
-                        }
-                        break;
-                    case RevertIfUnchangedCommandId:
-                    case CtxtRevertIfUnchangedCommandId:
-                        {
-                            commandline = string.Format("p4 {0} revert -a {1}", globalOptions, mCachedFilePath);
-                        }
-                        break;
-                    case RevertCommandId:
-                    case CtxtRevertCommandId:
-                        {
-                            IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+					switch (myCommand.CommandID.ID)
+					{
+						case CheckoutCommandId:
+						case CtxtCheckoutCommandId:
+							{
+								commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, filePath);
+							}
+							break;
+						case RevertIfUnchangedCommandId:
+						case CtxtRevertIfUnchangedCommandId:
+							{
+								commandline = string.Format("p4 {0} revert -a {1}", globalOptions, filePath);
+							}
+							break;
+						case RevertCommandId:
+						case CtxtRevertCommandId:
+							{
+								IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
 
-                            string message = string.Format("This will discard all changes. Are you sure you wish to revert {0}?", mCachedFilePath);
-                            bool shouldRevert = VsShellUtilities.PromptYesNo(
-                                message,
-                                "P4EditVS: Revert",
-                                OLEMSGICON.OLEMSGICON_WARNING,
-                                uiShell);
+								string message = string.Format("This will discard all changes. Are you sure you wish to revert {0}?", filePath);
+								bool shouldRevert = VsShellUtilities.PromptYesNo(
+									message,
+									"P4EditVS: Revert",
+									OLEMSGICON.OLEMSGICON_WARNING,
+									uiShell);
 
-                            if (shouldRevert)
-                            {
-                                commandline = string.Format("p4 {0} revert {1}", globalOptions, mCachedFilePath);
-                            }
-                        }
-                        break;
-                    case DiffCommandId:
-                    case CtxtDiffCommandId:
-                        {
-                            commandline = string.Format("p4vc {0} diffhave {1}", globalOptions, mCachedFilePath);
-                        }
-                        break;
-                    case HistoryCommandId:
-                    case CtxtHistoryCommandId:
-                        {
-                            commandline = string.Format("p4vc {0} history {1}", globalOptions, mCachedFilePath);
-                        }
-                        break;
-                    case TimelapseViewCommandId:
-                    case CtxtTimelapseViewCommandId:
-                        {
-                            commandline = string.Format("p4vc {0} timelapse {1}", globalOptions, mCachedFilePath);
-                        }
-                        break;
-                    case RevisionGraphCommandId:
-                    case CtxtRevisionGraphCommandId:
-                        {
-                            commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, mCachedFilePath);
-                        }
-                        break;
-                    default:
-                        break;
-                }
+								if (shouldRevert)
+								{
+									commandline = string.Format("p4 {0} revert {1}", globalOptions, filePath);
+								}
+							}
+							break;
+						case DiffCommandId:
+						case CtxtDiffCommandId:
+							{
+								commandline = string.Format("p4vc {0} diffhave {1}", globalOptions, filePath);
+							}
+							break;
+						case HistoryCommandId:
+						case CtxtHistoryCommandId:
+							{
+								commandline = string.Format("p4vc {0} history {1}", globalOptions, filePath);
+							}
+							break;
+						case TimelapseViewCommandId:
+						case CtxtTimelapseViewCommandId:
+							{
+								commandline = string.Format("p4vc {0} timelapse {1}", globalOptions, filePath);
+							}
+							break;
+						case RevisionGraphCommandId:
+						case CtxtRevisionGraphCommandId:
+							{
+								commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, filePath);
+							}
+							break;
+						default:
+							break;
+					}
 
-                if (commandline != "")
-                {
-                    UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null);
-                    _outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
+					if (commandline != "")
+					{
+						UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null);
+						_outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
 
-                    //System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                    //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    //startInfo.FileName = "cmd.exe";
-                    //startInfo.Arguments = "/C " + commandline;
-                    //process.StartInfo = startInfo;
-                    //process.Start();
-                }
+						//System.Diagnostics.Process process = new System.Diagnostics.Process();
+						//System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+						//startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+						//startInfo.FileName = "cmd.exe";
+						//startInfo.Arguments = "/C " + commandline;
+						//process.StartInfo = startInfo;
+						//process.Start();
+					}
+				}
             }
         }
 
@@ -451,7 +463,7 @@ namespace P4EditVS
         private void OnBeforeQueryStatusWorkspace(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            P4EditVS package = this.package as P4EditVS;
+            P4EditVS package = _package as P4EditVS;
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
@@ -474,7 +486,7 @@ namespace P4EditVS
         private void ExecuteWorkspace(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            P4EditVS package = this.package as P4EditVS;
+            P4EditVS package = _package as P4EditVS;
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {

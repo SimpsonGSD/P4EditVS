@@ -74,14 +74,14 @@ namespace P4EditVS
         /// </summary>
         public const string PackageGuidString = "d6a4db63-698d-4d16-bbc0-944fe52f83db";
 
-        private int mSelectedWorkspace = 0;
-        public int SelectedWorkspace { get => mSelectedWorkspace; set => mSelectedWorkspace = value; }
+        private int _selectedWorkspace = 0;
+        public int SelectedWorkspace { get => _selectedWorkspace; set => _selectedWorkspace = value; }
 
         public string ClientName
         {
             get
             {
-                return GetWorkspaceName(mSelectedWorkspace);
+                return GetWorkspaceName(_selectedWorkspace);
             }
         }
 
@@ -91,7 +91,7 @@ namespace P4EditVS
             {
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 // This is truly awful
-                switch (mSelectedWorkspace)
+                switch (_selectedWorkspace)
                 {
                     case 0:
                         return page.UserName;
@@ -116,7 +116,7 @@ namespace P4EditVS
             {
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 // This is truly awful
-                switch (mSelectedWorkspace)
+                switch (_selectedWorkspace)
                 {
                     case 0:
                         return page.Server;
@@ -220,7 +220,7 @@ namespace P4EditVS
 
         public string GetGlobalP4CmdLineOptions()
         {
-            if (mSelectedWorkspace == -1)
+            if (_selectedWorkspace == -1)
             {
                 return "";
             }
@@ -251,7 +251,7 @@ namespace P4EditVS
             //
             // So if things got this far, and the environment is the selected
             // workspace, it's all good. User name and server quite unnecessary.
-            if (mSelectedWorkspace == -1)
+            if (_selectedWorkspace == -1)
             {
                 return true;
             }
@@ -438,28 +438,28 @@ namespace P4EditVS
     {
         // This seems like a terrible way to do it
 
-        private bool mAllowEnvironment = false;
+        private bool _allowEnvironment = false;
 
-        [Category("Environment")]
+        [Category("Options")]
         [DisplayName("Allow Environment")]
         [Description("Allow use of environment for workspace/connection settings. (See p4v, Connection > Environment Settings...; or see \"p4 set\")")]
         public bool AllowEnvironment
         {
-            get { return mAllowEnvironment; }
-            set { mAllowEnvironment = value; }
+            get { return _allowEnvironment; }
+            set { _allowEnvironment = value; }
         }
 
-        private string mUserName = "";
-        private string mClientName = "";
-        private string mServer = "";
+        private string _userName = "";
+        private string _clientName = "";
+        private string _server = "";
 
         [Category("Workspace 1")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName
         {
-            get { return mUserName; }
-            set { mUserName = value.Trim(); }
+            get { return _userName; }
+            set { _userName = value.Trim(); }
         }
 
         [Category("Workspace 1")]
@@ -467,8 +467,8 @@ namespace P4EditVS
         [Description("Client name, i.e. workspace name")]
         public string ClientName
         {
-            get { return mClientName; }
-            set { mClientName = value.Trim(); }
+            get { return _clientName; }
+            set { _clientName = value.Trim(); }
         }
 
         [Category("Workspace 1")]
@@ -476,21 +476,21 @@ namespace P4EditVS
         [Description("e.g. localhost:1666")]
         public string Server
         {
-            get { return mServer; }
-            set { mServer = value.Trim(); }
+            get { return _server; }
+            set { _server = value.Trim(); }
         }
 
-        private string mUserName2 = "";
-        private string mClientName2 = "";
-        private string mServer2 = "";
+        private string _userName2 = "";
+        private string _clientName2 = "";
+        private string _server2 = "";
 
         [Category("Workspace 2")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName2
         {
-            get { return mUserName2; }
-            set { mUserName2 = value.Trim(); }
+            get { return _userName2; }
+            set { _userName2 = value.Trim(); }
         }
 
         [Category("Workspace 2")]
@@ -498,8 +498,8 @@ namespace P4EditVS
         [Description("Client name, i.e. workspace name")]
         public string ClientName2
         {
-            get { return mClientName2; }
-            set { mClientName2 = value.Trim(); }
+            get { return _clientName2; }
+            set { _clientName2 = value.Trim(); }
         }
 
         [Category("Workspace 2")]
@@ -507,21 +507,21 @@ namespace P4EditVS
         [Description("e.g. localhost:1666")]
         public string Server2
         {
-            get { return mServer2; }
-            set { mServer2 = value.Trim(); }
+            get { return _server2; }
+            set { _server2 = value.Trim(); }
         }
 
-        private string mUserName3 = "";
-        private string mClientName3 = "";
-        private string mServer3 = "";
+        private string _userName3 = "";
+        private string _clientName3 = "";
+        private string _server3 = "";
 
         [Category("Workspace 3")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName3
         {
-            get { return mUserName3; }
-            set { mUserName3 = value.Trim(); }
+            get { return _userName3; }
+            set { _userName3 = value.Trim(); }
         }
 
         [Category("Workspace 3")]
@@ -529,8 +529,8 @@ namespace P4EditVS
         [Description("Client name, i.e. workspace name")]
         public string ClientName3
         {
-            get { return mClientName3; }
-            set { mClientName3 = value.Trim(); }
+            get { return _clientName3; }
+            set { _clientName3 = value.Trim(); }
         }
 
         [Category("Workspace 3")]
@@ -538,21 +538,21 @@ namespace P4EditVS
         [Description("e.g. localhost:1666")]
         public string Server3
         {
-            get { return mServer3; }
-            set { mServer3 = value.Trim(); }
+            get { return _server3; }
+            set { _server3 = value.Trim(); }
         }
 
-        private string mUserName4 = "";
-        private string mClientName4 = "";
-        private string mServer4 = "";
+        private string _userName4 = "";
+        private string _clientName4 = "";
+        private string _server4 = "";
 
         [Category("Workspace 4")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName4
         {
-            get { return mUserName4; }
-            set { mUserName4 = value.Trim(); }
+            get { return _userName4; }
+            set { _userName4 = value.Trim(); }
         }
 
         [Category("Workspace 4")]
@@ -560,8 +560,8 @@ namespace P4EditVS
         [Description("Client name, i.e. workspace name")]
         public string ClientName4
         {
-            get { return mClientName4; }
-            set { mClientName4 = value.Trim(); }
+            get { return _clientName4; }
+            set { _clientName4 = value.Trim(); }
         }
 
         [Category("Workspace 4")]
@@ -569,21 +569,21 @@ namespace P4EditVS
         [Description("e.g. localhost:1666")]
         public string Server4
         {
-            get { return mServer4; }
-            set { mServer4 = value.Trim(); }
+            get { return _server4; }
+            set { _server4 = value.Trim(); }
         }
 
-        private string mUserName5 = "";
-        private string mClientName5 = "";
-        private string mServer5 = "";
+        private string _userName5 = "";
+        private string _clientName5 = "";
+        private string _server5 = "";
 
         [Category("Workspace 5")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName5
         {
-            get { return mUserName5; }
-            set { mUserName5 = value.Trim(); }
+            get { return _userName5; }
+            set { _userName5 = value.Trim(); }
         }
 
         [Category("Workspace 5")]
@@ -591,8 +591,8 @@ namespace P4EditVS
         [Description("Client name, i.e. workspace name")]
         public string ClientName5
         {
-            get { return mClientName5; }
-            set { mClientName5 = value.Trim(); }
+            get { return _clientName5; }
+            set { _clientName5 = value.Trim(); }
         }
 
         [Category("Workspace 5")]
@@ -600,21 +600,21 @@ namespace P4EditVS
         [Description("e.g. localhost:1666")]
         public string Server5
         {
-            get { return mServer5; }
-            set { mServer5 = value.Trim(); }
+            get { return _server5; }
+            set { _server5 = value.Trim(); }
         }
 
-        private string mUserName6 = "";
-        private string mClientName6 = "";
-        private string mServer6 = "";
+        private string _userName6 = "";
+        private string _clientName6 = "";
+        private string _server6 = "";
 
         [Category("Workspace 6")]
         [DisplayName("Perforce User Name")]
         [Description("User name")]
         public string UserName6
         {
-            get { return mUserName6; }
-            set { mUserName6 = value.Trim(); }
+            get { return _userName6; }
+            set { _userName6 = value.Trim(); }
         }
 
         [Category("Workspace 6")]
@@ -622,8 +622,8 @@ namespace P4EditVS
         [Description("Client name, i.e. workspace name")]
         public string ClientName6
         {
-            get { return mClientName6; }
-            set { mClientName6 = value.Trim(); }
+            get { return _clientName6; }
+            set { _clientName6 = value.Trim(); }
         }
 
         [Category("Workspace 6")]
@@ -631,8 +631,8 @@ namespace P4EditVS
         [Description("e.g. localhost:1666")]
         public string Server6
         {
-            get { return mServer6; }
-            set { mServer6 = value.Trim(); }
+            get { return _server6; }
+            set { _server6 = value.Trim(); }
         }
 
     }
