@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Task = System.Threading.Tasks.Task;
 using EnvDTE;
+using System.IO;
 
 namespace P4EditVS
 {
@@ -56,6 +57,8 @@ namespace P4EditVS
 
         private string mCachedFilePath;
 
+        private StreamWriter _outputWindow;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Commands"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
@@ -93,6 +96,12 @@ namespace P4EditVS
                 menuItem.Visible = true;
                 commandService.AddCommand(menuItem);
             }
+
+            EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
+            var outputWindowPaneStream = new OutputWindowStream(applicationObject, "P4EditVS");
+            _outputWindow = new StreamWriter(outputWindowPaneStream);
+            _outputWindow.AutoFlush = true;
+            //_outputWindow.WriteLine("hello from P4EditVS\n");
         }
 
         /// <summary>
@@ -392,13 +401,44 @@ namespace P4EditVS
 
                 if (commandline != "")
                 {
-                    System.Diagnostics.Process process = new System.Diagnostics.Process();
-                    System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                    startInfo.FileName = "cmd.exe";
-                    startInfo.Arguments = "/C " + commandline;
-                    process.StartInfo = startInfo;
-                    process.Start();
+                    UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null);
+                    _outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
+
+                    //System.Diagnostics.Process process = new System.Diagnostics.Process();
+                    //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+                    //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    //startInfo.FileName = "cmd.exe";
+                    //startInfo.Arguments = "/C " + commandline;
+                    //process.StartInfo = startInfo;
+                    //process.Start();
+                }
+            }
+        }
+
+        private void HandleRunnerResult(Runner.RunnerResult result)
+        {
+            DateTime now = DateTime.Now;
+            if (result.ExitCode == null)
+            {
+                _outputWindow.WriteLine("{0}: Timed out.", result.JobId);
+            }
+            else
+            {
+                DumpRunnerResult(result.JobId, "stdout",result.Stdout);
+                DumpRunnerResult(result.JobId, "stderr",result.Stderr);
+            }
+
+            _outputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
+        }
+
+        private void DumpRunnerResult(UInt64 jobId, string prefix, string data)
+        {
+            if (data.Length > 0)
+            {
+                using (var reader = new StringReader(data))
+                {
+                    string line = reader.ReadLine();
+                    _outputWindow.WriteLine("{0}: {1}: {2}", jobId, prefix, line);
                 }
             }
         }
