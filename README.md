@@ -4,6 +4,11 @@ Simple, lightweight Visual Studio extension that allows you to checkout and reve
 
 ![alt text](Screenshot.png "Example")
 
+# Requirements
+
+You'll need a relatively recent version of the Perforce client with
+`p4vc` installed. Version `2020.2/2013107` is known to work.
+
 # Configuration
 
 Visit `Tools` > `Options`, `P4EditVS` section.
@@ -40,3 +45,27 @@ The selected workspace is saved in the suo file for each solution.
 * For more advanced functionality see the offical P4VS extension.
 * `(Use environment)` is not much use with p4config files, as p4 is
   not run from the file's folder. This may or may not improve.
+
+# Building from Visual Studio
+
+Load `P4EditVS.sln` into Visual Studio 2017. Build. A double-clickable
+vsix file will be produced in `P4EditVS/bin/Debug` or
+``P4EditVS/bin/Release`.
+
+To debug the addin, you can run Visual Studio in the debugger. Right
+click the `P4EditVS` project in the Solution Explorer, select
+`Properties`, and visit the `Debug` section.
+
+Select `Start external program`, and find the appropriate
+`devenv.exe`. (For example, `C:\Program Files (x86)\Microsoft Visual
+Studio\2017\Professional\Common7\IDE\devenv.exe`.)
+
+In `Command line arguments`, enter `/rootsuffix Exp /resetsettings`.
+
+Then run. You get a second copy of Visual Studio, with the addin
+loaded.
+
+(`/rootsuffix Exp` directs Visual Studio to use a completely different
+set of registry keys and whatnot. For good or for ill, the child copy
+of Visual Studio is sandboxed in this respect, and doesn't share
+settings with your usualc opy.)
