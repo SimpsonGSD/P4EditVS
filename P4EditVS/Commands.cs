@@ -38,10 +38,11 @@ namespace P4EditVS
         public const int CtxtRevisionGraphCommandId = 0x0112;
         public const int TimelapseViewCommandId = 0x0113;
         public const int CtxtTimelapseViewCommandId = 0x0114;
+        public const int WorkspaceUseEnvironmentCommandId = 0x115;
 
         public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId };
         public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId };
-        public readonly int[] WorkspaceCommandIds = { Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
+        public readonly int[] WorkspaceCommandIds = { WorkspaceUseEnvironmentCommandId, Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
 
         /// <summary>
         /// Command menu group (command set GUID).
@@ -147,7 +148,7 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-                EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2; 
+                EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
                 if (applicationObject != null)
                 {
                     string guiFileName = "";
@@ -164,7 +165,7 @@ namespace P4EditVS
                     {
                         validSelection = false;
                     }
-                    
+
                     if (validSelection)
                     {
                         // Build menu string based on command ID and whether to enable it based on file type/state
@@ -315,7 +316,7 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             P4EditVS package = this.package as P4EditVS;
-            if(!package.ValidateUserSettings() || mCachedFilePath == "")
+            if (!package.ValidateUserSettings() || mCachedFilePath == "")
             {
                 return;
             }
@@ -355,7 +356,7 @@ namespace P4EditVS
                                 OLEMSGICON.OLEMSGICON_WARNING,
                                 uiShell);
 
-                            if(shouldRevert)
+                            if (shouldRevert)
                             {
                                 commandline = string.Format("p4 {0} revert {1}", globalOptions, mCachedFilePath);
                             }
@@ -448,6 +449,10 @@ namespace P4EditVS
             int index;
             switch (commandId)
             {
+                case WorkspaceUseEnvironmentCommandId:
+                    index = -1;
+                    break;
+
                 case Workspace1CommandId:
                     index = 0;
                     break;
@@ -460,8 +465,8 @@ namespace P4EditVS
                 case Workspace4CommandId:
                     index = 3;
                     break;
-                case Workspace5CommandId:       
-                    index = 4; 
+                case Workspace5CommandId:
+                    index = 4;
                     break;
                 case Workspace6CommandId:
                     index = 5;
