@@ -211,11 +211,10 @@ namespace P4EditVS
 					_selectedFiles.Clear();
 
                     var selectedItems = applicationObject.SelectedItems;
-                    if (selectedItems.Count > 0)
-                    {
-                        // Only 1 selected item supported
-                        var selectedFile = selectedItems.Item(1);
+					bool isMultiSelection = selectedItems.Count > 1;
 
+                    foreach(SelectedItem selectedFile in selectedItems)
+                    {
                         // Is selected item a project?
                         if (selectedFile.Project != null)
                         {
@@ -252,8 +251,9 @@ namespace P4EditVS
                     if (_selectedFiles.Count > 0)
                     {
                         System.IO.FileInfo info = new System.IO.FileInfo(_selectedFiles[0]);
+						string displayName = isMultiSelection ? "(multiple files)" : info.Name;
                         // Build menu string based on command ID and whether to enable it based on file type/state
-                        ConfigureCmdButton(myCommand, info.Name, info.IsReadOnly);
+                        ConfigureCmdButton(myCommand, displayName, info.IsReadOnly);
                     }
                     else
                     {
