@@ -59,8 +59,8 @@ namespace P4EditVS
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    //[ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.None)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
+    //[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.None)]
     [Guid(P4EditVS.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideOptionPage(typeof(OptionPageGrid), "P4EditVS", "Settings", 0, 0, true)]
@@ -135,7 +135,25 @@ namespace P4EditVS
             }
         }
 
-        public string GetWorkspaceName(int index)
+		public bool AutoCheckout
+		{
+			get
+			{
+				OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+				return page.AutoCheckout;
+			}
+		}
+
+		public bool AutoCheckoutPrompt
+		{
+			get
+			{
+				OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+				return page.AutoCheckoutPrompt;
+			}
+		}
+
+		public string GetWorkspaceName(int index)
         {
             OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
             // This is truly awful
@@ -449,7 +467,29 @@ namespace P4EditVS
             set { _allowEnvironment = value; }
         }
 
-        private string _userName = "";
+		private bool _autoCheckout = false;
+
+		[Category("Options")]
+		[DisplayName("Enable Auto-Checkout")]
+		[Description("Automatically checks out files on edit and save")]
+		public bool AutoCheckout
+		{
+			get { return _autoCheckout; }
+			set { _autoCheckout = value; }
+		}
+
+		private bool _autoCheckoutPrompt = false;
+
+		[Category("Options")]
+		[DisplayName("Prompt Auto-Checkout")]
+		[Description("Prompts messsage to automatically check out files on edit and save")]
+		public bool AutoCheckoutPrompt
+		{
+			get { return _autoCheckoutPrompt; }
+			set { _autoCheckoutPrompt = value; }
+		}
+
+		private string _userName = "";
         private string _clientName = "";
         private string _server = "";
 

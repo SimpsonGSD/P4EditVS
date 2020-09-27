@@ -9,6 +9,7 @@ using Task = System.Threading.Tasks.Task;
 using EnvDTE;
 using System.IO;
 using System.Collections.Generic;
+using EnvDTE80;
 
 namespace P4EditVS
 {
@@ -54,7 +55,7 @@ namespace P4EditVS
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly AsyncPackage _package;
+        private readonly P4EditVS _package;
 
 		/// <summary>
 		/// Files selected to apply source control commands to.
@@ -62,19 +63,24 @@ namespace P4EditVS
         private List<string> _selectedFiles = new List<string>();
 
         private StreamWriter _outputWindow;
+		private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
+		private EnvDTE.TextEditorEvents _textEditorEvents;
+		private EnvDTE80.DTE2 _application;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Commands"/> class.
-        /// Adds our command handlers for menu (commands must exist in the command table file)
-        /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        /// <param name="commandService">Command service to add command to, not null.</param>
-        private Commands(AsyncPackage package, OleMenuCommandService commandService)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Commands"/> class.
+		/// Adds our command handlers for menu (commands must exist in the command table file)
+		/// </summary>
+		/// <param name="package">Owner package, not null.</param>
+		/// <param name="commandService">Command service to add command to, not null.</param>
+		private Commands(AsyncPackage package, OleMenuCommandService commandService)
         {
-            _package = package ?? throw new ArgumentNullException(nameof(package));
+			ThreadHelper.ThrowIfNotOnUIThread();
+			_package = package as P4EditVS ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+			_application = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(EnvDTE80.DTE2));
 
-            foreach (var cmdId in CommandIds)
+			foreach (var cmdId in CommandIds)
             {
                 var menuCommandID = new CommandID(CommandSet, cmdId);
                 var menuItem = new OleMenuCommand(this.Execute, menuCommandID);
@@ -101,8 +107,12 @@ namespace P4EditVS
                 commandService.AddCommand(menuItem);
             }
 
-            EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
-            var outputWindowPaneStream = new OutputWindowStream(applicationObject, "P4EditVS");
+			_textDocEvents = ((EnvDTE80.Events2)_application.Events).get_TextDocumentKeyPressEvents(null);
+			_textDocEvents.BeforeKeyPress += new _dispTextDocumentKeyPressEvents_BeforeKeyPressEventHandler(OnBeforeKeyPress);
+			_textEditorEvents = ((EnvDTE80.Events2)_application.Events).get_TextEditorEvents(null);
+			_textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(OnLineChanged);
+
+			var outputWindowPaneStream = new OutputWindowStream(_application, "P4EditVS");
             _outputWindow = new StreamWriter(outputWindowPaneStream);
             _outputWindow.AutoFlush = true;
             //_outputWindow.WriteLine("hello from P4EditVS\n");
@@ -161,18 +171,17 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-                EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
-                if (applicationObject != null)
+                if (_application != null)
                 {
 					// reset selection
 					_selectedFiles.Clear();
 					
-                    if (applicationObject.ActiveDocument != null)
+                    if (_application.ActiveDocument != null)
                     {
-						_selectedFiles.Add(applicationObject.ActiveDocument.FullName);
+						_selectedFiles.Add(_application.ActiveDocument.FullName);
 
-                        string guiFileName = applicationObject.ActiveDocument.Name;
-                        bool isReadOnly = applicationObject.ActiveDocument.ReadOnly;
+                        string guiFileName = _application.ActiveDocument.Name;
+                        bool isReadOnly = _application.ActiveDocument.ReadOnly;
 						// Build menu string based on command ID and whether to enable it based on file type/state
 						ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
 					}
@@ -333,101 +342,170 @@ namespace P4EditVS
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            P4EditVS package = _package as P4EditVS;
-            if (!package.ValidateUserSettings() || _selectedFiles.Count == 0)
+            if (_selectedFiles.Count == 0)
             {
                 return;
             }
 
             var myCommand = sender as OleMenuCommand;
-
-            string globalOptions = package.GetGlobalP4CmdLineOptions();
-
-            EnvDTE80.DTE2 applicationObject = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2;
-            if (applicationObject != null)
-            {
-				foreach (string filePath in _selectedFiles)
-				{
-					string commandline = "";
-
-					switch (myCommand.CommandID.ID)
-					{
-						case CheckoutCommandId:
-						case CtxtCheckoutCommandId:
-							{
-								commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, filePath);
-							}
-							break;
-						case RevertIfUnchangedCommandId:
-						case CtxtRevertIfUnchangedCommandId:
-							{
-								commandline = string.Format("p4 {0} revert -a {1}", globalOptions, filePath);
-							}
-							break;
-						case RevertCommandId:
-						case CtxtRevertCommandId:
-							{
-								IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
-
-								string message = string.Format("This will discard all changes. Are you sure you wish to revert {0}?", filePath);
-								bool shouldRevert = VsShellUtilities.PromptYesNo(
-									message,
-									"P4EditVS: Revert",
-									OLEMSGICON.OLEMSGICON_WARNING,
-									uiShell);
-
-								if (shouldRevert)
-								{
-									commandline = string.Format("p4 {0} revert {1}", globalOptions, filePath);
-								}
-							}
-							break;
-						case DiffCommandId:
-						case CtxtDiffCommandId:
-							{
-								commandline = string.Format("p4vc {0} diffhave {1}", globalOptions, filePath);
-							}
-							break;
-						case HistoryCommandId:
-						case CtxtHistoryCommandId:
-							{
-								commandline = string.Format("p4vc {0} history {1}", globalOptions, filePath);
-							}
-							break;
-						case TimelapseViewCommandId:
-						case CtxtTimelapseViewCommandId:
-							{
-								commandline = string.Format("p4vc {0} timelapse {1}", globalOptions, filePath);
-							}
-							break;
-						case RevisionGraphCommandId:
-						case CtxtRevisionGraphCommandId:
-							{
-								commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, filePath);
-							}
-							break;
-						default:
-							break;
-					}
-
-					if (commandline != "")
-					{
-						UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null);
-						_outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
-
-						//System.Diagnostics.Process process = new System.Diagnostics.Process();
-						//System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-						//startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-						//startInfo.FileName = "cmd.exe";
-						//startInfo.Arguments = "/C " + commandline;
-						//process.StartInfo = startInfo;
-						//process.Start();
-					}
-				}
-            }
+			foreach (string filePath in _selectedFiles)
+			{
+				ExecuteCommand(filePath, myCommand.CommandID.ID);
+			}
         }
 
-        private void HandleRunnerResult(Runner.RunnerResult result)
+		/// <summary>
+		/// Executes P4 command for supplied command ID
+		/// </summary>
+		/// <param name="filePath"></param>
+		/// <param name="commandId"></param>
+		private void ExecuteCommand(string filePath, int commandId)
+		{
+            ThreadHelper.ThrowIfNotOnUIThread();
+			if(!_package.ValidateUserSettings())
+			{
+				return;
+			}
+
+			string globalOptions = _package.GetGlobalP4CmdLineOptions();
+			string commandline = "";
+
+			switch (commandId)
+			{
+				case CheckoutCommandId:
+				case CtxtCheckoutCommandId:
+					{
+						commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, filePath);
+					}
+					break;
+				case RevertIfUnchangedCommandId:
+				case CtxtRevertIfUnchangedCommandId:
+					{
+						commandline = string.Format("p4 {0} revert -a {1}", globalOptions, filePath);
+					}
+					break;
+				case RevertCommandId:
+				case CtxtRevertCommandId:
+					{
+						IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+
+						string message = string.Format("This will discard all changes. Are you sure you wish to revert {0}?", filePath);
+						bool shouldRevert = VsShellUtilities.PromptYesNo(
+							message,
+							"P4EditVS: Revert",
+							OLEMSGICON.OLEMSGICON_WARNING,
+							uiShell);
+
+						if (shouldRevert)
+						{
+							commandline = string.Format("p4 {0} revert {1}", globalOptions, filePath);
+						}
+					}
+					break;
+				case DiffCommandId:
+				case CtxtDiffCommandId:
+					{
+						commandline = string.Format("p4vc {0} diffhave {1}", globalOptions, filePath);
+					}
+					break;
+				case HistoryCommandId:
+				case CtxtHistoryCommandId:
+					{
+						commandline = string.Format("p4vc {0} history {1}", globalOptions, filePath);
+					}
+					break;
+				case TimelapseViewCommandId:
+				case CtxtTimelapseViewCommandId:
+					{
+						commandline = string.Format("p4vc {0} timelapse {1}", globalOptions, filePath);
+					}
+					break;
+				case RevisionGraphCommandId:
+				case CtxtRevisionGraphCommandId:
+					{
+						commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, filePath);
+					}
+					break;
+				default:
+					break;
+			}
+
+			if (commandline != "")
+			{
+				UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null);
+				_outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
+
+				//System.Diagnostics.Process process = new System.Diagnostics.Process();
+				//System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+				//startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+				//startInfo.FileName = "cmd.exe";
+				//startInfo.Arguments = "/C " + commandline;
+				//process.StartInfo = startInfo;
+				//process.Start();
+			}
+		}
+
+		private void AutoCheckout(string filePath)
+		{
+			if (_package.AutoCheckout)
+			{
+				if(_package.AutoCheckoutPrompt)
+				{
+					IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+
+					string message = string.Format("Checkout {0}?", filePath);
+					bool shouldCheckout = VsShellUtilities.PromptYesNo(
+						message,
+						"P4EditVS: Checkout",
+						OLEMSGICON.OLEMSGICON_QUERY,
+						uiShell);
+
+					if(!shouldCheckout)
+					{
+						return;
+					}
+				}
+
+				ExecuteCommand(filePath, CheckoutCommandId);
+			}
+		}
+
+		private void OnBeforeKeyPress(string Keypress, EnvDTE.TextSelection Selection, bool InStatementCompletion, ref bool CancelKeypress)
+		{
+            ThreadHelper.ThrowIfNotOnUIThread();
+			if(_application.ActiveDocument == null)
+			{
+				return;
+			}
+			if (_application.ActiveDocument.ReadOnly)
+			{
+				AutoCheckout(_application.ActiveDocument.FullName);
+			}
+		}
+
+		private void OnLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
+		{
+            ThreadHelper.ThrowIfNotOnUIThread();
+			if (_application.ActiveDocument == null)
+			{
+				return;
+			}
+
+			if ((Hint & (int)vsTextChanged.vsTextChangedNewline) == 0 &&
+				(Hint & (int)vsTextChanged.vsTextChangedMultiLine) == 0 &&
+				(Hint & (int)vsTextChanged.vsTextChangedNewline) == 0 &&
+				(Hint != 0))
+			{
+				return;
+			}
+
+			if (_application.ActiveDocument.ReadOnly && !_application.ActiveDocument.Saved)
+			{
+			//	AutoCheckout(_application.ActiveDocument.FullName);
+			}
+		}
+
+		private void HandleRunnerResult(Runner.RunnerResult result)
         {
             DateTime now = DateTime.Now;
             if (result.ExitCode == null)
