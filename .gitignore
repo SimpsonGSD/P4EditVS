@@ -5,4 +5,3 @@ packages/
 refs/*.dll
 *.user
 *.suo
-*.snk

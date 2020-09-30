@@ -71,6 +71,19 @@ namespace P4EditVS
             }
         }
 
+        public static bool IsFileReadOnly(string path)
+        {
+            try
+            {
+                System.IO.FileInfo info = new System.IO.FileInfo(path);
+                return info.IsReadOnly;
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+        }
+
         //########################################################################
         //########################################################################
 

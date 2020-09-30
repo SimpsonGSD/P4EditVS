@@ -10,13 +10,15 @@ using EnvDTE;
 using System.IO;
 using System.Collections.Generic;
 using EnvDTE80;
+using Microsoft.VisualStudio;
 
 namespace P4EditVS
 {
+
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class Commands
+    public class Commands
     {
         /// <summary>
         /// Command ID.
@@ -63,9 +65,11 @@ namespace P4EditVS
         private List<string> _selectedFiles = new List<string>();
 
         private StreamWriter _outputWindow;
-		private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
-		private EnvDTE.TextEditorEvents _textEditorEvents;
+		//private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
+		//private EnvDTE.TextEditorEvents _textEditorEvents;
 		private EnvDTE80.DTE2 _application;
+        private UpdateSolutionEvents _updateSolutionEvents;
+        private RunningDocTableEvents _runningDocTableEvents;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Commands"/> class.
@@ -78,7 +82,7 @@ namespace P4EditVS
 			ThreadHelper.ThrowIfNotOnUIThread();
 			_package = package as P4EditVS ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
-			_application = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(EnvDTE80.DTE2));
+			_application = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(_application));
 
 			foreach (var cmdId in CommandIds)
             {
@@ -107,12 +111,17 @@ namespace P4EditVS
                 commandService.AddCommand(menuItem);
             }
 
-			_textDocEvents = ((EnvDTE80.Events2)_application.Events).get_TextDocumentKeyPressEvents(null);
-			_textDocEvents.BeforeKeyPress += new _dispTextDocumentKeyPressEvents_BeforeKeyPressEventHandler(OnBeforeKeyPress);
-			_textEditorEvents = ((EnvDTE80.Events2)_application.Events).get_TextEditorEvents(null);
-			_textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(OnLineChanged);
+			//_textDocEvents = ((EnvDTE80.Events2)_application.Events).get_TextDocumentKeyPressEvents(null);
+			//_textDocEvents.BeforeKeyPress += new _dispTextDocumentKeyPressEvents_BeforeKeyPressEventHandler(OnBeforeKeyPress);
+			//_textEditorEvents = ((EnvDTE80.Events2)_application.Events).get_TextEditorEvents(null);
+			//_textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(OnLineChanged);
 
-			var outputWindowPaneStream = new OutputWindowStream(_application, "P4EditVS");
+            // Subscribe to events so we can do auto-checkout
+            _updateSolutionEvents = new UpdateSolutionEvents(this);
+            _runningDocTableEvents = new RunningDocTableEvents(this, _application as DTE);
+            
+            // Setup output log
+            var outputWindowPaneStream = new OutputWindowStream(_application, "P4EditVS");
             _outputWindow = new StreamWriter(outputWindowPaneStream);
             _outputWindow.AutoFlush = true;
             //_outputWindow.WriteLine("hello from P4EditVS\n");
@@ -350,7 +359,7 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
 			foreach (string filePath in _selectedFiles)
 			{
-				ExecuteCommand(filePath, myCommand.CommandID.ID);
+				ExecuteCommand(filePath, myCommand.CommandID.ID, false);
 			}
         }
 
@@ -359,7 +368,7 @@ namespace P4EditVS
 		/// </summary>
 		/// <param name="filePath"></param>
 		/// <param name="commandId"></param>
-		private void ExecuteCommand(string filePath, int commandId)
+		private void ExecuteCommand(string filePath, int commandId, bool immediate)
 		{
             ThreadHelper.ThrowIfNotOnUIThread();
 			if(!_package.ValidateUserSettings())
@@ -432,8 +441,9 @@ namespace P4EditVS
 
 			if (commandline != "")
 			{
-				UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null);
-				_outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
+				UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, HandleRunnerResult, null, null, immediate);
+                if(!immediate)
+				    _outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
 
 				//System.Diagnostics.Process process = new System.Diagnostics.Process();
 				//System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -445,8 +455,9 @@ namespace P4EditVS
 			}
 		}
 
-		private void AutoCheckout(string filePath)
+		private void AutoCheckout(string filePath, bool immediate)
 		{
+            ThreadHelper.ThrowIfNotOnUIThread();
 			if (_package.AutoCheckout)
 			{
 				if(_package.AutoCheckoutPrompt)
@@ -466,11 +477,53 @@ namespace P4EditVS
 					}
 				}
 
-				ExecuteCommand(filePath, CheckoutCommandId);
+				ExecuteCommand(filePath, CheckoutCommandId, immediate);
 			}
 		}
 
-		private void OnBeforeKeyPress(string Keypress, EnvDTE.TextSelection Selection, bool InStatementCompletion, ref bool CancelKeypress)
+        public void EditFile(string path)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            //_outputWindow.WriteLine("Edit File {0}", path);
+            if(Misc.IsFileReadOnly(path))
+            {
+                AutoCheckout(path, true);
+            }
+        }
+
+        public void EditSolution()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if(!_package.AutoCheckout)
+            {
+                return;
+            }
+
+            //CodeTimer timer = new CodeTimer("EditSolution");
+
+            if (_application.Solution != null)
+            {
+                //_outputWindow.WriteLine("Edit Solution {0}", _application.Solution.FullName);
+                if (!_application.Solution.Saved && Misc.IsFileReadOnly(_application.Solution.FullName))
+                {
+                    AutoCheckout(_application.Solution.FullName, true);
+                }
+
+                foreach(Document doc in _application.Documents)
+                {
+                    //_outputWindow.WriteLine("Edit Project {0}", doc.FullName);
+                    if(!doc.Saved && Misc.IsFileReadOnly(doc.FullName))
+                    {
+                        AutoCheckout(doc.FullName, true);
+                    }
+                }
+            }
+
+            //timer.Stop(_outputWindow);
+        }
+
+        private void OnBeforeKeyPress(string Keypress, EnvDTE.TextSelection Selection, bool InStatementCompletion, ref bool CancelKeypress)
 		{
             ThreadHelper.ThrowIfNotOnUIThread();
 			if(_application.ActiveDocument == null)
@@ -479,7 +532,7 @@ namespace P4EditVS
 			}
 			if (_application.ActiveDocument.ReadOnly)
 			{
-				AutoCheckout(_application.ActiveDocument.FullName);
+				AutoCheckout(_application.ActiveDocument.FullName, true);
 			}
 		}
 
@@ -501,7 +554,7 @@ namespace P4EditVS
 
 			if (_application.ActiveDocument.ReadOnly && !_application.ActiveDocument.Saved)
 			{
-			//	AutoCheckout(_application.ActiveDocument.FullName);
+				AutoCheckout(_application.ActiveDocument.FullName, true);
 			}
 		}
 

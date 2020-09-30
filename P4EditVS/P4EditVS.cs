@@ -471,7 +471,7 @@ namespace P4EditVS
 
 		[Category("Options")]
 		[DisplayName("Enable Auto-Checkout")]
-		[Description("Automatically checks out files on edit and save")]
+		[Description("Automatically checks out files on build and save")]
 		public bool AutoCheckout
 		{
 			get { return _autoCheckout; }
@@ -481,8 +481,8 @@ namespace P4EditVS
 		private bool _autoCheckoutPrompt = false;
 
 		[Category("Options")]
-		[DisplayName("Prompt Auto-Checkout")]
-		[Description("Prompts messsage to automatically check out files on edit and save")]
+		[DisplayName("Prompt Before Auto-Checkout")]
+		[Description("Prompts messsage to automatically check out files on build and save")]
 		public bool AutoCheckoutPrompt
 		{
 			get { return _autoCheckoutPrompt; }

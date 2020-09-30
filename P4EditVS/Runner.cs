@@ -53,7 +53,7 @@ namespace P4EditVS
         //########################################################################
         //########################################################################
 
-        public static UInt64 Run(string cmd, string args, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin)
+        public static UInt64 Run(string cmd, string args, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin, bool immediate)
         {
             var startInfo = new ProcessStartInfo();
 
@@ -76,7 +76,14 @@ namespace P4EditVS
             UInt64 jobId = _nextJobId++;
 
             var runner = new Runner(startInfo, callback, stdin, jobId);
-            ThreadPool.QueueUserWorkItem(ThreadProcThunk, runner);
+            if (immediate)
+            {
+                runner.ThreadProc();
+            }
+            else
+            {
+                ThreadPool.QueueUserWorkItem(ThreadProcThunk, runner);
+            }
 
             return jobId;
         }

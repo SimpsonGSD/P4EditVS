@@ -62,12 +62,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DataStreamFromComStream.cs" />
+    <Compile Include="Events.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="OutputWindowStream.cs" />
     <Compile Include="P4EditVS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Runner.cs" />
+    <Compile Include="CodeTimer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
