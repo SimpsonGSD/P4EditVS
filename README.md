@@ -1,6 +1,6 @@
 # P4EditVS
 
-[Download Latest Release Here](https://github.com/SimpsonGSD/P4EditVS/releases/tag/v1.5)
+[Download Latest Release Here](https://github.com/SimpsonGSD/P4EditVS/releases/tag/v1.6)
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
