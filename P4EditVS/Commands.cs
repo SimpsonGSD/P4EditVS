@@ -12,9 +12,17 @@ using System.Collections.Generic;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.TextManager.Interop;
+using System.ComponentModel.Composition;
+
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
+using Microsoft.VisualStudio.Utilities;
+
 namespace P4EditVS
 {
-
     /// <summary>
     /// Command handler
     /// </summary>
@@ -65,10 +73,10 @@ namespace P4EditVS
         private List<string> _selectedFiles = new List<string>();
 
         private StreamWriter _outputWindow;
-		//private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
+		private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
 		//private EnvDTE.TextEditorEvents _textEditorEvents;
 		private EnvDTE80.DTE2 _application;
-        private UpdateSolutionEvents _updateSolutionEvents;
+       // private UpdateSolutionEvents _updateSolutionEvents;
         private RunningDocTableEvents _runningDocTableEvents;
 
 		/// <summary>
@@ -111,13 +119,16 @@ namespace P4EditVS
                 commandService.AddCommand(menuItem);
             }
 
-			//_textDocEvents = ((EnvDTE80.Events2)_application.Events).get_TextDocumentKeyPressEvents(null);
-			//_textDocEvents.BeforeKeyPress += new _dispTextDocumentKeyPressEvents_BeforeKeyPressEventHandler(OnBeforeKeyPress);
+            if (_package.AutoCheckoutOnEdit)
+            {
+                _textDocEvents = ((EnvDTE80.Events2)_application.Events).get_TextDocumentKeyPressEvents(null);
+                _textDocEvents.BeforeKeyPress += new _dispTextDocumentKeyPressEvents_BeforeKeyPressEventHandler(OnBeforeKeyPress);
+            }
 			//_textEditorEvents = ((EnvDTE80.Events2)_application.Events).get_TextEditorEvents(null);
 			//_textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(OnLineChanged);
 
             // Subscribe to events so we can do auto-checkout
-            _updateSolutionEvents = new UpdateSolutionEvents(this);
+            //_updateSolutionEvents = new UpdateSolutionEvents(this);
             _runningDocTableEvents = new RunningDocTableEvents(this, _application as DTE);
             
             // Setup output log
@@ -536,6 +547,7 @@ namespace P4EditVS
 			}
 		}
 
+        // This gets called constantly when a text buffer has changed.. 
 		private void OnLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
 		{
             ThreadHelper.ThrowIfNotOnUIThread();
@@ -552,9 +564,10 @@ namespace P4EditVS
 				return;
 			}
 
+
 			if (_application.ActiveDocument.ReadOnly && !_application.ActiveDocument.Saved)
 			{
-				AutoCheckout(_application.ActiveDocument.FullName, true);
+				//AutoCheckout(_application.ActiveDocument.FullName, true);
 			}
 		}
 

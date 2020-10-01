@@ -140,7 +140,7 @@ namespace P4EditVS
 			get
 			{
 				OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-				return page.AutoCheckout;
+				return page.AutoCheckout || page.AutoCheckoutOnEdit;
 			}
 		}
 
@@ -153,7 +153,17 @@ namespace P4EditVS
 			}
 		}
 
-		public string GetWorkspaceName(int index)
+
+        public bool AutoCheckoutOnEdit
+        {
+            get
+            {
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                return page.AutoCheckoutOnEdit;
+            }
+        }
+
+        public string GetWorkspaceName(int index)
         {
             OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
             // This is truly awful
@@ -470,26 +480,37 @@ namespace P4EditVS
 		private bool _autoCheckout = false;
 
 		[Category("Options")]
-		[DisplayName("Enable Auto-Checkout")]
-		[Description("Automatically checks out files on build and save")]
+		[DisplayName("Auto-Checkout Enabled")]
+		[Description("Automatically checks out files save/build")]
 		public bool AutoCheckout
 		{
 			get { return _autoCheckout; }
 			set { _autoCheckout = value; }
 		}
 
-		private bool _autoCheckoutPrompt = false;
+        private bool _autoCheckoutOnEdit = false;
+
+        [Category("Options")]
+        [DisplayName("Auto-Checkout On Edit")]
+        [Description("Automatically checks out files when edited, does not work projects or solutions. Disabled by default as it is more expensive than doing it on save/build. (requires restart)")]
+        public bool AutoCheckoutOnEdit
+        {
+            get { return _autoCheckoutOnEdit; }
+            set { _autoCheckoutOnEdit = value; }
+        }
+
+        private bool _autoCheckoutPrompt = false;
 
 		[Category("Options")]
 		[DisplayName("Prompt Before Auto-Checkout")]
-		[Description("Prompts messsage to automatically check out files on build and save")]
+		[Description("Prompts message to automatically check out files on build and save. Auto-checkout must be enabled.")]
 		public bool AutoCheckoutPrompt
 		{
 			get { return _autoCheckoutPrompt; }
 			set { _autoCheckoutPrompt = value; }
 		}
 
-		private string _userName = "";
+        private string _userName = "";
         private string _clientName = "";
         private string _server = "";
 
