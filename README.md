@@ -8,8 +8,6 @@ Simple, lightweight Visual Studio extension that allows you to checkout and reve
 
 ![alt text](Screenshot.png "Example")
 
-Optional auto-checkout on save/build and/or text edit.
-
 ### Supported Commands
 
 * Checkout
@@ -21,6 +19,7 @@ Optional auto-checkout on save/build and/or text edit.
 * Revision Graph
 * Add
 * Delete
+* Auto-Checkout (optional)
 
 ## Requirements
 
