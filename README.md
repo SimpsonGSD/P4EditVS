@@ -1,17 +1,33 @@
 # P4EditVS
 
-[Download Latest Release Here](https://github.com/SimpsonGSD/P4EditVS/releases/tag/v1.6)
+[Download Latest Release Here](https://github.com/SimpsonGSD/P4EditVS/releases/tag/v1.7)
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
+## Features
+
 ![alt text](Screenshot.png "Example")
 
-# Requirements
+Optional auto-checkout on save/build and/or text edit.
+
+### Supported Commands
+
+* Checkout
+* Revert
+* Revert If Unchanged
+* History
+* Diff Against Have Revision
+* Time-lapse View
+* Revision Graph
+* Add
+* Delete
+
+## Requirements
 
 You'll need a relatively recent version of the Perforce client with
 `p4vc` installed. Version `2020.2/2013107` is known to work.
 
-# Configuration
+## Configuration
 
 Visit `Tools` > `Options`, `P4EditVS` section.
 
@@ -26,17 +42,7 @@ with `p4 set` and/or `Connection` > `Environment Settings...` in p4v.
 
 The selected workspace is saved in the suo file for each solution.
 
-# Supported Commands
-
-* Checkout
-* Revert
-* Revert If Unchanged
-* History
-* Diff Against Have Revision
-* Time-lapse View
-* Revision Graph
-
-# Notes
+## Notes
 
 * p4.exe must be accessible from PATH for checkout/revert.
 * p4v.exe must be accessible from PATH for history/diff/timelapse view/revision graph.
@@ -48,12 +54,12 @@ The selected workspace is saved in the suo file for each solution.
 * `(Use environment)` is not much use with p4config files, as p4 is
   not run from the file's folder. This may or may not improve.
 
-# Troubleshooting
+## Troubleshooting
 
 Switch the Output Window to P4EditVS to see P4 command logging to help identify issues if commands are not being executed as expected. 
 This will help quickly identify issues such as being logged out of the server, expired tickets, etc.
 
-# Building from Visual Studio
+## Building from Visual Studio
 
 Load `P4EditVS.sln` into Visual Studio 2017. Build. A double-clickable
 vsix file will be produced in `P4EditVS/bin/Debug` or
