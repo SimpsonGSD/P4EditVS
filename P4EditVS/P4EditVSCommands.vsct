@@ -168,6 +168,32 @@
         </Strings>
       </Button>
 
+      <Button guid="guidP4EditVSCmdSet" id="cmdidAdd" priority="0x0108" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpAdd"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Mark for Add</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidDelete" priority="0x0109" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <Icon guid="guidImages" id="bmpDelete"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Mark for Delete</ButtonText>
+        </Strings>
+      </Button>
+
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspaceUseEnvironment" priority="0x0104" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
@@ -336,11 +362,37 @@
         </Strings>
       </Button>
 
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtAdd" priority="0x0107" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpAdd"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Mark for Add</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtDelete" priority="0x0108" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <Icon guid="guidImages" id="bmpDelete"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Mark for Delete</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
 
     <Bitmaps>
       <Bitmap guid="guidImages" href="Resources\cmdImages.bmp"
-              usedList="bmpCheckout, bmpRevertIfUnchanged, bmpRevert, bmpHistory, bmpDiff"/>
+              usedList="bmpCheckout, bmpRevertIfUnchanged, bmpRevert, bmpHistory, bmpDiff, bmpAdd, bmpDelete"/>
     </Bitmaps>
 
   </Commands>
@@ -378,6 +430,10 @@
       <IDSymbol name="cmdidTimelapseView" value="0x0113" />
       <IDSymbol name="cmdidCtxtTimelapseView" value="0x0114" />
       <IDSymbol name="cmdidWorkspaceUseEnvironment" value="0x115" />
+      <IDSymbol name="cmdidAdd" value="0x0116" />
+      <IDSymbol name="cmdidCtxtAdd" value="0x0117" />
+      <IDSymbol name="cmdidDelete" value="0x0118" />
+      <IDSymbol name="cmdidCtxtDelete" value="0x0119" />
     </GuidSymbol>
 
     <!-- images -->
@@ -387,6 +443,8 @@
       <IDSymbol name="bmpRevertIfUnchanged" value="3" />
       <IDSymbol name="bmpHistory" value="4" />
       <IDSymbol name="bmpDiff" value="5" />
+      <IDSymbol name="bmpAdd" value="6" />
+      <IDSymbol name="bmpDelete" value="7" />
     </GuidSymbol>
     <GuidSymbol name="guidIcons" value="{CCA21650-7FA4-4AB9-9214-5822BFC66C62}">
       <IDSymbol name="p4editvs" value="1" />

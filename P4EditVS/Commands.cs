@@ -52,9 +52,13 @@ namespace P4EditVS
         public const int TimelapseViewCommandId = 0x0113;
         public const int CtxtTimelapseViewCommandId = 0x0114;
         public const int WorkspaceUseEnvironmentCommandId = 0x115;
+        public const int AddCommandId = 0x0116;
+        public const int CtxtAddCommandId = 0x0117;
+        public const int DeleteCommandId = 0x0118;
+        public const int CtxtDeleteCommandId = 0x0119;
 
-        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId };
-        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId };
+        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId, AddCommandId, DeleteCommandId };
+        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId, CtxtAddCommandId, CtxtDeleteCommandId };
         public readonly int[] WorkspaceCommandIds = { WorkspaceUseEnvironmentCommandId, Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
 
         /// <summary>
@@ -347,6 +351,20 @@ namespace P4EditVS
                         command.Enabled = true;
                     }
                     break;
+                case AddCommandId:
+                case CtxtAddCommandId:
+                    {
+                        command.Text = "Mark for Add";
+                        command.Enabled = !isReadOnly;
+                    }
+                    break;
+                case DeleteCommandId:
+                case CtxtDeleteCommandId:
+                    {
+                        command.Text = "Mark for Delete";
+                        command.Enabled = isReadOnly;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -446,7 +464,31 @@ namespace P4EditVS
 						commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, filePath);
 					}
 					break;
-				default:
+                case AddCommandId:
+                case CtxtAddCommandId:
+                    {
+						commandline = string.Format("p4 {0} add {1}", globalOptions, filePath);
+                    }
+                    break;
+                case DeleteCommandId:
+                case CtxtDeleteCommandId:
+                    {
+                        IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+
+                        string message = string.Format("This will delete the file and all changes will be lost. Are you sure you wish to delete {0}?", filePath);
+                        bool shouldDelete = VsShellUtilities.PromptYesNo(
+                            message,
+                            "P4EditVS: Delete",
+                            OLEMSGICON.OLEMSGICON_WARNING,
+                            uiShell);
+
+                        if (shouldDelete)
+                        {
+                            commandline = string.Format("p4 {0} delete {1}", globalOptions, filePath);
+                        }
+                    }
+                    break;
+                default:
 					break;
 			}
 
