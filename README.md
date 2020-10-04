@@ -80,4 +80,4 @@ loaded.
 (`/rootsuffix Exp` directs Visual Studio to use a completely different
 set of registry keys and whatnot. For good or for ill, the child copy
 of Visual Studio is sandboxed in this respect, and doesn't share
-settings with your usualc opy.)
+settings with your usual copy.)
