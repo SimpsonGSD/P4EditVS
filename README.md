@@ -1,6 +1,6 @@
 # P4EditVS
 
-[Download Latest Release Here](https://github.com/SimpsonGSD/P4EditVS/releases/tag/v1.7)
+Download the latest release from either the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs) or [GitHub](https://github.com/SimpsonGSD/P4EditVS/releases/tag/v1.7).
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
@@ -81,3 +81,7 @@ loaded.
 set of registry keys and whatnot. For good or for ill, the child copy
 of Visual Studio is sandboxed in this respect, and doesn't share
 settings with your usual copy.)
+
+## Contributions
+
+Contributions are welcomed where they improve the user experience and do not affect IDE performance.
