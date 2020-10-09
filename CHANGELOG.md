@@ -1,5 +1,9 @@
 # Change log
 
+## 1.9
+**2020-10-09**
+* Fixed [[Bug] Handling spaces in file path](https://github.com/SimpsonGSD/P4EditVS/issues/4)
+
 ## 1.8
 **2020-10-08**
 
