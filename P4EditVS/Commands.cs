@@ -417,13 +417,13 @@ namespace P4EditVS
 				case CheckoutCommandId:
 				case CtxtCheckoutCommandId:
 					{
-						commandline = string.Format("p4 {0} edit -c default {1}", globalOptions, filePath);
+						commandline = string.Format("p4 {0} edit -c default \"{1}\"", globalOptions, filePath);
 					}
 					break;
 				case RevertIfUnchangedCommandId:
 				case CtxtRevertIfUnchangedCommandId:
 					{
-						commandline = string.Format("p4 {0} revert -a {1}", globalOptions, filePath);
+						commandline = string.Format("p4 {0} revert -a \"{1}\"", globalOptions, filePath);
 					}
 					break;
 				case RevertCommandId:
@@ -440,38 +440,38 @@ namespace P4EditVS
 
 						if (shouldRevert)
 						{
-							commandline = string.Format("p4 {0} revert {1}", globalOptions, filePath);
+							commandline = string.Format("p4 {0} revert \"{1}\"", globalOptions, filePath);
 						}
 					}
 					break;
 				case DiffCommandId:
 				case CtxtDiffCommandId:
 					{
-						commandline = string.Format("p4vc {0} diffhave {1}", globalOptions, filePath);
+						commandline = string.Format("p4vc {0} diffhave \"{1}\"", globalOptions, filePath);
 					}
 					break;
 				case HistoryCommandId:
 				case CtxtHistoryCommandId:
 					{
-						commandline = string.Format("p4vc {0} history {1}", globalOptions, filePath);
+						commandline = string.Format("p4vc {0} history \"{1}\"", globalOptions, filePath);
 					}
 					break;
 				case TimelapseViewCommandId:
 				case CtxtTimelapseViewCommandId:
 					{
-						commandline = string.Format("p4vc {0} timelapse {1}", globalOptions, filePath);
+						commandline = string.Format("p4vc {0} timelapse \"{1}\"", globalOptions, filePath);
 					}
 					break;
 				case RevisionGraphCommandId:
 				case CtxtRevisionGraphCommandId:
 					{
-						commandline = string.Format("p4vc {0} revgraph {1}", globalOptions, filePath);
+						commandline = string.Format("p4vc {0} revgraph \"{1}\"", globalOptions, filePath);
 					}
 					break;
                 case AddCommandId:
                 case CtxtAddCommandId:
                     {
-						commandline = string.Format("p4 {0} add {1}", globalOptions, filePath);
+						commandline = string.Format("p4 {0} add \"{1}\"", globalOptions, filePath);
                     }
                     break;
                 case DeleteCommandId:
@@ -488,7 +488,7 @@ namespace P4EditVS
 
                         if (shouldDelete)
                         {
-                            commandline = string.Format("p4 {0} delete {1}", globalOptions, filePath);
+                            commandline = string.Format("p4 {0} delete \"{1}\"", globalOptions, filePath);
                         }
                     }
                     break;
