@@ -53,7 +53,18 @@ namespace P4EditVS
         //########################################################################
         //########################################################################
 
-        public static UInt64 Run(string cmd, string args, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin, bool immediate)
+        /// <summary>
+        /// Run subprocess.
+        /// </summary>
+        /// <param name="cmd">path to exe to run</param>
+        /// <param name="args">args for EXE</param>
+        /// <param name="workingFolder">working folder to use, or null for whatever the .NET default is</param>
+        /// <param name="callback">callback, if any, to invoke on the main thread when subprocess finishes</param>
+        /// <param name="env">extra environment variables for the subprocess</param>
+        /// <param name="stdin">data to supply to subprocess's redirected stdin, or null if no stdin redirection</param>
+        /// <param name="immediate">if true, block until subprocess finishes - note that callback may still be executed asynchronously</param>
+        /// <returns>job id, an arbitrary value uniquely identifying this subprocess</returns>
+        public static UInt64 Run(string cmd, string args, string workingFolder, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin, bool immediate)
         {
             var startInfo = new ProcessStartInfo();
 
@@ -67,6 +78,8 @@ namespace P4EditVS
             startInfo.RedirectStandardInput = true;
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
+
+            if (workingFolder != null) startInfo.WorkingDirectory = workingFolder;
 
             if (env != null)
             {
