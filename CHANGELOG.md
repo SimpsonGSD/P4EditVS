@@ -1,5 +1,10 @@
 # Change log
 
+## 1.8
+**2020-10-08**
+
+* Fixed issue where performing operations on project files in the Solution Explorer would check out all project items. Now only .filters are checked out too.
+
 ## 1.7
 **2020-10-02**
 
