@@ -639,10 +639,15 @@ namespace P4EditVS
             {
                 using (var reader = new StringReader(data))
                 {
+                    for (; ; )
+                {
                     string line = reader.ReadLine();
+                        if (line == null) break;
+
                     _outputWindow.WriteLine("{0}: {1}: {2}", jobId, prefix, line);
                 }
             }
+        }
         }
 
         /// <summary>
