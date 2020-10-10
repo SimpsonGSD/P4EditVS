@@ -35,9 +35,13 @@ workspaces configured here will show up in the `P4EditVS` menu, so you
 can switch between them easily.
 
 Set `Allow Environment` to `True` to enable a 7th workspace in the
-`P4EditVS` menu - `(Use environment)`. When selected, this runs `p4`
-with no additional parameters. You just get whatever settings are set
-with `p4 set` and/or `Connection` > `Environment Settings...` in p4v.
+`P4EditVS` menu: `(Use environment)`. When selected, P4EditVS runs
+`p4` with no additional parameters, with the `p4` working folder being
+the folder containing the source file in question. The
+[p4config](https://www.perforce.com/manuals/v16.2/cmdref/P4CONFIG.html)
+rules apply, if you use that mechanism; otherwise, you get whatever
+settings are set with `p4 set` and/or `Connection` > `Environment
+Settings...` in p4v.
 
 The selected workspace is saved in the suo file for each solution.
 
