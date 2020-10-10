@@ -1,4 +1,5 @@
-# P4EditVS
+# P4EditVS                  
+[![VS Marketplace](https://vsmarketplacebadge.apphb.com/version/ScottSimpson.p4editvs.svg)](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs)
 
 Download the latest release from either the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs) or [GitHub](https://github.com/SimpsonGSD/P4EditVS/releases).
 
