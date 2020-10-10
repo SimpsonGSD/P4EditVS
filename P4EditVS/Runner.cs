@@ -64,7 +64,7 @@ namespace P4EditVS
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
 
-            startInfo.RedirectStandardInput = true;
+            startInfo.RedirectStandardInput = NeedStdinRedirection(stdin);
             startInfo.RedirectStandardError = true;
             startInfo.RedirectStandardOutput = true;
 
@@ -86,6 +86,15 @@ namespace P4EditVS
             }
 
             return jobId;
+        }
+
+        //########################################################################
+        //########################################################################
+
+        private static bool NeedStdinRedirection(string stdin)
+        {
+            // appropriate policy?
+            return stdin != null;
         }
 
         //########################################################################
@@ -130,9 +139,11 @@ namespace P4EditVS
                     process.BeginOutputReadLine();
                     process.BeginErrorReadLine();
 
-                    if (_stdin != null) process.StandardInput.Write(_stdin);
-
-                    process.StandardInput.Close();//^Z
+                    if (NeedStdinRedirection(_stdin))
+                    {
+                        process.StandardInput.Write(_stdin);
+                        process.StandardInput.Close();//^Z
+                    }
 
                     // Should really be able to configure the timeout! MaxValue
                     // is probably safest in the absence of that.
