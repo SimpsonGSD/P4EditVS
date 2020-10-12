@@ -1,5 +1,11 @@
 # Change log
 
+## 2.0
+**2020-10-09**  
+(Thanks to Tom Seddon for the following changes)
+* P4CONFIG file now supported.
+* Fixed error in Output Window that occurred for some commands.
+
 ## 1.9
 **2020-10-09**
 * Fixed [[Bug] Handling spaces in file path](https://github.com/SimpsonGSD/P4EditVS/issues/4)
