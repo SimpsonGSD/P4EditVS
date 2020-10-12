@@ -7,7 +7,7 @@ Simple, lightweight Visual Studio extension that allows you to checkout and reve
 
 ## Features
 
-![alt text](Screenshot.png "Example")
+![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/Screenshot.png "Example")
 
 ### Supported Commands
 
