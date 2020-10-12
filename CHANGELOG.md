@@ -1,7 +1,7 @@
 # Change log
 
 ## 2.0
-**2020-10-09**  
+**2020-10-12**  
 (Thanks to Tom Seddon for the following changes)
 * P4CONFIG file now supported.
 * Fixed error in Output Window that occurred for some commands.
