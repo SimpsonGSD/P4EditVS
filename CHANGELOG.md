@@ -1,5 +1,9 @@
 # Change log
 
+## 2.1
+**2020-20-12**
+* VS2019 support.
+
 ## 2.0
 **2020-10-12**  
 (Thanks to Tom Seddon for the following changes)
