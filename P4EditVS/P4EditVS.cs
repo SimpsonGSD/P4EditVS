@@ -170,7 +170,7 @@ namespace P4EditVS
             switch (index)
             {
                 case -1:
-                    if (page.AllowEnvironment) return "(Use environment)";
+                    if (page.AllowEnvironment) return "(Use Environment)";
                     else return "";
 
                 case 0:
