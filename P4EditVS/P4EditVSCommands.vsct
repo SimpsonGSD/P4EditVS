@@ -57,6 +57,9 @@
       <Group guid="guidP4EditVSCmdSet" id="guidMenuGroup" priority="0x0600">
         <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
       </Group>
+      <Group guid="guidP4EditVSCmdSet" id="guidFileTabGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_EZDOCWINTAB"/>
+      </Group>
       <Group guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" priority="0x0600">
         <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenu"/>
       </Group>
@@ -273,6 +276,122 @@
         </Strings>
       </Button>
 
+      <!-- File tab context menu -->
+      
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpCheckout"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Checkout</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0102" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <CommandName>RevertIfUnchangedActiveFile</CommandName>
+          <ButtonText>Revert If Unchanged</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevert" priority="0x0103" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpRevert"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Revert</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidDiff" priority="0x0104" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpDiff"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Diff</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidHistory" priority="0x0105" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpHistory"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>History</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidTimelapseView" priority="0x0106" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Timelapse View</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidRevisionGraph" priority="0x0107" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Revision Graph</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidAdd" priority="0x0108" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpAdd"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Mark for Add</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidDelete" priority="0x0109" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <Icon guid="guidImages" id="bmpDelete"/>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Mark for Delete</ButtonText>
+        </Strings>
+      </Button>
+      
       <!--Context Menu Buttons-->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
@@ -409,6 +528,8 @@
       <IDSymbol name="guidCtxtMenu" value="0x1026"/>
       <IDSymbol name="guidWorkspaceMenuGroup" value="0x1027" />
       <IDSymbol name="guidWorkspaceMenu" value="0x1028" />
+      <IDSymbol name="guidFileTabGroup" value="0x1029" />
+
       <IDSymbol name="cmdidCheckout" value="0x0100" />
       <IDSymbol name="cmdidRevertIfUnchanged" value="0x0101" />
       <IDSymbol name="cmdidRevert" value="0x0103" />
