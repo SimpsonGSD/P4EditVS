@@ -33,7 +33,7 @@ namespace P4EditVS
     public class SolutionOptions
     {
         // Index of workspace to use.
-        public int WorkspaceIndex = 0;
+        public int WorkspaceIndex = -1;
 
         // For debugging purposes, when you're staring at a mostly
         // incomprehensible hex dump of the .suo file.
@@ -74,7 +74,7 @@ namespace P4EditVS
         /// </summary>
         public const string PackageGuidString = "d6a4db63-698d-4d16-bbc0-944fe52f83db";
 
-        private int _selectedWorkspace = 0;
+        private int _selectedWorkspace = -1;
         public int SelectedWorkspace { get => _selectedWorkspace; set => _selectedWorkspace = value; }
 
         public string ClientName
@@ -466,7 +466,7 @@ namespace P4EditVS
     {
         // This seems like a terrible way to do it
 
-        private bool _allowEnvironment = false;
+        private bool _allowEnvironment = true;
 
         [Category("Options")]
         [DisplayName("Allow Environment")]
@@ -477,7 +477,7 @@ namespace P4EditVS
             set { _allowEnvironment = value; }
         }
 
-		private bool _autoCheckout = false;
+		private bool _autoCheckout = true;
 
 		[Category("Options")]
 		[DisplayName("Auto-Checkout Enabled")]
