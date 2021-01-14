@@ -7,7 +7,25 @@ Simple, lightweight Visual Studio extension that allows you to checkout and reve
 
 ## Features
 
-![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/Screenshot.png "Example")
+Access commands for current file in extension toolbar menu. (Under Extensions in VS2019)
+
+![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/Menu.jpg "ToolbarMenu")
+
+Right-click active file tab.
+
+![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/FileTab.jpg "FileTab")
+
+Right-click items in Solution Explorer.
+
+![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/SolutionExplorer.jpg "SolutionExplorer")
+
+Bind keyboard shortcuts to commands.
+
+![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/KeyboardShortcuts.jpg "KeyboardShortcuts")
+
+See P4 command output and server response in Output Window.
+
+![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/OutputWindow.jpg "OutputWindow")
 
 ### Supported Commands
 
