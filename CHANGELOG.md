@@ -1,5 +1,12 @@
 # Change log
 
+## 2.2
+**2020-14-01**
+* Added commands to file tab context menu.
+* Set allow environment setting to true by default.
+* Made environment setting the default workspace.
+* Set auto-checkout setting to true by default.
+
 ## 2.1
 **2020-20-12**
 * VS2019 support.
