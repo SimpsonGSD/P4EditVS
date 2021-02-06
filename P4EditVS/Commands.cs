@@ -56,9 +56,11 @@ namespace P4EditVS
         public const int CtxtAddCommandId = 0x0117;
         public const int DeleteCommandId = 0x0118;
         public const int CtxtDeleteCommandId = 0x0119;
+        public const int OpenInP4VCommandId = 0x011A;
+        public const int CtxtOpenInP4VCommandId = 0x011B;
 
-        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId, AddCommandId, DeleteCommandId };
-        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId, CtxtAddCommandId, CtxtDeleteCommandId };
+        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId, AddCommandId, DeleteCommandId, OpenInP4VCommandId };
+        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId, CtxtAddCommandId, CtxtDeleteCommandId, CtxtOpenInP4VCommandId };
         public readonly int[] WorkspaceCommandIds = { WorkspaceUseEnvironmentCommandId, Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
 
         /// <summary>
@@ -369,6 +371,13 @@ namespace P4EditVS
                         command.Enabled = isReadOnly;
                     }
                     break;
+                case OpenInP4VCommandId:
+                case CtxtOpenInP4VCommandId:
+                    {
+                        command.Text = "Open in P4V";
+                        command.Enabled = true;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -502,6 +511,12 @@ namespace P4EditVS
                         }
                     }
                     break;
+                case OpenInP4VCommandId:
+                case CtxtOpenInP4VCommandId:
+                    {
+                        commandline = string.Format("p4v {0} -s \"{1}\"", globalOptions, filePath);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -603,9 +618,10 @@ namespace P4EditVS
             }
         }
 
-        // This gets called constantly when a text buffer has changed.. 
         private void OnLineChanged(TextPoint StartPoint, TextPoint EndPoint, int Hint)
         {
+            // TODO: This gets called constantly when a text buffer has changed which makes it a performance problem
+            /*
             ThreadHelper.ThrowIfNotOnUIThread();
             if (_application.ActiveDocument == null)
             {
@@ -623,8 +639,9 @@ namespace P4EditVS
 
             if (_application.ActiveDocument.ReadOnly && !_application.ActiveDocument.Saved)
             {
-                //AutoCheckout(_application.ActiveDocument.FullName, true);
+                AutoCheckout(_application.ActiveDocument.FullName, true);
             }
+            */
         }
 
         private void HandleRunnerResult(Runner.RunnerResult result)

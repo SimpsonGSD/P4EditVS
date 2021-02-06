@@ -5,3 +5,4 @@ packages/
 refs/*.dll
 *.user
 *.suo
+*.args.json

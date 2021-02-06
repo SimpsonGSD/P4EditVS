@@ -46,7 +46,6 @@
           <CommandName>P4EditVS</CommandName>
         </Strings>
       </Menu>
-
     </Menus>
 
     <!-- In this section you can define new menu groups. A menu group is a container for
@@ -197,6 +196,19 @@
         </Strings>
       </Button>
 
+      <Button guid="guidP4EditVSCmdSet" id="cmdidOpenInP4V" priority="0x0109" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Open in P4V</ButtonText>
+        </Strings>
+      </Button>
+
+       <!-- Workspace selection -->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspaceUseEnvironment" priority="0x0104" type="Button">
         <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
@@ -391,7 +403,19 @@
           <ButtonText>Mark for Delete</ButtonText>
         </Strings>
       </Button>
-      
+
+      <Button guid="guidP4EditVSCmdSet" id="cmdidOpenInP4V" priority="0x0109" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Open in P4V</ButtonText>
+        </Strings>
+      </Button>
+
       <!--Context Menu Buttons-->
 
       <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
@@ -507,6 +531,18 @@
         </Strings>
       </Button>
 
+      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtOpenInP4V" priority="0x0109" type="Button">
+        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <CommandFlag>DontCache</CommandFlag>
+        <Strings>
+          <ButtonText>Open in P4V</ButtonText>
+        </Strings>
+      </Button>
+
     </Buttons>
 
     <Bitmaps>
@@ -555,6 +591,8 @@
       <IDSymbol name="cmdidCtxtAdd" value="0x0117" />
       <IDSymbol name="cmdidDelete" value="0x0118" />
       <IDSymbol name="cmdidCtxtDelete" value="0x0119" />
+      <IDSymbol name="cmdidOpenInP4V" value="0x011A" />
+      <IDSymbol name="cmdidCtxtOpenInP4V" value="0x011B" />
     </GuidSymbol>
 
     <!-- images -->
