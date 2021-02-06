@@ -201,6 +201,11 @@ namespace P4EditVS
             Trace.WriteLine(string.Format("Hello from P4EditVS"));
         }
 
+        private OptionPageGrid GetOptionsPage()
+        {
+            return (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+        }
+
         /// <summary>
         /// Create a SolutionOptions object for the current settings.
         /// </summary>
@@ -243,6 +248,10 @@ namespace P4EditVS
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+            // If allow environment is not in use set it to the first workspace so some workspace is selected
+            SelectedWorkspace = GetOptionsPage().AllowEnvironment ? -1 : 0;
+            
             await Commands.InitializeAsync(this);
         }
 
@@ -452,7 +461,12 @@ namespace P4EditVS
 
             var options = new SolutionOptions();
 
-            if (stream.Length > 0) options = Misc.ReadXmlOrCreateDefault<SolutionOptions>(stream);
+            bool createdDefault = false;
+            if (stream.Length > 0) options = Misc.ReadXmlOrCreateDefault<SolutionOptions>(stream, out createdDefault);
+
+            // If allow environment is not in use set it to the first workspace so some workspace is selected
+            if(createdDefault)
+                options.WorkspaceIndex = GetOptionsPage().AllowEnvironment ? -1 : 0;
 
             SetSolutionOptions(options);
 

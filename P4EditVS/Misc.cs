@@ -115,15 +115,27 @@ namespace P4EditVS
 
         public static T LoadXmlOrCreateDefault<T>(string fileName) where T : class, new()
         {
-            return DoXmlOrCreateDefault<T>(() => LoadXml<T>(fileName));
+            bool outCreatedDefault;
+            return DoXmlOrCreateDefault<T>(() => LoadXml<T>(fileName), out outCreatedDefault);
         }
 
         public static T ReadXmlOrCreateDefault<T>(Stream stream) where T : class, new()
         {
-            return DoXmlOrCreateDefault<T>(() => ReadXml<T>(stream));
+            bool outCreatedDefault;
+            return DoXmlOrCreateDefault<T>(() => ReadXml<T>(stream), out outCreatedDefault);
         }
 
-        private static T DoXmlOrCreateDefault<T>(Func<T> reader) where T : class, new()
+        public static T LoadXmlOrCreateDefault<T>(string fileName, out bool outCreatedDefault) where T : class, new()
+        {
+            return DoXmlOrCreateDefault<T>(() => LoadXml<T>(fileName), out outCreatedDefault);
+        }
+
+        public static T ReadXmlOrCreateDefault<T>(Stream stream, out bool outCreatedDefault) where T : class, new()
+        {
+            return DoXmlOrCreateDefault<T>(() => ReadXml<T>(stream), out outCreatedDefault);
+        }
+
+        private static T DoXmlOrCreateDefault<T>(Func<T> reader, out bool outCreatedDefault) where T : class, new()
         {
             T result = null;
 
@@ -138,7 +150,12 @@ namespace P4EditVS
             {
             }
 
-            if (result == null) result = new T();
+            outCreatedDefault = false;
+            if (result == null)
+            {
+                result = new T();
+                outCreatedDefault = true;
+            }
 
             return result;
         }
