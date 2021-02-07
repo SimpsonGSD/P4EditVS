@@ -13,6 +13,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using Task = System.Threading.Tasks.Task;
 using System.ComponentModel;
+using EnvDTE;
+using EnvDTE80;
+using System.IO;
 
 // The documentation for IVsPersistSolutionOpts is... not good. There's some use
 // here:
@@ -20,17 +23,18 @@ using System.ComponentModel;
 
 namespace P4EditVS
 {
-    /// <summary>
-    /// Values saved to the .suo file.
-    /// </summary>
-    /// <remarks>
-    /// Since it's convenient, this stuff is serialized using the XmlSerializer.
-    /// So anything in here needs to be compatible with that.
-    ///
-    /// If the suo doesn't contain a SolutionOptions, the default values here
-    /// will be used. 
-    /// </remarks>
-    public class SolutionOptions
+	/// <summary>
+	/// Values saved to the .suo file.
+	/// </summary>
+	/// <remarks>
+	/// Since it's convenient, this stuff is serialized using the XmlSerializer.
+	/// So anything in here needs to be compatible with that.
+	///
+	/// If the suo doesn't contain a SolutionOptions, the default values here
+	/// will be used. 
+	/// </remarks>
+	[System.Obsolete("Use SolutionSettings instead")]
+	public class SolutionOptions
     {
         // Index of workspace to use.
         public int WorkspaceIndex = -1;
@@ -74,14 +78,33 @@ namespace P4EditVS
         /// </summary>
         public const string PackageGuidString = "d6a4db63-698d-4d16-bbc0-944fe52f83db";
 
-        private int _selectedWorkspace = -1;
-        public int SelectedWorkspace { get => _selectedWorkspace; set => _selectedWorkspace = value; }
+		[System.Obsolete("Use SelectedWorkspace instead")]
+		private int _selectedWorkspace = -1;
 
-        public string ClientName
+		public SolutionSettings SolutionSettings;
+		private EnvDTE80.DTE2 _dte;
+		private EnvDTE.SolutionEvents _solutionEvents;
+		public StreamWriter OutputWindow;
+		private string _saveDataDirectory;
+
+		public int SelectedWorkspace
+		{
+			get => SolutionSettings.SelectedWorkspace;
+			set
+			{
+				if (SolutionSettings.SelectedWorkspace != value)
+				{
+					SolutionSettings.SelectedWorkspace = value;
+					SolutionSettings.SaveAsync();
+				}
+			}
+		}
+
+		public string ClientName
         {
             get
             {
-                return GetWorkspaceName(_selectedWorkspace);
+                return GetWorkspaceName(SelectedWorkspace);
             }
         }
 
@@ -90,8 +113,7 @@ namespace P4EditVS
             get
             {
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                // This is truly awful
-                switch (_selectedWorkspace)
+                switch (SelectedWorkspace)
                 {
                     case 0:
                         return page.UserName;
@@ -115,8 +137,7 @@ namespace P4EditVS
             get
             {
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                // This is truly awful
-                switch (_selectedWorkspace)
+                switch (SelectedWorkspace)
                 {
                     case 0:
                         return page.Server;
@@ -166,7 +187,6 @@ namespace P4EditVS
         public string GetWorkspaceName(int index)
         {
             OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-            // This is truly awful
             switch (index)
             {
                 case -1:
@@ -199,65 +219,111 @@ namespace P4EditVS
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
             Trace.WriteLine(string.Format("Hello from P4EditVS"));
-        }
 
-        private OptionPageGrid GetOptionsPage()
+			// %APPDATA%/Roaming/P4EditVS
+			_saveDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\P4EditVS\\";
+			// Ensure save data directory exists
+			if (!Directory.Exists(_saveDataDirectory))
+			{
+				Directory.CreateDirectory(_saveDataDirectory);
+			}
+		}
+
+		/// <summary>
+		/// Initialization of the package; this method is called right after the package is sited, so this is the place
+		/// where you can put all the initialization code that rely on services provided by VisualStudio.
+		/// </summary>
+		/// <param name="cancellationToken">A cancellation token to monitor for initialization cancellation, which can occur when VS is shutting down.</param>
+		/// <param name="progress">A provider for progress updates.</param>
+		/// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
+		protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+		{
+			// When initialized asynchronously, the current thread may be a background thread at this point.
+			// Do any initialization that requires the UI thread after switching to the UI thread.
+			await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+
+			_dte = await GetServiceAsync(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(EnvDTE80.DTE2));
+
+			// Legacy 
+		#pragma warning disable 618
+			_selectedWorkspace = GetOptionsPage().AllowEnvironment ? -1 : 0; // Pick correct default workspace
+		#pragma warning restore 618
+
+			// Setup output log
+			var outputWindowPaneStream = new OutputWindowStream(_dte, "P4EditVS");
+			OutputWindow = new StreamWriter(outputWindowPaneStream);
+			OutputWindow.AutoFlush = true;
+			//OutputWindow.WriteLine("hello from P4EditVS\n");
+
+			// A solution may have been opened before we are initialised
+			if(_dte.Solution != null && _dte.Solution.FullName.Length > 0)
+			{
+				OnSolutionOpened();
+			}
+
+			_solutionEvents = _dte.Events.SolutionEvents;
+			_solutionEvents.Opened += new _dispSolutionEvents_OpenedEventHandler(OnSolutionOpened);
+			_solutionEvents.BeforeClosing += new _dispSolutionEvents_BeforeClosingEventHandler(OnSolutionClosing);
+			_solutionEvents.AfterClosing += new _dispSolutionEvents_AfterClosingEventHandler(OnSolutionClosed);
+
+
+			await Commands.InitializeAsync(this);
+		}
+
+		private OptionPageGrid GetOptionsPage()
         {
             return (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
         }
 
-        /// <summary>
-        /// Create a SolutionOptions object for the current settings.
-        /// </summary>
-        /// <remarks>
-        /// The SolutionOptions object is written to the .suo file.
-        /// </remarks>
-        /// <returns></returns>
-        private SolutionOptions GetSolutionOptions()
+		private void OnSolutionOpened()
+		{
+			ThreadHelper.ThrowIfNotOnUIThread();
+			if (SolutionSettings != null)
+			{
+				// Save settings to prevent losing data
+				SolutionSettings.SaveAsync();
+			}
+
+			SolutionSettings = new SolutionSettings(_saveDataDirectory, _dte.Solution.FileName);
+			if(!SolutionSettings.DoesExist())
+			{
+				OutputWindow.WriteLine("Solution settings {0} not found", SolutionSettings.PathAndFileName);
+
+				// If solution settings don't exist then create, set default values and save it.
+				SolutionSettings.Create();
+
+				// Initialise default values here
+				// This is initialised using legacy variable to ensure previous value from .suo file is read
+			#pragma warning disable 618
+				SolutionSettings.SelectedWorkspace = _selectedWorkspace;
+			#pragma warning restore 618
+
+				SolutionSettings.SaveAsync();
+			}
+			else
+			{
+				OutputWindow.WriteLine("Solution settings {0} loaded", SolutionSettings.PathAndFileName);
+				SolutionSettings.Load();
+			}
+		}
+
+		private void OnSolutionClosing()
+		{
+			if (SolutionSettings != null)
+			{
+				// Save settings to prevent losing data
+				SolutionSettings.SaveAsync();
+			}
+		}
+
+		private void OnSolutionClosed()
+		{
+			SolutionSettings = null;
+		}
+
+		public string GetGlobalP4CmdLineOptions()
         {
-            var options = new SolutionOptions();
-
-            options.WorkspaceIndex = SelectedWorkspace;
-
-            return options;
-        }
-
-        /// <summary>
-        /// Set the current settings from a SolutionOptions object.
-        /// </summary>
-        /// <remarks>
-        /// The SolutionOptions is just whatever was in the .suo file.
-        /// </remarks>
-        /// <param name="options"></param>
-        private void SetSolutionOptions(SolutionOptions options)
-        {
-            if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) SelectedWorkspace = options.WorkspaceIndex;
-        }
-
-        #region Package Members
-
-        /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initialization code that rely on services provided by VisualStudio.
-        /// </summary>
-        /// <param name="cancellationToken">A cancellation token to monitor for initialization cancellation, which can occur when VS is shutting down.</param>
-        /// <param name="progress">A provider for progress updates.</param>
-        /// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
-        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-        {
-            // When initialized asynchronously, the current thread may be a background thread at this point.
-            // Do any initialization that requires the UI thread after switching to the UI thread.
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
-            // If allow environment is not in use set it to the first workspace so some workspace is selected
-            SelectedWorkspace = GetOptionsPage().AllowEnvironment ? -1 : 0;
-            
-            await Commands.InitializeAsync(this);
-        }
-
-        public string GetGlobalP4CmdLineOptions()
-        {
-            if (_selectedWorkspace == -1)
+            if (SelectedWorkspace == -1)
             {
                 return "";
             }
@@ -288,7 +354,7 @@ namespace P4EditVS
             //
             // So if things got this far, and the environment is the selected
             // workspace, it's all good. User name and server quite unnecessary.
-            if (_selectedWorkspace == -1)
+            if (SelectedWorkspace == -1)
             {
                 return true;
             }
@@ -322,20 +388,36 @@ namespace P4EditVS
             return true;
         }
 
-        //
-        // Summary:
-        //     Saves user options for a given solution.
-        //
-        // Parameters:
-        //   pPersistence:
-        //     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
-        //     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
-        //     method for each stream name it wants to write to the user options file.
-        //
-        // Returns:
-        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-        //     it fails, it returns an error code.
-        public int SaveUserOptions(IVsSolutionPersistence pPersistence)
+		#region Visual Studio suo interface
+
+		/// <summary>
+		/// Set the current settings from a SolutionOptions object.
+		/// </summary>
+		/// <remarks>
+		/// The SolutionOptions is just whatever was in the .suo file.
+		/// </remarks>
+		/// <param name="options"></param>
+		[System.Obsolete("Use SolutionSettings instead")]
+		private void SetSolutionOptions(SolutionOptions options)
+		{
+			if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) _selectedWorkspace = options.WorkspaceIndex;
+		}
+
+		//
+		// Summary:
+		//     Saves user options for a given solution.
+		//
+		// Parameters:
+		//   pPersistence:
+		//     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
+		//     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
+		//     method for each stream name it wants to write to the user options file.
+		//
+		// Returns:
+		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+		//     it fails, it returns an error code.
+		[System.Obsolete(".suo has been removed, use SolutionSettings instead", true)]
+		public int SaveUserOptions(IVsSolutionPersistence pPersistence)
         {
             Trace.WriteLine(String.Format("P4EditVS SaveUserOptions"));
 
@@ -354,24 +436,25 @@ namespace P4EditVS
             return VSConstants.S_OK;
         }
 
-        //
-        // Summary:
-        //     Loads user options for a given solution.
-        //
-        // Parameters:
-        //   pPersistence:
-        //     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
-        //     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
-        //     method for each stream name it wants to read from the user options (.opt) file.
-        //
-        //   grfLoadOpts:
-        //     [in] User options whose value is taken from the Microsoft.VisualStudio.Shell.Interop.__VSLOADUSEROPTS
-        //     DWORD.
-        //
-        // Returns:
-        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-        //     it fails, it returns an error code.
-        public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
+		//
+		// Summary:
+		//     Loads user options for a given solution.
+		//
+		// Parameters:
+		//   pPersistence:
+		//     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
+		//     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
+		//     method for each stream name it wants to read from the user options (.opt) file.
+		//
+		//   grfLoadOpts:
+		//     [in] User options whose value is taken from the Microsoft.VisualStudio.Shell.Interop.__VSLOADUSEROPTS
+		//     DWORD.
+		//
+		// Returns:
+		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+		//     it fails, it returns an error code.
+		[System.Obsolete(".suo has been removed, use SolutionSettings instead")]
+		public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
         {
             Trace.WriteLine(String.Format("P4EditVS LoadUserOptions (grfLoadOpts={0})", grfLoadOpts));
 
@@ -391,23 +474,24 @@ namespace P4EditVS
             return VSConstants.S_OK;
         }
 
-        //
-        // Summary:
-        //     Writes user options for a given solution.
-        //
-        // Parameters:
-        //   pOptionsStream:
-        //     [in] Pointer to the IStream interface to which the VSPackage should write the
-        //     user-specific options.
-        //
-        //   pszKey:
-        //     [in] Name of the stream, as provided by the VSPackage by means of the method
-        //     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
-        //
-        // Returns:
-        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-        //     it fails, it returns an error code.
-        public int WriteUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
+		//
+		// Summary:
+		//     Writes user options for a given solution.
+		//
+		// Parameters:
+		//   pOptionsStream:
+		//     [in] Pointer to the IStream interface to which the VSPackage should write the
+		//     user-specific options.
+		//
+		//   pszKey:
+		//     [in] Name of the stream, as provided by the VSPackage by means of the method
+		//     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
+		//
+		// Returns:
+		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+		//     it fails, it returns an error code.
+		[System.Obsolete(".suo has been removed, use SolutionSettings instead", true)]
+		public int WriteUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
             Trace.WriteLine(String.Format("P4EditVS WriteUserOptions (key=\"{0}\")", pszKey));
 
@@ -418,30 +502,32 @@ namespace P4EditVS
             // SaveUserOptions(), when the shell started saving the suo file.
             var stream = new DataStreamFromComStream(pOptionsStream);
 
-            var options = GetSolutionOptions();
+			var options = new SolutionOptions();
+			options.WorkspaceIndex = SelectedWorkspace;
 
-            Misc.WriteXml(stream, options);
+			Misc.WriteXml(stream, options);
 
             return VSConstants.S_OK;
         }
 
-        //
-        // Summary:
-        //     Reads user options for a given solution.
-        //
-        // Parameters:
-        //   pOptionsStream:
-        //     [in] Pointer to the IStream interface from which the VSPackage should read the
-        //     user-specific options.
-        //
-        //   pszKey:
-        //     [in] Name of the stream, as provided by the VSPackage by means of the method
-        //     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
-        //
-        // Returns:
-        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-        //     it fails, it returns an error code.
-        public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
+		//
+		// Summary:
+		//     Reads user options for a given solution.
+		//
+		// Parameters:
+		//   pOptionsStream:
+		//     [in] Pointer to the IStream interface from which the VSPackage should read the
+		//     user-specific options.
+		//
+		//   pszKey:
+		//     [in] Name of the stream, as provided by the VSPackage by means of the method
+		//     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
+		//
+		// Returns:
+		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+		//     it fails, it returns an error code.
+		[System.Obsolete(".suo has been removed, use SolutionSettings instead")]
+		public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
             Trace.WriteLine(String.Format("P4EditVS ReadUserOptions (key=\"{0}\")", pszKey));
 

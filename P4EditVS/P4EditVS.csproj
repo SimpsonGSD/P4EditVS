@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.16.6.2051\build\Microsoft.VSSDK.BuildTools.props" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.16.6.2051\build\Microsoft.VSSDK.BuildTools.props')" />
   <PropertyGroup>
@@ -70,12 +70,13 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="CodeTimer.cs" />
+    <Compile Include="SolutionSettings.cs" />
   </ItemGroup>
   <ItemGroup>
-	<Content Include="..\LICENSE">
-		<Link>Resources\LICENSE</Link>
-		<IncludeInVSIX>true</IncludeInVSIX>
-	</Content>
+    <Content Include="..\LICENSE">
+      <Link>Resources\LICENSE</Link>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <None Include="Key.snk" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

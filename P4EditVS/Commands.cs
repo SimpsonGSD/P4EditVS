@@ -78,10 +78,9 @@ namespace P4EditVS
         /// </summary>
         private List<string> _selectedFiles = new List<string>();
 
-        private StreamWriter _outputWindow;
         private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
         //private EnvDTE.TextEditorEvents _textEditorEvents;
-        private EnvDTE80.DTE2 _application;
+        private EnvDTE80.DTE2 _dte;
         // private UpdateSolutionEvents _updateSolutionEvents;
         private RunningDocTableEvents _runningDocTableEvents;
 
@@ -96,7 +95,7 @@ namespace P4EditVS
             ThreadHelper.ThrowIfNotOnUIThread();
             _package = package as P4EditVS ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
-            _application = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(_application));
+            _dte = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(_dte));
 
             foreach (var cmdId in CommandIds)
             {
@@ -127,21 +126,17 @@ namespace P4EditVS
 
             if (_package.AutoCheckoutOnEdit)
             {
-                _textDocEvents = ((EnvDTE80.Events2)_application.Events).get_TextDocumentKeyPressEvents(null);
+                _textDocEvents = ((EnvDTE80.Events2)_dte.Events).get_TextDocumentKeyPressEvents(null);
                 _textDocEvents.BeforeKeyPress += new _dispTextDocumentKeyPressEvents_BeforeKeyPressEventHandler(OnBeforeKeyPress);
             }
-            //_textEditorEvents = ((EnvDTE80.Events2)_application.Events).get_TextEditorEvents(null);
+            //_textEditorEvents = ((EnvDTE80.Events2)_dte.Events).get_TextEditorEvents(null);
             //_textEditorEvents.LineChanged += new _dispTextEditorEvents_LineChangedEventHandler(OnLineChanged);
 
             // Subscribe to events so we can do auto-checkout
             //_updateSolutionEvents = new UpdateSolutionEvents(this);
-            _runningDocTableEvents = new RunningDocTableEvents(this, _application as DTE);
+            _runningDocTableEvents = new RunningDocTableEvents(this, _dte as DTE);
 
-            // Setup output log
-            var outputWindowPaneStream = new OutputWindowStream(_application, "P4EditVS");
-            _outputWindow = new StreamWriter(outputWindowPaneStream);
-            _outputWindow.AutoFlush = true;
-            //_outputWindow.WriteLine("hello from P4EditVS\n");
+
         }
 
         /// <summary>
@@ -172,6 +167,11 @@ namespace P4EditVS
             }
         }
 
+		private StreamWriter OutputWindow
+		{
+			get => _package.OutputWindow;
+		}
+
         /// <summary>
         /// Initializes the singleton instance of the command.
         /// </summary>
@@ -197,26 +197,28 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-                if (_application != null)
+                if (_dte != null)
                 {
                     // reset selection
                     _selectedFiles.Clear();
 
-                    if (_application.ActiveDocument != null)
+                    if (_dte.ActiveDocument != null)
                     {
-                        _selectedFiles.Add(_application.ActiveDocument.FullName);
+                        _selectedFiles.Add(_dte.ActiveDocument.FullName);
 
-                        string guiFileName = _application.ActiveDocument.Name;
-                        bool isReadOnly = _application.ActiveDocument.ReadOnly;
+                        string guiFileName = _dte.ActiveDocument.Name;
+                        bool isReadOnly = _dte.ActiveDocument.ReadOnly;
                         // Build menu string based on command ID and whether to enable it based on file type/state
                         ConfigureCmdButton(myCommand, guiFileName, isReadOnly);
                     }
                     else
                     {
-                        // Invalid selection clear cached path and disable buttons
-                        myCommand.Enabled = false;
-                    }
-                }
+						// Clear any cached file names in the UI
+						ConfigureCmdButton(myCommand, "", false);
+						// Invalid selection clear cached path and disable buttons
+						myCommand.Enabled = false;
+					}
+				}
             }
         }
 
@@ -525,7 +527,7 @@ namespace P4EditVS
             {
                 UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, fileFolder, HandleRunnerResult, null, null, immediate);
                 if (!immediate)
-                    _outputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
+                    OutputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
 
                 //System.Diagnostics.Process process = new System.Diagnostics.Process();
                 //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
@@ -566,7 +568,7 @@ namespace P4EditVS
         public void EditFile(string path)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            //_outputWindow.WriteLine("Edit File {0}", path);
+            //OutputWindow.WriteLine("Edit File {0}", path);
             if (Misc.IsFileReadOnly(path))
             {
                 AutoCheckout(path, true);
@@ -584,17 +586,17 @@ namespace P4EditVS
 
             //CodeTimer timer = new CodeTimer("EditSolution");
 
-            if (_application.Solution != null)
+            if (_dte.Solution != null)
             {
-                //_outputWindow.WriteLine("Edit Solution {0}", _application.Solution.FullName);
-                if (!_application.Solution.Saved && Misc.IsFileReadOnly(_application.Solution.FullName))
+                //OutputWindow.WriteLine("Edit Solution {0}", _dte.Solution.FullName);
+                if (!_dte.Solution.Saved && Misc.IsFileReadOnly(_dte.Solution.FullName))
                 {
-                    AutoCheckout(_application.Solution.FullName, true);
+                    AutoCheckout(_dte.Solution.FullName, true);
                 }
 
-                foreach (Document doc in _application.Documents)
+                foreach (Document doc in _dte.Documents)
                 {
-                    //_outputWindow.WriteLine("Edit Project {0}", doc.FullName);
+                    //OutputWindow.WriteLine("Edit Project {0}", doc.FullName);
                     if (!doc.Saved && Misc.IsFileReadOnly(doc.FullName))
                     {
                         AutoCheckout(doc.FullName, true);
@@ -602,19 +604,19 @@ namespace P4EditVS
                 }
             }
 
-            //timer.Stop(_outputWindow);
+            //timer.Stop(OutputWindow);
         }
 
         private void OnBeforeKeyPress(string Keypress, EnvDTE.TextSelection Selection, bool InStatementCompletion, ref bool CancelKeypress)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            if (_application.ActiveDocument == null)
+            if (_dte.ActiveDocument == null)
             {
                 return;
             }
-            if (_application.ActiveDocument.ReadOnly)
+            if (_dte.ActiveDocument.ReadOnly)
             {
-                AutoCheckout(_application.ActiveDocument.FullName, true);
+                AutoCheckout(_dte.ActiveDocument.FullName, true);
             }
         }
 
@@ -623,7 +625,7 @@ namespace P4EditVS
             // TODO: This gets called constantly when a text buffer has changed which makes it a performance problem
             /*
             ThreadHelper.ThrowIfNotOnUIThread();
-            if (_application.ActiveDocument == null)
+            if (_dte.ActiveDocument == null)
             {
                 return;
             }
@@ -637,9 +639,9 @@ namespace P4EditVS
             }
 
 
-            if (_application.ActiveDocument.ReadOnly && !_application.ActiveDocument.Saved)
+            if (_dte.ActiveDocument.ReadOnly && !_dte.ActiveDocument.Saved)
             {
-                AutoCheckout(_application.ActiveDocument.FullName, true);
+                AutoCheckout(_dte.ActiveDocument.FullName, true);
             }
             */
         }
@@ -649,7 +651,7 @@ namespace P4EditVS
             DateTime now = DateTime.Now;
             if (result.ExitCode == null)
             {
-                _outputWindow.WriteLine("{0}: Timed out.", result.JobId);
+                OutputWindow.WriteLine("{0}: Timed out.", result.JobId);
             }
             else
             {
@@ -657,7 +659,7 @@ namespace P4EditVS
                 DumpRunnerResult(result.JobId, "stderr", result.Stderr);
             }
 
-            _outputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
+            OutputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
         }
 
         private void DumpRunnerResult(UInt64 jobId, string prefix, string data)
@@ -671,7 +673,7 @@ namespace P4EditVS
                         string line = reader.ReadLine();
                         if (line == null) break;
 
-                        _outputWindow.WriteLine("{0}: {1}: {2}", jobId, prefix, line);
+                        OutputWindow.WriteLine("{0}: {1}: {2}", jobId, prefix, line);
                     }
                 }
             }
@@ -689,12 +691,20 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-                int workspaceIndex = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
-                myCommand.Checked = (package.SelectedWorkspace == workspaceIndex);
-                string text = package.GetWorkspaceName(workspaceIndex);
-                myCommand.Enabled = (text != "");
-                myCommand.Visible = myCommand.Enabled;
-                myCommand.Text = text;
+				int workspaceIndex = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
+				string text = package.GetWorkspaceName(workspaceIndex);
+				myCommand.Visible = (text.Length > 0);
+				myCommand.Text = text;
+
+				if (_dte.Solution != null && _dte.Solution.FileName.Length > 0)
+				{
+					myCommand.Checked = (package.SelectedWorkspace == workspaceIndex);
+					myCommand.Enabled = true;
+				}
+				else
+				{
+					myCommand.Enabled = false;
+				}
             }
         }
 
@@ -712,9 +722,12 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-                int workspaceId = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
-                package.SelectedWorkspace = workspaceId;
-                myCommand.Checked = true;
+				if (_dte.Solution != null && _dte.Solution.FileName.Length > 0)
+				{
+					int workspaceId = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
+					package.SelectedWorkspace = workspaceId;
+					myCommand.Checked = true;
+				}
             }
         }
 
