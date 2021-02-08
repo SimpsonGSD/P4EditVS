@@ -1,5 +1,10 @@
 # Change log
 
+## 2.3
+**2020-08-02**
+* Added Open in P4V command.
+* Moved saved workspace settings to %appdata%/P4EditVS to avoid issues with .suo files being deleted in temporary workspaces.
+
 ## 2.2
 **2020-14-01**
 * Added commands to file tab context menu.
