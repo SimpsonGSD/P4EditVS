@@ -39,6 +39,7 @@ See P4 command output and server response in Output Window.
 * Add
 * Delete
 * Auto-Checkout (optional)
+* Open in P4V
 
 ## Requirements
 
