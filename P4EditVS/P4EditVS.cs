@@ -403,20 +403,20 @@ namespace P4EditVS
 			if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) _selectedWorkspace = options.WorkspaceIndex;
 		}
 
-		//
-		// Summary:
-		//     Saves user options for a given solution.
-		//
-		// Parameters:
-		//   pPersistence:
-		//     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
-		//     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
-		//     method for each stream name it wants to write to the user options file.
-		//
-		// Returns:
-		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-		//     it fails, it returns an error code.
-		[System.Obsolete(".suo has been removed, use SolutionSettings instead", true)]
+        //
+        // Summary:
+        //     Saves user options for a given solution.
+        //
+        // Parameters:
+        //   pPersistence:
+        //     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
+        //     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
+        //     method for each stream name it wants to write to the user options file.
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        /* NO LONGER USED, LEFT IN FOR REFERENCE
 		public int SaveUserOptions(IVsSolutionPersistence pPersistence)
         {
             Trace.WriteLine(String.Format("P4EditVS SaveUserOptions"));
@@ -435,6 +435,7 @@ namespace P4EditVS
             pPersistence.SavePackageUserOpts(this, SolutionUserOptionsKey);
             return VSConstants.S_OK;
         }
+        */
 
 		//
 		// Summary:
@@ -453,7 +454,7 @@ namespace P4EditVS
 		// Returns:
 		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
 		//     it fails, it returns an error code.
-		[System.Obsolete(".suo has been removed, use SolutionSettings instead")]
+		[System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
 		public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
         {
             Trace.WriteLine(String.Format("P4EditVS LoadUserOptions (grfLoadOpts={0})", grfLoadOpts));
@@ -490,7 +491,7 @@ namespace P4EditVS
 		// Returns:
 		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
 		//     it fails, it returns an error code.
-		[System.Obsolete(".suo has been removed, use SolutionSettings instead", true)]
+        /* NO LONGER USED, LEFT IN FOR REFERENCE
 		public int WriteUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
             Trace.WriteLine(String.Format("P4EditVS WriteUserOptions (key=\"{0}\")", pszKey));
@@ -509,24 +510,25 @@ namespace P4EditVS
 
             return VSConstants.S_OK;
         }
+        */
 
-		//
-		// Summary:
-		//     Reads user options for a given solution.
-		//
-		// Parameters:
-		//   pOptionsStream:
-		//     [in] Pointer to the IStream interface from which the VSPackage should read the
-		//     user-specific options.
-		//
-		//   pszKey:
-		//     [in] Name of the stream, as provided by the VSPackage by means of the method
-		//     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
-		//
-		// Returns:
-		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-		//     it fails, it returns an error code.
-		[System.Obsolete(".suo has been removed, use SolutionSettings instead")]
+        //
+        // Summary:
+        //     Reads user options for a given solution.
+        //
+        // Parameters:
+        //   pOptionsStream:
+        //     [in] Pointer to the IStream interface from which the VSPackage should read the
+        //     user-specific options.
+        //
+        //   pszKey:
+        //     [in] Name of the stream, as provided by the VSPackage by means of the method
+        //     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        [System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
 		public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
             Trace.WriteLine(String.Format("P4EditVS ReadUserOptions (key=\"{0}\")", pszKey));

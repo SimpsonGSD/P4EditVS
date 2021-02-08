@@ -40,10 +40,11 @@ namespace P4EditVS
 
 			// Build filename in form <solution_name>_<hash_of_solution_path_and_file_name>.xml
 			string solutionName = Misc.GetPathFileNameWithoutExtension(solutionPathAndFileName);
-			string hash = solutionPathAndFileName.GetHashCode().ToString("X"); // Use hex value to avoid MAX_PATH issues
+			string hash = GetHash(solutionPathAndFileName.ToCharArray()).ToString("X"); // Use hex value to avoid MAX_PATH issues
 			_fileName = solutionName + "_" + hash + ".xml";
 			_pathAndFileName = _path + _fileName;
-		}
+
+        }
 
 
 		public bool DoesExist()
@@ -96,5 +97,19 @@ namespace P4EditVS
 				while (!_saveTask.IsCompleted) { }
 			}
 		}
+
+        private uint GetHash(char[] data)
+        {
+            uint hash = 2166136261; // FNV Offset Basis
+
+            foreach (char c in data)
+            {
+
+                hash = hash ^ c;
+                hash = hash * 16777619; // FNV prime
+            }
+
+            return hash;
+        }
 	}
 }
