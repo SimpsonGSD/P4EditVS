@@ -109,3 +109,6 @@ settings with your usual copy.)
 ## Contributions
 
 Contributions are welcomed where they improve the user experience and do not affect IDE performance.
+
+Thanks to the following contributors for making this extension better.
+* Tom Seddon
