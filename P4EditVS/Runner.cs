@@ -13,7 +13,7 @@ namespace P4EditVS
     /// Run a process asynchronously, feeding data to its stdin and capturing
     /// its stdout/stderr. 
     /// </summary>
-    class Runner
+    public class Runner
     {
         public class RunnerResult
         {
@@ -49,12 +49,18 @@ namespace P4EditVS
         private StringBuilder _stdoutBuilder = new StringBuilder();
         private StringBuilder _stderrBuilder = new StringBuilder();
         private UInt64 _jobId = 0;
+        private float _timeoutSeconds = 0.0f; // equivalent to infinite
 
         //########################################################################
         //########################################################################
+
+        public UInt64 JobId
+        {
+            get => _jobId;
+        }
 
         /// <summary>
-        /// Run subprocess.
+        /// Create runner for subprocess.
         /// </summary>
         /// <param name="cmd">path to exe to run</param>
         /// <param name="args">args for EXE</param>
@@ -62,9 +68,8 @@ namespace P4EditVS
         /// <param name="callback">callback, if any, to invoke on the main thread when subprocess finishes</param>
         /// <param name="env">extra environment variables for the subprocess</param>
         /// <param name="stdin">data to supply to subprocess's redirected stdin, or null if no stdin redirection</param>
-        /// <param name="immediate">if true, block until subprocess finishes - note that callback may still be executed asynchronously</param>
         /// <returns>job id, an arbitrary value uniquely identifying this subprocess</returns>
-        public static UInt64 Run(string cmd, string args, string workingFolder, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin, bool immediate)
+        public static Runner Create(string cmd, string args, string workingFolder, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin)
         {
             var startInfo = new ProcessStartInfo();
 
@@ -89,16 +94,27 @@ namespace P4EditVS
             UInt64 jobId = _nextJobId++;
 
             var runner = new Runner(startInfo, callback, stdin, jobId);
-            if (immediate)
-            {
-                runner.ThreadProc();
-            }
-            else
+            return runner;
+        }
+
+        /// <summary>
+        /// Run subprocess.
+        /// </summary>
+        /// <param name="runner">runner instance to run</param>
+        /// <param name="async">if false, block until subprocess finishes - note that callback may still be executed asynchronously</param>
+        /// <param name="timeoutSeconds">if > 0.0f this is the maxiumum time the runner will take before it is killed</param>
+        /// <returns>job id, an arbitrary value uniquely identifying this subprocess</returns>
+        public static void Run(Runner runner, bool async, float timeoutSeconds)
+        {
+            runner._timeoutSeconds = timeoutSeconds;
+            if (async)
             {
                 ThreadPool.QueueUserWorkItem(ThreadProcThunk, runner);
             }
-
-            return jobId;
+            else
+            {
+                runner.ThreadProc();
+            }
         }
 
         //########################################################################
@@ -158,9 +174,8 @@ namespace P4EditVS
                         process.StandardInput.Close();//^Z
                     }
 
-                    // Should really be able to configure the timeout! MaxValue
-                    // is probably safest in the absence of that.
-                    if (process.WaitForExit(Int32.MaxValue))
+                    int timeoutMs = _timeoutSeconds > 0.0f ? (int)(_timeoutSeconds * 1000.0f) : Int32.MaxValue;
+                    if (process.WaitForExit(timeoutMs))
                         good = true;
                     else
                         process.Kill();

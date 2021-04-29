@@ -78,29 +78,29 @@ namespace P4EditVS
         /// </summary>
         public const string PackageGuidString = "d6a4db63-698d-4d16-bbc0-944fe52f83db";
 
-		[System.Obsolete("Use SelectedWorkspace instead")]
-		private int _selectedWorkspace = -1;
+        [System.Obsolete("Use SelectedWorkspace instead")]
+        private int _selectedWorkspace = -1;
 
-		public SolutionSettings SolutionSettings;
-		private EnvDTE80.DTE2 _dte;
-		private EnvDTE.SolutionEvents _solutionEvents;
-		public StreamWriter OutputWindow;
-		private string _saveDataDirectory;
+        public SolutionSettings SolutionSettings;
+        private EnvDTE80.DTE2 _dte;
+        private EnvDTE.SolutionEvents _solutionEvents;
+        public StreamWriter OutputWindow;
+        private string _saveDataDirectory;
 
-		public int SelectedWorkspace
-		{
-			get => SolutionSettings.SelectedWorkspace;
-			set
-			{
-				if (SolutionSettings.SelectedWorkspace != value)
-				{
-					SolutionSettings.SelectedWorkspace = value;
-					SolutionSettings.SaveAsync();
-				}
-			}
-		}
+        public int SelectedWorkspace
+        {
+            get => SolutionSettings.SelectedWorkspace;
+            set
+            {
+                if (SolutionSettings.SelectedWorkspace != value)
+                {
+                    SolutionSettings.SelectedWorkspace = value;
+                    SolutionSettings.SaveAsync();
+                }
+            }
+        }
 
-		public string ClientName
+        public string ClientName
         {
             get
             {
@@ -156,23 +156,23 @@ namespace P4EditVS
             }
         }
 
-		public bool AutoCheckout
-		{
-			get
-			{
-				OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-				return page.AutoCheckout || page.AutoCheckoutOnEdit;
-			}
-		}
+        public bool AutoCheckout
+        {
+            get
+            {
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                return page.AutoCheckout || page.AutoCheckoutOnEdit;
+            }
+        }
 
-		public bool AutoCheckoutPrompt
-		{
-			get
-			{
-				OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-				return page.AutoCheckoutPrompt;
-			}
-		}
+        public bool AutoCheckoutPrompt
+        {
+            get
+            {
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                return page.AutoCheckoutPrompt;
+            }
+        }
 
 
         public bool AutoCheckoutOnEdit
@@ -220,108 +220,108 @@ namespace P4EditVS
             // initialization is the Initialize method.
             Trace.WriteLine(string.Format("Hello from P4EditVS"));
 
-			// %APPDATA%/Roaming/P4EditVS
-			_saveDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\P4EditVS\\";
-			// Ensure save data directory exists
-			if (!Directory.Exists(_saveDataDirectory))
-			{
-				Directory.CreateDirectory(_saveDataDirectory);
-			}
-		}
+            // %APPDATA%/Roaming/P4EditVS
+            _saveDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\P4EditVS\\";
+            // Ensure save data directory exists
+            if (!Directory.Exists(_saveDataDirectory))
+            {
+                Directory.CreateDirectory(_saveDataDirectory);
+            }
+        }
 
-		/// <summary>
-		/// Initialization of the package; this method is called right after the package is sited, so this is the place
-		/// where you can put all the initialization code that rely on services provided by VisualStudio.
-		/// </summary>
-		/// <param name="cancellationToken">A cancellation token to monitor for initialization cancellation, which can occur when VS is shutting down.</param>
-		/// <param name="progress">A provider for progress updates.</param>
-		/// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
-		protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
-		{
-			// When initialized asynchronously, the current thread may be a background thread at this point.
-			// Do any initialization that requires the UI thread after switching to the UI thread.
-			await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+        /// <summary>
+        /// Initialization of the package; this method is called right after the package is sited, so this is the place
+        /// where you can put all the initialization code that rely on services provided by VisualStudio.
+        /// </summary>
+        /// <param name="cancellationToken">A cancellation token to monitor for initialization cancellation, which can occur when VS is shutting down.</param>
+        /// <param name="progress">A provider for progress updates.</param>
+        /// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
+        protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
+        {
+            // When initialized asynchronously, the current thread may be a background thread at this point.
+            // Do any initialization that requires the UI thread after switching to the UI thread.
+            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-			_dte = await GetServiceAsync(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(EnvDTE80.DTE2));
+            _dte = await GetServiceAsync(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(EnvDTE80.DTE2));
 
-			// Legacy 
-		#pragma warning disable 618
-			_selectedWorkspace = GetOptionsPage().AllowEnvironment ? -1 : 0; // Pick correct default workspace
-		#pragma warning restore 618
+            // Legacy 
+#pragma warning disable 618
+            _selectedWorkspace = GetOptionsPage().AllowEnvironment ? -1 : 0; // Pick correct default workspace
+#pragma warning restore 618
 
-			// Setup output log
-			var outputWindowPaneStream = new OutputWindowStream(_dte, "P4EditVS");
-			OutputWindow = new StreamWriter(outputWindowPaneStream);
-			OutputWindow.AutoFlush = true;
-			//OutputWindow.WriteLine("hello from P4EditVS\n");
+            // Setup output log
+            var outputWindowPaneStream = new OutputWindowStream(_dte, "P4EditVS");
+            OutputWindow = new StreamWriter(outputWindowPaneStream);
+            OutputWindow.AutoFlush = true;
+            //OutputWindow.WriteLine("hello from P4EditVS\n");
 
-			// A solution may have been opened before we are initialised
-			if(_dte.Solution != null && _dte.Solution.FullName.Length > 0)
-			{
-				OnSolutionOpened();
-			}
+            // A solution may have been opened before we are initialised
+            if (_dte.Solution != null && _dte.Solution.FullName.Length > 0)
+            {
+                OnSolutionOpened();
+            }
 
-			_solutionEvents = _dte.Events.SolutionEvents;
-			_solutionEvents.Opened += new _dispSolutionEvents_OpenedEventHandler(OnSolutionOpened);
-			_solutionEvents.BeforeClosing += new _dispSolutionEvents_BeforeClosingEventHandler(OnSolutionClosing);
-			_solutionEvents.AfterClosing += new _dispSolutionEvents_AfterClosingEventHandler(OnSolutionClosed);
+            _solutionEvents = _dte.Events.SolutionEvents;
+            _solutionEvents.Opened += new _dispSolutionEvents_OpenedEventHandler(OnSolutionOpened);
+            _solutionEvents.BeforeClosing += new _dispSolutionEvents_BeforeClosingEventHandler(OnSolutionClosing);
+            _solutionEvents.AfterClosing += new _dispSolutionEvents_AfterClosingEventHandler(OnSolutionClosed);
 
 
-			await Commands.InitializeAsync(this);
-		}
+            await Commands.InitializeAsync(this);
+        }
 
-		private OptionPageGrid GetOptionsPage()
+        private OptionPageGrid GetOptionsPage()
         {
             return (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
         }
 
-		private void OnSolutionOpened()
-		{
-			ThreadHelper.ThrowIfNotOnUIThread();
-			if (SolutionSettings != null)
-			{
-				// Save settings to prevent losing data
-				SolutionSettings.SaveAsync();
-			}
+        private void OnSolutionOpened()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if (SolutionSettings != null)
+            {
+                // Save settings to prevent losing data
+                SolutionSettings.SaveAsync();
+            }
 
-			SolutionSettings = new SolutionSettings(_saveDataDirectory, _dte.Solution.FileName);
-			if(!SolutionSettings.DoesExist())
-			{
-				OutputWindow.WriteLine("Solution settings {0} not found", SolutionSettings.PathAndFileName);
+            SolutionSettings = new SolutionSettings(_saveDataDirectory, _dte.Solution.FileName);
+            if (!SolutionSettings.DoesExist())
+            {
+                OutputWindow.WriteLine("Solution settings {0} not found", SolutionSettings.PathAndFileName);
 
-				// If solution settings don't exist then create, set default values and save it.
-				SolutionSettings.Create();
+                // If solution settings don't exist then create, set default values and save it.
+                SolutionSettings.Create();
 
-				// Initialise default values here
-				// This is initialised using legacy variable to ensure previous value from .suo file is read
-			#pragma warning disable 618
-				SolutionSettings.SelectedWorkspace = _selectedWorkspace;
-			#pragma warning restore 618
+                // Initialise default values here
+                // This is initialised using legacy variable to ensure previous value from .suo file is read
+#pragma warning disable 618
+                SolutionSettings.SelectedWorkspace = _selectedWorkspace;
+#pragma warning restore 618
 
-				SolutionSettings.SaveAsync();
-			}
-			else
-			{
-				OutputWindow.WriteLine("Solution settings {0} loaded", SolutionSettings.PathAndFileName);
-				SolutionSettings.Load();
-			}
-		}
+                SolutionSettings.SaveAsync();
+            }
+            else
+            {
+                OutputWindow.WriteLine("Solution settings {0} loaded", SolutionSettings.PathAndFileName);
+                SolutionSettings.Load();
+            }
+        }
 
-		private void OnSolutionClosing()
-		{
-			if (SolutionSettings != null)
-			{
-				// Save settings to prevent losing data
-				SolutionSettings.SaveAsync();
-			}
-		}
+        private void OnSolutionClosing()
+        {
+            if (SolutionSettings != null)
+            {
+                // Save settings to prevent losing data
+                SolutionSettings.SaveAsync();
+            }
+        }
 
-		private void OnSolutionClosed()
-		{
-			SolutionSettings = null;
-		}
+        private void OnSolutionClosed()
+        {
+            SolutionSettings = null;
+        }
 
-		public string GetGlobalP4CmdLineOptions()
+        public string GetGlobalP4CmdLineOptions()
         {
             if (SelectedWorkspace == -1)
             {
@@ -388,16 +388,22 @@ namespace P4EditVS
             return true;
         }
 
-		#region Visual Studio suo interface
+        public float GetCommandTimeoutSeconds()
+        {
+            return GetOptionsPage().CommandTimeoutSeconds;
+        }
 
-		/// <summary>
-		/// Set the current settings from a SolutionOptions object.
-		/// </summary>
-		/// <remarks>
-		/// The SolutionOptions is just whatever was in the .suo file.
-		/// </remarks>
-		/// <param name="options"></param>
-		[System.Obsolete("Use SolutionSettings instead")]
+
+        #region Visual Studio suo interface
+
+        /// <summary>
+        /// Set the current settings from a SolutionOptions object.
+        /// </summary>
+        /// <remarks>
+        /// The SolutionOptions is just whatever was in the .suo file.
+        /// </remarks>
+        /// <param name="options"></param>
+        [System.Obsolete("Use SolutionSettings instead")]
 		private void SetSolutionOptions(SolutionOptions options)
 		{
 			if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) _selectedWorkspace = options.WorkspaceIndex;
@@ -583,7 +589,7 @@ namespace P4EditVS
 
 		[Category("Options")]
 		[DisplayName("Auto-Checkout Enabled")]
-		[Description("Automatically checks out files save/build")]
+		[Description("Automatically checks out files on save/build. Not recommended for slow networks as this will block Visual Studio.")]
 		public bool AutoCheckout
 		{
 			get { return _autoCheckout; }
@@ -611,6 +617,17 @@ namespace P4EditVS
 			get { return _autoCheckoutPrompt; }
 			set { _autoCheckoutPrompt = value; }
 		}
+
+        private float _commandTimeoutSeconds = 10.0f;
+
+        [Category("Options")]
+        [DisplayName("Timeout (seconds)")]
+        [Description("Timeout before P4EditVS stops waiting for the Perforce command to complete. 0.0 <= is equivalent to no timeout.")]
+        public float CommandTimeoutSeconds
+        {
+            get { return _commandTimeoutSeconds; }
+            set { _commandTimeoutSeconds = value; }
+        }
 
         private string _userName = "";
         private string _clientName = "";

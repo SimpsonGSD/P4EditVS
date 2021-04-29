@@ -525,17 +525,10 @@ namespace P4EditVS
 
             if (commandline != "")
             {
-                UInt64 jobId = Runner.Run("cmd.exe", "/C " + commandline, fileFolder, HandleRunnerResult, null, null, immediate);
-                if (!immediate)
-                    OutputWindow.WriteLine("{0}: started at {1}: {2}", jobId, DateTime.Now, commandline);
-
-                //System.Diagnostics.Process process = new System.Diagnostics.Process();
-                //System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-                //startInfo.FileName = "cmd.exe";
-                //startInfo.Arguments = "/C " + commandline;
-                //process.StartInfo = startInfo;
-                //process.Start();
+                var runner = Runner.Create("cmd.exe", "/C " + commandline, fileFolder, HandleRunnerResult, null, null);
+                OutputWindow.WriteLine("{0}: started at {1}: {2}", runner.JobId, DateTime.Now, commandline);
+                var runAsync = !immediate;
+                Runner.Run(runner, runAsync, _package.GetCommandTimeoutSeconds());
             }
         }
 
@@ -651,7 +644,7 @@ namespace P4EditVS
             DateTime now = DateTime.Now;
             if (result.ExitCode == null)
             {
-                OutputWindow.WriteLine("{0}: Timed out.", result.JobId);
+                OutputWindow.WriteLine("{0}: Timed out. Check server connection.", result.JobId);
             }
             else
             {
