@@ -393,6 +393,11 @@ namespace P4EditVS
             return GetOptionsPage().CommandTimeoutSeconds;
         }
 
+        public bool GetUseReadOnlyFlag()
+        {
+            return GetOptionsPage().UseReadOnlyFlag;
+        }
+
 
         #region Visual Studio suo interface
 
@@ -627,6 +632,17 @@ namespace P4EditVS
         {
             get { return _commandTimeoutSeconds; }
             set { _commandTimeoutSeconds = value; }
+        }
+
+        private bool _useReadOnlyFlag = true;
+
+        [Category("Options")]
+        [DisplayName("Use Read-Only File Flag")]
+        [Description("P4EditVS will use the read-only file flag as a fast way to determine if a file is already checked out. Disable this option if you use the Allwrite workspace option or always want the commands enabled regardless of file state. It is not recommended, for performance overhead, to disable this when using auto-checkout as P4EditVS will issue a P4 command for every save file request whether it is checked out or not.")]
+        public bool UseReadOnlyFlag
+        {
+            get { return _useReadOnlyFlag; }
+            set { _useReadOnlyFlag = value; }
         }
 
         private string _userName = "";

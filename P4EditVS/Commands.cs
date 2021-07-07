@@ -307,35 +307,37 @@ namespace P4EditVS
 
         void ConfigureCmdButton(OleMenuCommand command, string name, bool isReadOnly)
         {
+            bool useReadOnlyFlag = _package.GetUseReadOnlyFlag();
+
             switch (command.CommandID.ID)
             {
                 case CheckoutCommandId:
                 case CtxtCheckoutCommandId:
                     {
                         // This is first command in the menu so rather than bloating the whole thing just display the filename at the top to the right
-                        command.Enabled = isReadOnly;
                         command.Text = command.Enabled ? string.Format("Checkout\t\t\t{0}", name) : "Checkout";
+                        command.Enabled = useReadOnlyFlag ? isReadOnly : true;
                     }
                     break;
                 case RevertIfUnchangedCommandId:
                 case CtxtRevertIfUnchangedCommandId:
                     {
-                        command.Enabled = !isReadOnly;
                         command.Text = command.Enabled ? string.Format("Revert If Unchanged\t\t{0}", name) : "Revert If Unchanged";
+                        command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case RevertCommandId:
                 case CtxtRevertCommandId:
                     {
                         command.Text = "Revert";
-                        command.Enabled = !isReadOnly;
+                        command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case DiffCommandId:
                 case CtxtDiffCommandId:
                     {
                         command.Text = "Diff Against Have Revision";
-                        command.Enabled = !isReadOnly;
+                        command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case HistoryCommandId:
@@ -363,14 +365,14 @@ namespace P4EditVS
                 case CtxtAddCommandId:
                     {
                         command.Text = "Mark for Add";
-                        command.Enabled = !isReadOnly;
+                        command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case DeleteCommandId:
                 case CtxtDeleteCommandId:
                     {
                         command.Text = "Mark for Delete";
-                        command.Enabled = isReadOnly;
+                        command.Enabled = useReadOnlyFlag ? isReadOnly : true;
                     }
                     break;
                 case OpenInP4VCommandId:
@@ -562,7 +564,7 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             //OutputWindow.WriteLine("Edit File {0}", path);
-            if (Misc.IsFileReadOnly(path))
+            if (Misc.IsFileReadOnly(path) || !_package.GetUseReadOnlyFlag())
             {
                 AutoCheckout(path, true);
             }
@@ -582,7 +584,7 @@ namespace P4EditVS
             if (_dte.Solution != null)
             {
                 //OutputWindow.WriteLine("Edit Solution {0}", _dte.Solution.FullName);
-                if (!_dte.Solution.Saved && Misc.IsFileReadOnly(_dte.Solution.FullName))
+                if (!_dte.Solution.Saved && (Misc.IsFileReadOnly(_dte.Solution.FullName) || !_package.GetUseReadOnlyFlag()))
                 {
                     AutoCheckout(_dte.Solution.FullName, true);
                 }
@@ -590,7 +592,7 @@ namespace P4EditVS
                 foreach (Document doc in _dte.Documents)
                 {
                     //OutputWindow.WriteLine("Edit Project {0}", doc.FullName);
-                    if (!doc.Saved && Misc.IsFileReadOnly(doc.FullName))
+                    if (!doc.Saved && (Misc.IsFileReadOnly(doc.FullName) || !_package.GetUseReadOnlyFlag()))
                     {
                         AutoCheckout(doc.FullName, true);
                     }
@@ -607,7 +609,7 @@ namespace P4EditVS
             {
                 return;
             }
-            if (_dte.ActiveDocument.ReadOnly)
+            if (_dte.ActiveDocument.ReadOnly || !_package.GetUseReadOnlyFlag())
             {
                 AutoCheckout(_dte.ActiveDocument.FullName, true);
             }
