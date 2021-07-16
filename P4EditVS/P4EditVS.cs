@@ -16,6 +16,7 @@ using System.ComponentModel;
 using EnvDTE;
 using EnvDTE80;
 using System.IO;
+using System.Collections.Generic;
 
 // The documentation for IVsPersistSolutionOpts is... not good. There's some use
 // here:
@@ -174,7 +175,6 @@ namespace P4EditVS
             }
         }
 
-
         public bool AutoCheckoutOnEdit
         {
             get
@@ -182,6 +182,77 @@ namespace P4EditVS
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 return page.AutoCheckoutOnEdit;
             }
+        }
+
+        private List<string> CheckoutPromptAllowlist
+        {
+            get
+            {
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                return new List<string>(page.CheckoutPromptAllowlist.Split(','));
+            }
+        }
+
+        public bool IsOnAllowlist(string filePath)
+        {
+            return IsInPathList(CheckoutPromptAllowlist, filePath);
+        }
+
+        private List<string> CheckoutPromptBlocklist
+        {
+            get
+            {
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                return new List<string>(page.CheckoutPromptBlocklist.Split(','));
+            }
+        }
+
+        public bool IsOnBlocklist(string filePath)
+        {
+            return IsInPathList(CheckoutPromptBlocklist, filePath);
+        }
+
+        private bool IsInPathList(List<string> paths, string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return false;
+            }
+            string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\'));
+            foreach (string path in paths)
+            {
+                var trimmedPath = path.Trim();
+                if (trimmedPath == filePath || IsInDirectory(trimmedPath, filePathDirectory))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool IsInDirectory(string parentPath, string filePath)
+        {
+            if(string.IsNullOrEmpty(parentPath))
+            {
+                return false;
+            }
+            // DirectoryInfo doesn't work with a trailing backslash, so ensure it doesn't exist
+            int lastBackslashIndex = parentPath.LastIndexOf('\\');
+            if(lastBackslashIndex == parentPath.Length - 1)
+            {
+                parentPath = parentPath.Substring(0, parentPath.Length - 1);
+            }
+            DirectoryInfo parentPathInfo = new DirectoryInfo(parentPath);
+            DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
+            while (filePathInfo != null)
+            {
+                if (filePathInfo.FullName == parentPathInfo.FullName)
+                {
+                    return true;
+                }
+                filePathInfo = filePathInfo.Parent;
+            }
+            return false;
         }
 
         public string GetWorkspaceName(int index)
@@ -622,6 +693,28 @@ namespace P4EditVS
 			get { return _autoCheckoutPrompt; }
 			set { _autoCheckoutPrompt = value; }
 		}
+
+        private string _checkoutPromptBlocklist = "";
+
+        [Category("Options")]
+        [DisplayName("Checkout Prompt Blocklist")]
+        [Description("Comma separated list of full path directories or files that require a prompt before checkout even when Prompt Before Auto-Checkout is False.")]
+        public string CheckoutPromptBlocklist
+        {
+            get { return _checkoutPromptBlocklist; }
+            set { _checkoutPromptBlocklist = value; }
+        }
+
+        private string _checkoutPromptAllowlist = "";
+
+        [Category("Options")]
+        [DisplayName("Checkout Prompt Allowlist")]
+        [Description("Exceptions to the Checkout Prompt Blocklist. Comma separated list of full path directories or files that won't require a prompt before checkout unless Prompt Before Auto-Checkout is True.")]
+        public string CheckoutPromptAllowlist
+        {
+            get { return _checkoutPromptAllowlist; }
+            set { _checkoutPromptAllowlist = value; }
+        }
 
         private float _commandTimeoutSeconds = 10.0f;
 
