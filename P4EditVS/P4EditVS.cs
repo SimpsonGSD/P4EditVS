@@ -218,10 +218,11 @@ namespace P4EditVS
             {
                 return false;
             }
+            filePath = filePath.ToLower();
             string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\'));
             foreach (string path in paths)
             {
-                var trimmedPath = path.Trim();
+                var trimmedPath = path.Trim().ToLower();
                 if (trimmedPath == filePath || IsInDirectory(trimmedPath, filePathDirectory))
                 {
                     return true;
@@ -236,7 +237,7 @@ namespace P4EditVS
             {
                 return false;
             }
-            // DirectoryInfo doesn't work with a trailing backslash, so ensure it doesn't exist
+            // DirectoryInfo name comparison doesn't work with a trailing backslash, so ensure it doesn't exist
             int lastBackslashIndex = parentPath.LastIndexOf('\\');
             if(lastBackslashIndex == parentPath.Length - 1)
             {
