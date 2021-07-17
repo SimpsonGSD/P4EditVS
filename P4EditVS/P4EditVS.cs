@@ -184,74 +184,112 @@ namespace P4EditVS
             }
         }
 
-        private List<string> CheckoutPromptAllowlist
+        private HashSet<string> _checkoutPromptAllowlistDirectories;
+        private List<string> _checkoutPromptAllowlistDirectoriesList;
+        private HashSet<string> _checkoutPromptAllowlistFilePaths;
+        private void EnsureAllowlistsArePopulated()
         {
-            get
+            if(_checkoutPromptAllowlistDirectories == null)
             {
+                _checkoutPromptAllowlistDirectories = new HashSet<string>();
+                _checkoutPromptAllowlistFilePaths = new HashSet<string>();
+                _checkoutPromptAllowlistDirectoriesList = new List<string>();
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                return new List<string>(page.CheckoutPromptAllowlist.Split(','));
+                foreach (string path in page.CheckoutPromptAllowlist.Split(','))
+                {
+                    var attr = File.GetAttributes(path);
+                    if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        string dirPath = path.NormalizeDirectoryPath();
+                        _checkoutPromptAllowlistDirectories.Add(dirPath);
+                        _checkoutPromptAllowlistDirectoriesList.Add(dirPath);
+                    }
+                    else
+                    {
+                        _checkoutPromptAllowlistFilePaths.Add(path.NormalizeFilePath());
+                    }
+                }
             }
         }
 
         public bool IsOnAllowlist(string filePath)
         {
-            return IsInPathList(CheckoutPromptAllowlist, filePath);
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return false;
+            }
+            EnsureAllowlistsArePopulated();
+            filePath = filePath.NormalizeFilePath();
+            if (_checkoutPromptAllowlistFilePaths.Contains(filePath))
+            {
+                return true;
+            }
+            string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\') + 1);
+            // Maybe we'll get lucky and it's directly in the directory we care about
+            if (_checkoutPromptAllowlistDirectories.Contains(filePathDirectory))
+            {
+                return true;
+            }
+            return IsInPathList(_checkoutPromptAllowlistDirectoriesList, filePathDirectory);
         }
 
-        private List<string> CheckoutPromptBlocklist
+        private HashSet<string> _checkoutPromptBlocklistDirectories;
+        private List<string> _checkoutPromptBlocklistDirectoriesList;
+        private HashSet<string> _checkoutPromptBlocklistFilePaths;
+        private void EnsureBlocklistsArePopulated()
         {
-            get
+            if(_checkoutPromptBlocklistDirectories == null)
             {
+                _checkoutPromptBlocklistDirectories = new HashSet<string>();
+                _checkoutPromptBlocklistFilePaths = new HashSet<string>();
+                _checkoutPromptBlocklistDirectoriesList = new List<string>();
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                return new List<string>(page.CheckoutPromptBlocklist.Split(','));
+                foreach(string path in page.CheckoutPromptBlocklist.Split(','))
+                {
+                    var attr = File.GetAttributes(path);
+                    if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        string dirPath = path.NormalizeDirectoryPath();
+                        _checkoutPromptBlocklistDirectories.Add(dirPath);
+                        _checkoutPromptBlocklistDirectoriesList.Add(dirPath);
+                    }
+                    else
+                    {
+                        _checkoutPromptBlocklistFilePaths.Add(path.NormalizeFilePath());
+                    }
+                }
             }
         }
 
         public bool IsOnBlocklist(string filePath)
         {
-            return IsInPathList(CheckoutPromptBlocklist, filePath);
-        }
-
-        private bool IsInPathList(List<string> paths, string filePath)
-        {
             if (string.IsNullOrEmpty(filePath))
             {
                 return false;
             }
-            filePath = filePath.ToLower();
-            string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\'));
-            foreach (string path in paths)
+            EnsureBlocklistsArePopulated();
+            filePath = filePath.NormalizeFilePath();
+            if(_checkoutPromptBlocklistFilePaths.Contains(filePath))
             {
-                var trimmedPath = path.Trim().ToLower();
-                if (trimmedPath == filePath || IsInDirectory(trimmedPath, filePathDirectory))
-                {
-                    return true;
-                }
+                return true;
             }
-            return false;
+            string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\') + 1);
+            // Maybe we'll get lucky and it's directly in the directory we care about
+            if (_checkoutPromptBlocklistDirectories.Contains(filePathDirectory))
+            {
+                return true;
+            }
+            return IsInPathList(_checkoutPromptBlocklistDirectoriesList, filePathDirectory);
         }
 
-        private bool IsInDirectory(string parentPath, string filePath)
+        private bool IsInPathList(List<string> paths, string filePathDirectory)
         {
-            if(string.IsNullOrEmpty(parentPath))
+            foreach (string path in paths)
             {
-                return false;
-            }
-            // DirectoryInfo name comparison doesn't work with a trailing backslash, so ensure it doesn't exist
-            int lastBackslashIndex = parentPath.LastIndexOf('\\');
-            if(lastBackslashIndex == parentPath.Length - 1)
-            {
-                parentPath = parentPath.Substring(0, parentPath.Length - 1);
-            }
-            DirectoryInfo parentPathInfo = new DirectoryInfo(parentPath);
-            DirectoryInfo filePathInfo = new DirectoryInfo(filePath);
-            while (filePathInfo != null)
-            {
-                if (filePathInfo.FullName == parentPathInfo.FullName)
+                if(filePathDirectory.IsSubPathOf(path))
                 {
                     return true;
                 }
-                filePathInfo = filePathInfo.Parent;
             }
             return false;
         }
@@ -699,7 +737,7 @@ namespace P4EditVS
 
         [Category("Options")]
         [DisplayName("Checkout Prompt Blocklist")]
-        [Description("Comma separated list of full path directories or files that require a prompt before checkout even when Prompt Before Auto-Checkout is False.")]
+        [Description("(Restart VS after changing) Comma separated list of full path directories or files that require a prompt before checkout even when Prompt Before Auto-Checkout is False.")]
         public string CheckoutPromptBlocklist
         {
             get { return _checkoutPromptBlocklist; }
@@ -710,7 +748,7 @@ namespace P4EditVS
 
         [Category("Options")]
         [DisplayName("Checkout Prompt Allowlist")]
-        [Description("Exceptions to the Checkout Prompt Blocklist. Comma separated list of full path directories or files that won't require a prompt before checkout unless Prompt Before Auto-Checkout is True.")]
+        [Description("(Restart VS after changing) Exceptions to the Checkout Prompt Blocklist. Comma separated list of full path directories or files that won't require a prompt before checkout unless Prompt Before Auto-Checkout is True.")]
         public string CheckoutPromptAllowlist
         {
             get { return _checkoutPromptAllowlist; }
