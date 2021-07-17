@@ -184,6 +184,7 @@ namespace P4EditVS
             }
         }
 
+        private bool _hasAnyAllowlists = false;
         private HashSet<string> _checkoutPromptAllowlistDirectories;
         private List<string> _checkoutPromptAllowlistDirectoriesList;
         private HashSet<string> _checkoutPromptAllowlistFilePaths;
@@ -195,6 +196,11 @@ namespace P4EditVS
                 _checkoutPromptAllowlistFilePaths = new HashSet<string>();
                 _checkoutPromptAllowlistDirectoriesList = new List<string>();
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                if(string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
+                {
+                    return;
+                }
+                _hasAnyAllowlists = true;
                 foreach (string path in page.CheckoutPromptAllowlist.Split(','))
                 {
                     var attr = File.GetAttributes(path);
@@ -214,11 +220,15 @@ namespace P4EditVS
 
         public bool IsOnAllowlist(string filePath)
         {
+            EnsureAllowlistsArePopulated();
+            if (!_hasAnyAllowlists)
+            {
+                return false;
+            }
             if (string.IsNullOrEmpty(filePath))
             {
                 return false;
             }
-            EnsureAllowlistsArePopulated();
             filePath = filePath.NormalizeFilePath();
             if (_checkoutPromptAllowlistFilePaths.Contains(filePath))
             {
@@ -233,6 +243,7 @@ namespace P4EditVS
             return IsInPathList(_checkoutPromptAllowlistDirectoriesList, filePathDirectory);
         }
 
+        private bool _hasAnyBlocklists = false;
         private HashSet<string> _checkoutPromptBlocklistDirectories;
         private List<string> _checkoutPromptBlocklistDirectoriesList;
         private HashSet<string> _checkoutPromptBlocklistFilePaths;
@@ -244,7 +255,12 @@ namespace P4EditVS
                 _checkoutPromptBlocklistFilePaths = new HashSet<string>();
                 _checkoutPromptBlocklistDirectoriesList = new List<string>();
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                foreach(string path in page.CheckoutPromptBlocklist.Split(','))
+                if (string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
+                {
+                    return;
+                }
+                _hasAnyBlocklists = true;
+                foreach (string path in page.CheckoutPromptBlocklist.Split(','))
                 {
                     var attr = File.GetAttributes(path);
                     if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
@@ -263,11 +279,15 @@ namespace P4EditVS
 
         public bool IsOnBlocklist(string filePath)
         {
+            EnsureBlocklistsArePopulated();
+            if (!_hasAnyBlocklists)
+            {
+                return false;
+            }
             if (string.IsNullOrEmpty(filePath))
             {
                 return false;
             }
-            EnsureBlocklistsArePopulated();
             filePath = filePath.NormalizeFilePath();
             if(_checkoutPromptBlocklistFilePaths.Contains(filePath))
             {
