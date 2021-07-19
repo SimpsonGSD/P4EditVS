@@ -230,6 +230,10 @@ namespace P4EditVS
             {
                 return true;
             }
+            if(_checkoutPromptAllowlistDirectories.Count < 1)
+            {
+                return false;
+            }
             string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\') + 1);
             // Maybe we'll get lucky and it's directly in the directory we care about
             if (_checkoutPromptAllowlistDirectories.Contains(filePathDirectory))
@@ -284,6 +288,10 @@ namespace P4EditVS
             if(_checkoutPromptBlocklistFilePaths.Contains(filePath))
             {
                 return true;
+            }
+            if (_checkoutPromptBlocklistDirectories.Count < 1)
+            {
+                return false;
             }
             string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\') + 1);
             // Maybe we'll get lucky and it's directly in the directory we care about
