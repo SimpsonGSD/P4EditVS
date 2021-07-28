@@ -539,7 +539,7 @@ namespace P4EditVS
             ThreadHelper.ThrowIfNotOnUIThread();
             if (_package.AutoCheckout)
             {
-                if (_package.AutoCheckoutPrompt)
+                if (_package.AutoCheckoutPrompt || (_package.IsOnBlocklist(filePath) && !_package.IsOnAllowlist(filePath)))
                 {
                     IVsUIShell uiShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
 

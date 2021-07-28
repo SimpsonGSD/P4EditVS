@@ -16,6 +16,7 @@ using System.ComponentModel;
 using EnvDTE;
 using EnvDTE80;
 using System.IO;
+using System.Collections.Generic;
 
 // The documentation for IVsPersistSolutionOpts is... not good. There's some use
 // here:
@@ -174,7 +175,6 @@ namespace P4EditVS
             }
         }
 
-
         public bool AutoCheckoutOnEdit
         {
             get
@@ -182,6 +182,136 @@ namespace P4EditVS
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
                 return page.AutoCheckoutOnEdit;
             }
+        }
+
+        private bool _hasAnyAllowlists = false;
+        private HashSet<string> _checkoutPromptAllowlistDirectories;
+        private HashSet<string> _checkoutPromptAllowlistFilePaths;
+        private void EnsureAllowlistsArePopulated()
+        {
+            if(_checkoutPromptAllowlistDirectories == null)
+            {
+                _checkoutPromptAllowlistDirectories = new HashSet<string>();
+                _checkoutPromptAllowlistFilePaths = new HashSet<string>();
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                if(string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
+                {
+                    return;
+                }
+                _hasAnyAllowlists = true;
+                foreach (string path in page.CheckoutPromptAllowlist.Split(','))
+                {
+                    var attr = File.GetAttributes(path);
+                    if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        _checkoutPromptAllowlistDirectories.Add(path.NormalizeDirectoryPath());
+                    }
+                    else
+                    {
+                        _checkoutPromptAllowlistFilePaths.Add(path.NormalizeFilePath());
+                    }
+                }
+            }
+        }
+
+        public bool IsOnAllowlist(string filePath)
+        {
+            EnsureAllowlistsArePopulated();
+            if (!_hasAnyAllowlists)
+            {
+                return false;
+            }
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return false;
+            }
+            filePath = filePath.NormalizeFilePath();
+            if (_checkoutPromptAllowlistFilePaths.Contains(filePath))
+            {
+                return true;
+            }
+            if(_checkoutPromptAllowlistDirectories.Count < 1)
+            {
+                return false;
+            }
+            string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\') + 1);
+            // Maybe we'll get lucky and it's directly in the directory we care about
+            if (_checkoutPromptAllowlistDirectories.Contains(filePathDirectory))
+            {
+                return true;
+            }
+            return IsInPathList(_checkoutPromptAllowlistDirectories, filePathDirectory);
+        }
+
+        private bool _hasAnyBlocklists = false;
+        private HashSet<string> _checkoutPromptBlocklistDirectories;
+        private HashSet<string> _checkoutPromptBlocklistFilePaths;
+        private void EnsureBlocklistsArePopulated()
+        {
+            if(_checkoutPromptBlocklistDirectories == null)
+            {
+                _checkoutPromptBlocklistDirectories = new HashSet<string>();
+                _checkoutPromptBlocklistFilePaths = new HashSet<string>();
+                OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
+                if (string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
+                {
+                    return;
+                }
+                _hasAnyBlocklists = true;
+                foreach (string path in page.CheckoutPromptBlocklist.Split(','))
+                {
+                    var attr = File.GetAttributes(path);
+                    if ((attr & FileAttributes.Directory) == FileAttributes.Directory)
+                    {
+                        _checkoutPromptBlocklistDirectories.Add(path.NormalizeDirectoryPath());
+                    }
+                    else
+                    {
+                        _checkoutPromptBlocklistFilePaths.Add(path.NormalizeFilePath());
+                    }
+                }
+            }
+        }
+
+        public bool IsOnBlocklist(string filePath)
+        {
+            EnsureBlocklistsArePopulated();
+            if (!_hasAnyBlocklists)
+            {
+                return false;
+            }
+            if (string.IsNullOrEmpty(filePath))
+            {
+                return false;
+            }
+            filePath = filePath.NormalizeFilePath();
+            if(_checkoutPromptBlocklistFilePaths.Contains(filePath))
+            {
+                return true;
+            }
+            if (_checkoutPromptBlocklistDirectories.Count < 1)
+            {
+                return false;
+            }
+            string filePathDirectory = filePath.Substring(0, filePath.LastIndexOf('\\') + 1);
+            // Maybe we'll get lucky and it's directly in the directory we care about
+            if (_checkoutPromptBlocklistDirectories.Contains(filePathDirectory))
+            {
+                return true;
+            }
+            return IsInPathList(_checkoutPromptBlocklistDirectories, filePathDirectory);
+        }
+
+        private bool IsInPathList(HashSet<string> paths, string filePathDirectory)
+        {
+            foreach (string path in paths)
+            {
+                if(filePathDirectory.IsSubPathOf(path))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public string GetWorkspaceName(int index)
@@ -622,6 +752,28 @@ namespace P4EditVS
 			get { return _autoCheckoutPrompt; }
 			set { _autoCheckoutPrompt = value; }
 		}
+
+        private string _checkoutPromptBlocklist = "";
+
+        [Category("Options")]
+        [DisplayName("Checkout Prompt Blocklist")]
+        [Description("(Restart VS after changing) Comma separated list of full path directories or files that require a prompt before checkout even when Prompt Before Auto-Checkout is False.")]
+        public string CheckoutPromptBlocklist
+        {
+            get { return _checkoutPromptBlocklist; }
+            set { _checkoutPromptBlocklist = value; }
+        }
+
+        private string _checkoutPromptAllowlist = "";
+
+        [Category("Options")]
+        [DisplayName("Checkout Prompt Allowlist")]
+        [Description("(Restart VS after changing) Exceptions to the Checkout Prompt Blocklist. Comma separated list of full path directories or files that won't require a prompt before checkout unless Prompt Before Auto-Checkout is True.")]
+        public string CheckoutPromptAllowlist
+        {
+            get { return _checkoutPromptAllowlist; }
+            set { _checkoutPromptAllowlist = value; }
+        }
 
         private float _commandTimeoutSeconds = 10.0f;
 
