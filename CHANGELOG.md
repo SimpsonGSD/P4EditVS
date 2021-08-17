@@ -1,11 +1,11 @@
 # Change log
 
 ## 2.5
-**2021-29-04
+**2021-29-04**
 * Added option to disable using read-only flag to support allwrite workspaces.
 
 ## 2.4
-**2021-29-04
+**2021-29-04**
 * Added configurable command timeout.
 
 ## 2.3
