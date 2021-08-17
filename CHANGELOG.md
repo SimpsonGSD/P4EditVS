@@ -1,12 +1,20 @@
 # Change log
 
+## 2.5
+**2021-29-04
+* Added option to disable using read-only flag to support allwrite workspaces.
+
+## 2.4
+**2021-29-04
+* Added configurable command timeout.
+
 ## 2.3
-**2020-08-02**
+**2021-08-02**
 * Added Open in P4V command.
 * Moved saved workspace settings to %appdata%/P4EditVS to avoid issues with .suo files being deleted in temporary workspaces.
 
 ## 2.2
-**2020-14-01**
+**2021-14-01**
 * Added commands to file tab context menu.
 * Set allow environment setting to true by default.
 * Made environment setting the default workspace.
