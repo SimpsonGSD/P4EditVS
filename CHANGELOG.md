@@ -2,7 +2,7 @@
 
 ## 2.5
 **2021-29-04**
-* Added option to disable using read-only flag to support allwrite workspaces.
+* Added option to disable using read-only flag to support [allwrite workspaces](https://github.com/SimpsonGSD/P4EditVS/issues/9).
 
 ## 2.4
 **2021-29-04**
