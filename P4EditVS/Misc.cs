@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Runtime.InteropServices;
+
 
 namespace P4EditVS
 {
@@ -71,6 +73,58 @@ namespace P4EditVS
             }
         }
 
+        //########################################################################
+        //########################################################################
+
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern uint GetLongPathName(string ShortPath, StringBuilder sb, int buffer);
+
+        [DllImport("kernel32.dll")]
+        static extern uint GetShortPathName(string longpath, StringBuilder sb, int buffer);
+
+        /// <summary>
+        /// Returns case sensitive path of <paramref name="path"/>
+        /// Taken from https://www.generacodice.com/en/articolo/1089798/how-can-i-obtain-the-case-sensitive-path-on-windows
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetWindowsPhysicalPath(string path)
+        {
+            StringBuilder builder = new StringBuilder(255);
+
+            // names with long extension can cause the short name to be actually larger than
+            // the long name.
+            GetShortPathName(path, builder, builder.Capacity);
+
+            path = builder.ToString();
+
+            uint result = GetLongPathName(path, builder, builder.Capacity);
+
+            if (result > 0 && result < builder.Capacity)
+            {
+                //Success retrieved long file name
+                builder[0] = char.ToLower(builder[0]);
+                return builder.ToString(0, (int)result);
+            }
+
+            if (result > 0)
+            {
+                //Need more capacity in the buffer
+                //specified in the result variable
+                builder = new StringBuilder((int)result);
+                builder[0] = char.ToLower(builder[0]);
+                result = GetLongPathName(path, builder, builder.Capacity);
+                return builder.ToString(0, (int)result);
+            }
+
+            return null;
+        }
+
+
+        //########################################################################
+        //########################################################################
+
         public static bool IsFileReadOnly(string path)
         {
             try
@@ -83,6 +137,9 @@ namespace P4EditVS
                 return false;
             }
         }
+
+        //########################################################################
+        //########################################################################
 
         // IsSubPathOf(), WithEnding() and Right() come from https://stackoverflow.com/questions/5617320/given-full-path-check-if-path-is-subdirectory-of-some-other-path-or-otherwise/31941159#31941159
         // courtesy of @angularsen
@@ -102,15 +159,24 @@ namespace P4EditVS
             return path.StartsWith(baseDirPath, StringComparison.OrdinalIgnoreCase);
         }
 
+        //########################################################################
+        //########################################################################
+
         public static string NormalizeFilePath(this string path)
         {
             return Path.GetFullPath(path.Trim().Replace('/', '\\').ToLower());
         }
 
+        //########################################################################
+        //########################################################################
+
         public static string NormalizeDirectoryPath(this string path)
         {
             return Path.GetFullPath(path.Trim().Replace('/', '\\').ToLower().WithEnding("\\"));
         }
+
+        //########################################################################
+        //########################################################################
 
         /// <summary>
         /// Returns <paramref name="str"/> with the minimal concatenation of <paramref name="ending"/> (starting from end) that
@@ -136,6 +202,9 @@ namespace P4EditVS
 
             return result;
         }
+
+        //########################################################################
+        //########################################################################
 
         /// <summary>Gets the rightmost <paramref name="length" /> characters from a string.</summary>
         /// <param name="value">The string to retrieve the substring from.</param>

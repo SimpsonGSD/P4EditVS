@@ -431,6 +431,10 @@ namespace P4EditVS
             {
                 // If anything goes wrong, just use the default.
             }
+            
+            // I've had reports of visual studio dropping file path case which is a problem for
+            // case-sensitive P4 servers. To get around this grab the case-sensitive filepath.
+            filePath = Misc.GetWindowsPhysicalPath(filePath);
 
             string globalOptions = _package.GetGlobalP4CmdLineOptions();
             string commandline = "";
