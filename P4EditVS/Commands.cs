@@ -258,12 +258,13 @@ namespace P4EditVS
                             AddSelectedFile(_selectedFiles, selectedFile.Project.FullName);
 
                             // Get .filter file, usually the first project item
-                            if (selectedFile.Project.ProjectItems.Count > 0)
+                            foreach(ProjectItem item in selectedFile.Project.ProjectItems)
                             {
-                                string projectItemFileName = selectedFile.Project.ProjectItems.Item(1).FileNames[0];
-                                if (projectItemFileName.Contains(".filters"))
+                                string projectItemFileName = item.FileNames[0];
+                                if (projectItemFileName.EndsWith(".filters"))
                                 {
                                     AddSelectedFile(_selectedFiles, projectItemFileName);
+                                    break;
                                 }
                             }
                         }
