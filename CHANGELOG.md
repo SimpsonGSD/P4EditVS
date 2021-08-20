@@ -1,5 +1,11 @@
 # Change log
 
+## 2.6
+**2021-20-08**
+* Fixed issue with .filters file not being checked out with project [(issue #13)](https://github.com/SimpsonGSD/P4EditVS/issues/13).
+* Attempted a fix for case-sensitive Perforce servers not being issues commands with file paths is correct case [(issue #12)](https://github.com/SimpsonGSD/P4EditVS/issues/12). 
+* Merged [pull request](https://github.com/SimpsonGSD/P4EditVS/pull/10) from [Eris Koleszar](https://github.com/bellicapax) to add a checkout prompt filter for specific files.
+
 ## 2.5
 **2021-29-04**
 * Added option to disable using read-only flag to support [allwrite workspaces](https://github.com/SimpsonGSD/P4EditVS/issues/9).
