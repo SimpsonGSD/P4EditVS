@@ -112,3 +112,4 @@ Contributions are welcomed where they improve the user experience and do not aff
 
 Thanks to the following contributors for making this extension better.
 * Tom Seddon
+* Eris Koleszar
