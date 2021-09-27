@@ -19,6 +19,7 @@ steps:
 
 - task: NuGetToolInstaller@1
 
+# Build VS2019 extension
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
@@ -29,7 +30,6 @@ steps:
 #    FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
 #    VersionNumber: '$(Build.BuildNumber)'
 
-# Build VS2019 extension
 - task: MSBuild@1
   displayName: 'VS2019 Build'
   inputs:
@@ -42,6 +42,11 @@ steps:
     msbuildArguments: '/p:DeployExtension=false'
     
 # Build VS2022 extension
+- task: NuGetCommand@2
+  env:
+    VsTargetVersion: 'VS2022'
+  inputs:
+    restoreSolution: '$(solution)'
 - task: MSBuild@1
   displayName: 'VS2022 Build'
   env:
