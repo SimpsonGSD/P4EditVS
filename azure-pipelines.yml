@@ -28,29 +28,29 @@ steps:
 #  inputs:
 #    FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
 #    VersionNumber: '$(Build.BuildNumber)'
-  
+
 # Build VS2019 extension
-- task: VSBuild@1
+- task: MSBuild@1
   displayName: 'VS2019 Build'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     clean: true
-    customVersion: '16.0'
-    msbuildArgs: '/p:DeployExtension=false'
-    
+    msbuildVersion: '16.0'
+    msbuildArchitecture: 'x86'
+    msbuildArguments: '/p:DeployExtension=false'
     
 # Build VS2022 extension
-- task: VSBuild@1
+- task: MSBuild@1
   displayName: 'VS2022 Build'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    msbuildArgs: '/p:DeployExtension=false'
-    vsVersion: '17.0'
-    customVersion: '17.0'
+    msbuildArguments: '/p:DeployExtension=false'
+    msbuildVersion: '17.0'
+    msbuildArchitecture: 'x64'
 
 - task: CopyFiles@2
   displayName: 'Copy Artifacts to Staging'
