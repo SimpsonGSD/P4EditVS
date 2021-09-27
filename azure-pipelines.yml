@@ -46,7 +46,6 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-    clean: true
     customVersion: '17.0'
 
 - task: CopyFiles@2
