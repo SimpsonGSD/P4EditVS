@@ -44,12 +44,14 @@ steps:
 # Build VS2022 extension
 - task: MSBuild@1
   displayName: 'VS2022 Build'
+  env:
+    VsTargetVersion: 'VS2022'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/p:DeployExtension=false'
-    msbuildVersion: '17.0'
+    msbuildVersion: '16.0'
     msbuildArchitecture: 'x64'
 
 - task: CopyFiles@2
