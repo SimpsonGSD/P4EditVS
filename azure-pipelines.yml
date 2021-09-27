@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'windows-latest'
 
 variables:
   solution: '**/*.sln'
@@ -29,12 +29,25 @@ steps:
 #    FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
 #    VersionNumber: '$(Build.BuildNumber)'
   
+# Build VS2019 extension
 - task: VSBuild@1
-  displayName: 'Build'
+  displayName: 'VS2019 Build'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    clean: true
+    customVersion: '16.0'
+    
+# Build VS2022 extension
+- task: VSBuild@1
+  displayName: 'VS2022 Build'
+  inputs:
+    solution: '$(solution)'
+    platform: '$(buildPlatform)'
+    configuration: '$(buildConfiguration)'
+    clean: true
+    customVersion: '17.0'
 
 - task: CopyFiles@2
   displayName: 'Copy Artifacts to Staging'
