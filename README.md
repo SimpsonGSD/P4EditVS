@@ -86,17 +86,24 @@ This will help quickly identify issues such as being logged out of the server, e
 
 ## Building from Visual Studio
 
-Load `P4EditVS.sln` into Visual Studio 2017. Build. A double-clickable
+### To Build for VS2015 - VS2019
+Load `P4EditVS.sln` into Visual Studio 2019. Build. A double-clickable
 vsix file will be produced in `P4EditVS/bin/Debug` or
-`P4EditVS/bin/Release`.
+`P4EditVS/bin/Release` named `P4EditVS.vsix`.
 
+### To Build for VS2022+
+Load `P4EditVS.sln` into Visual Studio 2022. Build. A double-clickable
+vsix file will be produced in `P4EditVS/bin/Debug` or
+`P4EditVS/bin/Release` named `P4EditVS2022.vsix`.
+
+### Debugging
 To debug the addin, you can run Visual Studio in the debugger. Right
 click the `P4EditVS` project in the Solution Explorer, select
 `Properties`, and visit the `Debug` section.
 
 Select `Start external program`, and find the appropriate
 `devenv.exe`. (For example, `C:\Program Files (x86)\Microsoft Visual
-Studio\2017\Professional\Common7\IDE\devenv.exe`.)
+Studio\2019\Professional\Common7\IDE\devenv.exe`.)
 
 In `Command line arguments`, enter `/rootsuffix Exp /resetsettings`.
 
