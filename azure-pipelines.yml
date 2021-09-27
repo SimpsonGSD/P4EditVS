@@ -23,11 +23,11 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
-- task: VsixToolsUpdateVersion@2
-  displayName: 'Update Vsix Version'
-  inputs:
-    FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
-    VersionNumber: '$(Build.BuildNumber)'
+#- task: VsixToolsUpdateVersion@2
+#  displayName: 'Update Vsix Version'
+#  inputs:
+#    FileName: $(Build.SourcesDirectory)\$(system.teamProject)\source.extension.vsixmanifest
+#    VersionNumber: '$(Build.BuildNumber)'
   
 - task: VSBuild@1
   displayName: 'Build'
