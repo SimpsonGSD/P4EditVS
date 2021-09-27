@@ -38,6 +38,7 @@ steps:
     configuration: '$(buildConfiguration)'
     clean: true
     customVersion: '16.0'
+    msbuildArgs: '/p:DeployExtension=false'
     
 # Build VS2022 extension
 - task: VSBuild@1
@@ -47,6 +48,7 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     customVersion: '17.0'
+    msbuildArgs: '/p:DeployExtension=false'
 
 - task: CopyFiles@2
   displayName: 'Copy Artifacts to Staging'
