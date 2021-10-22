@@ -167,10 +167,10 @@ namespace P4EditVS
             }
         }
 
-		private StreamWriter OutputWindow
-		{
-			get => _package.OutputWindow;
-		}
+        private StreamWriter OutputWindow
+        {
+            get => _package.OutputWindow;
+        }
 
         /// <summary>
         /// Initializes the singleton instance of the command.
@@ -213,12 +213,12 @@ namespace P4EditVS
                     }
                     else
                     {
-						// Clear any cached file names in the UI
-						ConfigureCmdButton(myCommand, "", false);
-						// Invalid selection clear cached path and disable buttons
-						myCommand.Enabled = false;
-					}
-				}
+                        // Clear any cached file names in the UI
+                        ConfigureCmdButton(myCommand, "", false);
+                        // Invalid selection clear cached path and disable buttons
+                        myCommand.Enabled = false;
+                    }
+                }
             }
         }
 
@@ -258,7 +258,7 @@ namespace P4EditVS
                             AddSelectedFile(_selectedFiles, selectedFile.Project.FullName);
 
                             // Get .filter file, usually the first project item
-                            foreach(ProjectItem item in selectedFile.Project.ProjectItems)
+                            foreach (ProjectItem item in selectedFile.Project.ProjectItems)
                             {
                                 string projectItemFileName = item.FileNames[0];
                                 if (projectItemFileName.EndsWith(".filters"))
@@ -432,7 +432,7 @@ namespace P4EditVS
             {
                 // If anything goes wrong, just use the default.
             }
-            
+
             // I've had reports of visual studio dropping file path case which is a problem for
             // case-sensitive P4 servers. To get around this grab the case-sensitive filepath.
             filePath = Misc.GetWindowsPhysicalPath(filePath);
@@ -646,17 +646,30 @@ namespace P4EditVS
             */
         }
 
+        private void SetStatusBarText(string message, bool highlight)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            _dte.StatusBar.Text = message;
+            _dte.StatusBar.Highlight(highlight);
+        }
+
         private void HandleRunnerResult(Runner.RunnerResult result)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             DateTime now = DateTime.Now;
             if (result.ExitCode == null)
             {
-                OutputWindow.WriteLine("{0}: Timed out. Check server connection.", result.JobId);
+                string message = "Timed out. Check server connection.";
+                OutputWindow.WriteLine("{0}: {1}", result.JobId, message);
+                SetStatusBarText(message, true);
             }
             else
             {
                 DumpRunnerResult(result.JobId, "stdout", result.Stdout);
                 DumpRunnerResult(result.JobId, "stderr", result.Stderr);
+                SetStatusBarText(string.Format("exit code {0} for {1} {2}", (int)result.ExitCode, result.Cmd, result.Args), result.ExitCode != 0);
+                OutputWindow.WriteLine("{0}: exit code: {1} (0x{1:X})", result.JobId, (int)result.ExitCode, (int)result.ExitCode);
             }
 
             OutputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
@@ -691,20 +704,20 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-				int workspaceIndex = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
-				string text = package.GetWorkspaceName(workspaceIndex);
-				myCommand.Visible = (text.Length > 0);
-				myCommand.Text = text;
+                int workspaceIndex = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
+                string text = package.GetWorkspaceName(workspaceIndex);
+                myCommand.Visible = (text.Length > 0);
+                myCommand.Text = text;
 
-				if (_dte.Solution != null && _dte.Solution.FileName.Length > 0)
-				{
-					myCommand.Checked = (package.SelectedWorkspace == workspaceIndex);
-					myCommand.Enabled = true;
-				}
-				else
-				{
-					myCommand.Enabled = false;
-				}
+                if (_dte.Solution != null && _dte.Solution.FileName.Length > 0)
+                {
+                    myCommand.Checked = (package.SelectedWorkspace == workspaceIndex);
+                    myCommand.Enabled = true;
+                }
+                else
+                {
+                    myCommand.Enabled = false;
+                }
             }
         }
 
@@ -722,12 +735,12 @@ namespace P4EditVS
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
-				if (_dte.Solution != null && _dte.Solution.FileName.Length > 0)
-				{
-					int workspaceId = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
-					package.SelectedWorkspace = workspaceId;
-					myCommand.Checked = true;
-				}
+                if (_dte.Solution != null && _dte.Solution.FileName.Length > 0)
+                {
+                    int workspaceId = GetWorkspaceIndexForCommandId(myCommand.CommandID.ID);
+                    package.SelectedWorkspace = workspaceId;
+                    myCommand.Checked = true;
+                }
             }
         }
 
