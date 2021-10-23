@@ -10,6 +10,7 @@ using EnvDTE;
 using System.IO;
 using System.Collections.Generic;
 using EnvDTE80;
+using System.Text.RegularExpressions;
 using Microsoft.VisualStudio;
 
 using Microsoft.VisualStudio.Editor;
@@ -20,6 +21,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
+using System.Text;
 
 namespace P4EditVS
 {
@@ -439,6 +441,7 @@ namespace P4EditVS
 
             string globalOptions = _package.GetGlobalP4CmdLineOptions();
             string commandline = "";
+            Action<Runner.RunnerResult> handler = HandleGenericRunnerResult;
 
             switch (commandId)
             {
@@ -446,6 +449,20 @@ namespace P4EditVS
                 case CtxtCheckoutCommandId:
                     {
                         commandline = string.Format("p4 {0} edit -c default \"{1}\"", globalOptions, filePath);
+
+                        string fileName;
+                        try
+                        {
+                            fileName = Path.GetFileName(filePath);
+                        }
+                        catch (Exception)
+                        {
+                            // the file path will do in an emergency. The point
+                            // is just to create a shorter message.
+                            fileName = filePath;
+                        }
+
+                        handler = (Runner.RunnerResult result) => HandleCheckOutRunnerResult(result, fileName);
                     }
                     break;
                 case RevertIfUnchangedCommandId:
@@ -532,7 +549,7 @@ namespace P4EditVS
 
             if (commandline != "")
             {
-                var runner = Runner.Create(commandline, fileFolder, HandleRunnerResult, null, null);
+                var runner = Runner.Create(commandline, fileFolder, handler, null, null);
                 OutputWindow.WriteLine("{0}: started at {1}: {2}", runner.JobId, DateTime.Now, commandline);
                 var runAsync = !immediate;
                 Runner.Run(runner, runAsync, _package.GetCommandTimeoutSeconds());
@@ -654,15 +671,26 @@ namespace P4EditVS
             _dte.StatusBar.Highlight(highlight);
         }
 
-        private void HandleRunnerResult(Runner.RunnerResult result)
+        /// <summary>
+        /// Fill output window with subprocess output. Set status bar text if
+        /// process timed out.
+        /// </summary>
+        /// <param name="result">RunnerResult for the subprocess</param>
+        /// <returns>true if the process finished (status bar untouched); false if it timed out (status bar updated)</returns>
+        private bool ShowRunnerResultOutput(Runner.RunnerResult result)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+
+            bool completed;
+
             DateTime now = DateTime.Now;
             if (result.ExitCode == null)
             {
                 string message = "Timed out. Check server connection.";
                 OutputWindow.WriteLine("{0}: {1}", result.JobId, message);
                 SetStatusBarText(message, true);
+
+                completed = false;
             }
             else
             {
@@ -670,11 +698,79 @@ namespace P4EditVS
                 DumpRunnerResult(result.JobId, "stderr", result.Stderr);
                 OutputWindow.WriteLine("{0}: exit code: {1} (0x{1:X})", result.JobId, (int)result.ExitCode, (int)result.ExitCode);
 
-                if (result.ExitCode == 0) SetStatusBarText("Succeeded: " + result.CommandLine, false);
-                else SetStatusBarText("Failed: " + result.CommandLine, true);
+                completed = true;
             }
 
             OutputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
+
+            return completed;
+        }
+
+        private void SetStatusBarTextForRunnerResult(Runner.RunnerResult result)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (result.ExitCode == 0) SetStatusBarText("Succeeded: " + result.CommandLine, false);
+            else SetStatusBarText("Failed: " + result.CommandLine, true);
+        }
+
+        private void HandleGenericRunnerResult(Runner.RunnerResult result)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (ShowRunnerResultOutput(result)) SetStatusBarTextForRunnerResult(result);
+        }
+
+        // TODO - presumably it's possible for this message to end up localized.
+        // What's a better way of doing this?
+        //
+        // There's a p4 -L language option, but the docs are a bit coy about
+        // what exactly it's for or how you use it. ("This feature is reserved
+        // for system integrators" - see
+        // https://www.perforce.com/manuals/cmdref/Content/CmdRef/global.options.html)
+        //
+        // You can query the list of other users using ``p4 fstat PATH'' and
+        // scanning for otherXXXN line(s). But now that's two p4 invocations
+        // when checking out. Maybe we should just do that.
+        //
+        // ``p4 -z tag edit PATH'' doesn't do anything useful. -Mj and -G just
+        // produce the same data, but in a structured format that's not really
+        // any easier to parse from C#. (And the -Mj output isn't even valid
+        // JSON! It's several mappings, back to back!)
+        //
+        // https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
+        private static readonly Regex AlsoOpenedByRegex = new Regex(@"^... (?:.*) - also opened by (?<user>.*)$");
+
+        private void HandleCheckOutRunnerResult(Runner.RunnerResult result, string fileName)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            if (ShowRunnerResultOutput(result))
+            {
+                if (result.ExitCode == 0)
+                {
+                    // Is there a better way of doing this? Surely there must be.
+                    var otherUsers = new List<string>();
+
+                    foreach (string line in result.Stdout)
+                    {
+                        try
+                        {
+                            Match match = AlsoOpenedByRegex.Match(line);
+                            if (match.Success)
+                            {
+                                string otherUser = match.Groups["user"].Value;
+                                otherUsers.Add(otherUser);
+                            }
+                        }
+                        catch (RegexMatchTimeoutException) { }
+                    }
+
+                    if (otherUsers.Count == 0) SetStatusBarText(fileName + ": opened for edit", false);
+                    else SetStatusBarText(string.Format("{0}: also opened by {1} user(s): {2}", fileName, otherUsers.Count, string.Join(", ", otherUsers)), false);
+                }
+                else SetStatusBarTextForRunnerResult(result);
+            }
         }
 
         private void DumpRunnerResult(UInt64 jobId, string prefix, IEnumerable<string> lines)
