@@ -532,7 +532,7 @@ namespace P4EditVS
 
             if (commandline != "")
             {
-                var runner = Runner.Create("cmd.exe", "/C " + commandline, fileFolder, HandleRunnerResult, null, null);
+                var runner = Runner.Create(commandline, fileFolder, HandleRunnerResult, null, null);
                 OutputWindow.WriteLine("{0}: started at {1}: {2}", runner.JobId, DateTime.Now, commandline);
                 var runAsync = !immediate;
                 Runner.Run(runner, runAsync, _package.GetCommandTimeoutSeconds());
@@ -668,7 +668,7 @@ namespace P4EditVS
             {
                 DumpRunnerResult(result.JobId, "stdout", result.Stdout);
                 DumpRunnerResult(result.JobId, "stderr", result.Stderr);
-                SetStatusBarText(string.Format("exit code {0} for {1} {2}", (int)result.ExitCode, result.Cmd, result.Args), result.ExitCode != 0);
+                SetStatusBarText(string.Format("exit code {0} for {1}", (int)result.ExitCode, result.CommandLine), result.ExitCode != 0);
                 OutputWindow.WriteLine("{0}: exit code: {1} (0x{1:X})", result.JobId, (int)result.ExitCode, (int)result.ExitCode);
             }
 
