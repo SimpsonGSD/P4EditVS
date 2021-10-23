@@ -668,8 +668,10 @@ namespace P4EditVS
             {
                 DumpRunnerResult(result.JobId, "stdout", result.Stdout);
                 DumpRunnerResult(result.JobId, "stderr", result.Stderr);
-                SetStatusBarText(string.Format("exit code {0} for {1}", (int)result.ExitCode, result.CommandLine), result.ExitCode != 0);
                 OutputWindow.WriteLine("{0}: exit code: {1} (0x{1:X})", result.JobId, (int)result.ExitCode, (int)result.ExitCode);
+
+                if (result.ExitCode == 0) SetStatusBarText("Succeeded: " + result.CommandLine, false);
+                else SetStatusBarText("Failed: " + result.CommandLine, true);
             }
 
             OutputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
