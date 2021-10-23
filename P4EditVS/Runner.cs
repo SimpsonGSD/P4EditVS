@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using System.Collections.ObjectModel;
 
 namespace P4EditVS
 {
@@ -19,16 +20,16 @@ namespace P4EditVS
         {
             public readonly UInt64 JobId = 0;
             public readonly string CommandLine = null;
-            public readonly string Stdout = null;
-            public readonly string Stderr = null;
+            public readonly ReadOnlyCollection<string> Stdout = null;
+            public readonly ReadOnlyCollection<string> Stderr = null;
             public readonly int? ExitCode = null;
 
-            public RunnerResult(UInt64 jobId, string commandLine, string stdout, string stderr, int? exitCode)
+            public RunnerResult(UInt64 jobId, string commandLine, List<string> stdout, List<string> stderr, int? exitCode)
             {
                 JobId = jobId;
                 CommandLine = commandLine;
-                Stdout = stdout;
-                Stderr = stderr;
+                Stdout = stdout.AsReadOnly();
+                Stderr = stderr.AsReadOnly();
                 ExitCode = exitCode;
             }
         }
@@ -44,8 +45,8 @@ namespace P4EditVS
         private string _stdin = null;
         private ProcessStartInfo _processStartInfo = null;
         private Action<RunnerResult> _callback = null;
-        private StringBuilder _stdoutBuilder = new StringBuilder();
-        private StringBuilder _stderrBuilder = new StringBuilder();
+        private List<string> _stdoutLines = new List<string>();
+        private List<string> _stderrLines = new List<string>();
         private UInt64 _jobId = 0;
         private float _timeoutSeconds = 0.0f; // equivalent to infinite
         private string _commandLine = null;
@@ -152,7 +153,6 @@ namespace P4EditVS
         {
             bool good = false;
 
-            string stdout, stderr;
             int? exitCode;
 
             using (var process = new Process())
@@ -184,28 +184,25 @@ namespace P4EditVS
                 }
                 catch (System.Exception ex)
                 {
-                    _stderrBuilder.Clear();
-                    _stderrBuilder.Append(ex.ToString());
+                    _stderrLines.Clear();
+                    _stderrLines.Append(ex.ToString());
                 }
 
                 if (good)
                 {
-                    stdout = _stdoutBuilder.ToString();
-                    stderr = _stderrBuilder.ToString();
-
                     exitCode = process.ExitCode;
                 }
                 else
                 {
-                    stdout = null;
-                    stderr = null;
+                    _stdoutLines = null;
+                    _stderrLines = null;
                     exitCode = null;
                 }
             }
 
             if (_callback != null)
             {
-                var result = new RunnerResult(_jobId, _commandLine, stdout, stderr, exitCode);
+                var result = new RunnerResult(_jobId, _commandLine, _stdoutLines, _stderrLines, exitCode);
                 Action<RunnerResult> callback = _callback;
 
                 // https://stackoverflow.com/questions/58237847/how-to-resolve-vs2019-warning-to-use-joinabletaskfactory-switchtomainthreadasyn
@@ -220,7 +217,7 @@ namespace P4EditVS
 
         //########################################################################
         //########################################################################
-        private void OnDataReceived(DataReceivedEventArgs e, StringBuilder b, string name)
+        private void OnDataReceived(DataReceivedEventArgs e, List<string> lines, string name)
         {
             if (e.Data == null)
             {
@@ -230,10 +227,7 @@ namespace P4EditVS
             {
                 //Debug.WriteLine(name + " OnDataReceived: got: \"" + e.Data + "\"");
 
-                if (b.Length > 0)
-                    b.Append(Environment.NewLine);
-
-                b.Append(e.Data);
+                lines.Add(e.Data);
             }
         }
 
@@ -242,7 +236,7 @@ namespace P4EditVS
 
         private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            OnDataReceived(e, _stderrBuilder, "STDERR");
+            OnDataReceived(e, _stderrLines, "STDERR");
         }
 
         //########################################################################
@@ -250,7 +244,7 @@ namespace P4EditVS
 
         private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            OnDataReceived(e, _stdoutBuilder, "STDOUT");
+            OnDataReceived(e, _stdoutLines, "STDOUT");
         }
 
         //########################################################################

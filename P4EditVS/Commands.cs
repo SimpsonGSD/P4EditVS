@@ -675,21 +675,9 @@ namespace P4EditVS
             OutputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
         }
 
-        private void DumpRunnerResult(UInt64 jobId, string prefix, string data)
+        private void DumpRunnerResult(UInt64 jobId, string prefix, IEnumerable<string> lines)
         {
-            if (data.Length > 0)
-            {
-                using (var reader = new StringReader(data))
-                {
-                    for (; ; )
-                    {
-                        string line = reader.ReadLine();
-                        if (line == null) break;
-
-                        OutputWindow.WriteLine("{0}: {1}: {2}", jobId, prefix, line);
-                    }
-                }
-            }
+            foreach (string line in lines) OutputWindow.WriteLine("{0}: {1}: {2}", jobId, prefix, line);
         }
 
         /// <summary>
