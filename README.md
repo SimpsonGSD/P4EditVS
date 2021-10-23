@@ -25,7 +25,7 @@ Bind keyboard shortcuts to commands.
 
 ![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/KeyboardShortcuts.jpg "KeyboardShortcuts")
 
-See P4 command output and server response in Output Window.
+P4 command success/failure is indicated in the status bar. See full output and server response in the new P4EditVS section of the Output Window.
 
 ![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/OutputWindow.jpg "OutputWindow")
 
@@ -73,11 +73,8 @@ The selected workspace is saved in the suo file for each solution.
 * p4v.exe must be accessible from PATH for history/diff/timelapse view/revision graph.
 * Up to 6 workspace settings supported.
 * The extension does not send or collect any information, settings are only stored locally. 
-* This extension silently fails as it does not receive any information from the Perforce server, it only issues commands to it.
 * Checkout/revert state is only determined by file read-only flag.
 * For more advanced functionality see the offical P4VS extension.
-* `(Use environment)` is not much use with p4config files, as p4 is
-  not run from the file's folder. This may or may not improve.
 
 ## Troubleshooting
 
@@ -120,5 +117,5 @@ settings with your usual copy.)
 Contributions are welcomed where they improve the user experience and do not affect IDE performance.
 
 Thanks to the following contributors for making this extension better.
-* Tom Seddon
+* [Tom Seddon](https://github.com/tom-seddon/)
 * Eris Koleszar
