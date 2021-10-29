@@ -65,6 +65,10 @@ namespace P4EditVS
         public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId, CtxtAddCommandId, CtxtDeleteCommandId, CtxtOpenInP4VCommandId };
         public readonly int[] WorkspaceCommandIds = { WorkspaceUseEnvironmentCommandId, Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
 
+        private static readonly string ADDIN_NAME = "P4EditVS";
+        private static readonly string SUCCESS_PREFIX = "(\u2713) ";
+        private static readonly string FAILURE_PREFIX = "(Failed) ";
+
         /// <summary>
         /// Command menu group (command set GUID).
         /// </summary>
@@ -308,6 +312,84 @@ namespace P4EditVS
             }
         }
 
+        /// <summary>
+        /// Get human-readable text for a command, suitable for, e.g., putting on a button.
+        /// </summary>
+        /// <param name="commandID">the command ID</param>
+        /// <returns></returns>
+        private string GetCommandText(int commandID)
+        {
+            switch (commandID)
+            {
+                case CheckoutCommandId:
+                case CtxtCheckoutCommandId:
+                    return "Checkout";
+
+                case RevertIfUnchangedCommandId:
+                case CtxtRevertIfUnchangedCommandId:
+                    return "Revert If Unchanged";
+
+                case RevertCommandId:
+                case CtxtRevertCommandId:
+                    return "Revert";
+
+                case DiffCommandId:
+                case CtxtDiffCommandId:
+                    return "Diff Against Have Revision";
+
+                case HistoryCommandId:
+                case CtxtHistoryCommandId:
+                    return "History";
+
+                case TimelapseViewCommandId:
+                case CtxtTimelapseViewCommandId:
+                    return "Time-lapse View";
+
+                case RevisionGraphCommandId:
+                case CtxtRevisionGraphCommandId:
+                    return "Revision Graph";
+
+                case AddCommandId:
+                case CtxtAddCommandId:
+                    return "Mark for Add";
+
+                case DeleteCommandId:
+                case CtxtDeleteCommandId:
+                    return "Mark for Delete";
+
+                case OpenInP4VCommandId:
+                case CtxtOpenInP4VCommandId:
+                    return "Open in P4V";
+            }
+
+            // don't return null here or anything - the result of this should
+            // always be something human-readable, as it goes in the UI.
+            return string.Format("Unknown command: {0}", commandID);
+        }
+
+        /// <summary>
+        /// Get human-readable description of a command that's operating on a file.
+        /// </summary>
+        /// <param name="commandID">the command ID</param>
+        /// <param name="filePath">the path of the file it's operating on</param>
+        /// <returns></returns>
+        private string GetBriefCommandDescription(int commandID, string filePath)
+        {
+            // Try to get just the name part. Make the description shorter.
+            string fileName;
+            try
+            {
+                fileName = Path.GetFileName(filePath);
+            }
+            catch (Exception)
+            {
+                // the whole path will do in an emergency.
+                fileName = filePath;
+            }
+
+            return string.Format("{0}: {1}", GetCommandText(commandID), fileName);
+        }
+
         void ConfigureCmdButton(OleMenuCommand command, string name, bool isReadOnly)
         {
             bool useReadOnlyFlag = _package.GetUseReadOnlyFlag();
@@ -317,71 +399,75 @@ namespace P4EditVS
                 case CheckoutCommandId:
                 case CtxtCheckoutCommandId:
                     {
+                        string text = GetCommandText(command.CommandID.ID);
+
                         // This is first command in the menu so rather than bloating the whole thing just display the filename at the top to the right
-                        command.Text = command.Enabled ? string.Format("Checkout\t\t\t{0}", name) : "Checkout";
+                        command.Text = command.Enabled ? string.Format("{0}\t\t\t{1}", text, name) : text;
                         command.Enabled = useReadOnlyFlag ? isReadOnly : true;
                     }
                     break;
                 case RevertIfUnchangedCommandId:
                 case CtxtRevertIfUnchangedCommandId:
                     {
-                        command.Text = command.Enabled ? string.Format("Revert If Unchanged\t\t{0}", name) : "Revert If Unchanged";
+                        string text = GetCommandText(command.CommandID.ID);
+
+                        command.Text = command.Enabled ? string.Format("{0}\t\t{1}", text, name) : text;
                         command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case RevertCommandId:
                 case CtxtRevertCommandId:
                     {
-                        command.Text = "Revert";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case DiffCommandId:
                 case CtxtDiffCommandId:
                     {
-                        command.Text = "Diff Against Have Revision";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case HistoryCommandId:
                 case CtxtHistoryCommandId:
                     {
-                        command.Text = "History";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = true;
                     }
                     break;
                 case TimelapseViewCommandId:
                 case CtxtTimelapseViewCommandId:
                     {
-                        command.Text = "Time-lapse View";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = true;
                     }
                     break;
                 case RevisionGraphCommandId:
                 case CtxtRevisionGraphCommandId:
                     {
-                        command.Text = "Revision Graph";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = true;
                     }
                     break;
                 case AddCommandId:
                 case CtxtAddCommandId:
                     {
-                        command.Text = "Mark for Add";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = useReadOnlyFlag ? !isReadOnly : true;
                     }
                     break;
                 case DeleteCommandId:
                 case CtxtDeleteCommandId:
                     {
-                        command.Text = "Mark for Delete";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = useReadOnlyFlag ? isReadOnly : true;
                     }
                     break;
                 case OpenInP4VCommandId:
                 case CtxtOpenInP4VCommandId:
                     {
-                        command.Text = "Open in P4V";
+                        command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = true;
                     }
                     break;
@@ -400,6 +486,7 @@ namespace P4EditVS
         private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+
             if (_selectedFiles.Count == 0)
             {
                 return;
@@ -441,7 +528,8 @@ namespace P4EditVS
 
             string globalOptions = _package.GetGlobalP4CmdLineOptions();
             string commandline = "";
-            Action<Runner.RunnerResult> handler = HandleGenericRunnerResult;
+
+            Action<Runner.RunnerResult> handler = CreateCommandRunnerResultHandler(GetCommandText(commandId)); ;
 
             switch (commandId)
             {
@@ -469,6 +557,8 @@ namespace P4EditVS
                 case CtxtRevertIfUnchangedCommandId:
                     {
                         commandline = string.Format("p4 {0} revert -a \"{1}\"", globalOptions, filePath);
+
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case RevertCommandId:
@@ -479,13 +569,14 @@ namespace P4EditVS
                         string message = string.Format("This will discard all changes. Are you sure you wish to revert {0}?", filePath);
                         bool shouldRevert = VsShellUtilities.PromptYesNo(
                             message,
-                            "P4EditVS: Revert",
+                            string.Format("{0}: {1}", ADDIN_NAME, GetCommandText(commandId)),
                             OLEMSGICON.OLEMSGICON_WARNING,
-                            uiShell);
+                            uiShell); ;
 
                         if (shouldRevert)
                         {
                             commandline = string.Format("p4 {0} revert \"{1}\"", globalOptions, filePath);
+                            handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                         }
                     }
                     break;
@@ -493,30 +584,35 @@ namespace P4EditVS
                 case CtxtDiffCommandId:
                     {
                         commandline = string.Format("p4vc {0} diffhave \"{1}\"", globalOptions, filePath);
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case HistoryCommandId:
                 case CtxtHistoryCommandId:
                     {
                         commandline = string.Format("p4vc {0} history \"{1}\"", globalOptions, filePath);
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case TimelapseViewCommandId:
                 case CtxtTimelapseViewCommandId:
                     {
                         commandline = string.Format("p4vc {0} timelapse \"{1}\"", globalOptions, filePath);
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case RevisionGraphCommandId:
                 case CtxtRevisionGraphCommandId:
                     {
                         commandline = string.Format("p4vc {0} revgraph \"{1}\"", globalOptions, filePath);
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case AddCommandId:
                 case CtxtAddCommandId:
                     {
                         commandline = string.Format("p4 {0} add \"{1}\"", globalOptions, filePath);
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case DeleteCommandId:
@@ -527,13 +623,14 @@ namespace P4EditVS
                         string message = string.Format("This will delete the file and all changes will be lost. Are you sure you wish to delete {0}?", filePath);
                         bool shouldDelete = VsShellUtilities.PromptYesNo(
                             message,
-                            "P4EditVS: Delete",
+                            string.Format("{0}: {1}", ADDIN_NAME, GetCommandText(commandId)),
                             OLEMSGICON.OLEMSGICON_WARNING,
                             uiShell);
 
                         if (shouldDelete)
                         {
                             commandline = string.Format("p4 {0} delete \"{1}\"", globalOptions, filePath);
+                            handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                         }
                     }
                     break;
@@ -541,6 +638,7 @@ namespace P4EditVS
                 case CtxtOpenInP4VCommandId:
                     {
                         commandline = string.Format("p4v {0} -s \"{1}\"", globalOptions, filePath);
+                        handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 default:
@@ -568,7 +666,7 @@ namespace P4EditVS
                     string message = string.Format("Checkout {0}?", filePath);
                     bool shouldCheckout = VsShellUtilities.PromptYesNo(
                         message,
-                        "P4EditVS: Checkout",
+                            string.Format("{0}: {1}", ADDIN_NAME, GetCommandText(CheckoutCommandId)),
                         OLEMSGICON.OLEMSGICON_QUERY,
                         uiShell);
 
@@ -667,7 +765,7 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            _dte.StatusBar.Text = message;
+            _dte.StatusBar.Text = string.Format("{0}: {1}", ADDIN_NAME, message);
             _dte.StatusBar.Highlight(highlight);
         }
 
@@ -677,7 +775,7 @@ namespace P4EditVS
         /// </summary>
         /// <param name="result">RunnerResult for the subprocess</param>
         /// <returns>true if the process finished (status bar untouched); false if it timed out (status bar updated)</returns>
-        private bool ShowRunnerResultOutput(Runner.RunnerResult result)
+        private bool ShowRunnerResultOutput(Runner.RunnerResult result, string commandDescription)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -688,7 +786,7 @@ namespace P4EditVS
             {
                 string message = "Timed out. Check server connection.";
                 OutputWindow.WriteLine("{0}: {1}", result.JobId, message);
-                SetStatusBarText(message, true);
+                SetStatusBarText(string.Format("Timed out: {0}", commandDescription), true);
 
                 completed = false;
             }
@@ -706,19 +804,12 @@ namespace P4EditVS
             return completed;
         }
 
-        private void SetStatusBarTextForRunnerResult(Runner.RunnerResult result)
+        private void SetStatusBarTextForRunnerResult(Runner.RunnerResult result, string commandDescription)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (result.ExitCode == 0) SetStatusBarText("Succeeded: " + result.CommandLine, false);
-            else SetStatusBarText("Failed: " + result.CommandLine, true);
-        }
-
-        private void HandleGenericRunnerResult(Runner.RunnerResult result)
-        {
-            ThreadHelper.ThrowIfNotOnUIThread();
-
-            if (ShowRunnerResultOutput(result)) SetStatusBarTextForRunnerResult(result);
+            if (result.ExitCode == 0) SetStatusBarText(SUCCESS_PREFIX + commandDescription, false);
+            else SetStatusBarText(FAILURE_PREFIX + commandDescription, true);
         }
 
         // TODO - presumably it's possible for this message to end up localized.
@@ -741,36 +832,51 @@ namespace P4EditVS
         // https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference
         private static readonly Regex AlsoOpenedByRegex = new Regex(@"^... (?:.*) - also opened by (?<user>.*)$");
 
-        private void HandleCheckOutRunnerResult(Runner.RunnerResult result, string fileName)
+        private void HandleCheckOutRunnerResult(Runner.RunnerResult result, string filePath)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (ShowRunnerResultOutput(result))
+            string commandDescription = GetBriefCommandDescription(CheckoutCommandId, filePath);
+
+            if (ShowRunnerResultOutput(result, commandDescription))
             {
                 if (result.ExitCode == 0)
                 {
                     // Is there a better way of doing this? Surely there must be.
-                    var otherUsers = new List<string>();
+                    int numOtherUsers = 0;
 
                     foreach (string line in result.Stdout)
                     {
                         try
                         {
                             Match match = AlsoOpenedByRegex.Match(line);
-                            if (match.Success)
-                            {
-                                string otherUser = match.Groups["user"].Value;
-                                otherUsers.Add(otherUser);
-                            }
+                            if (match.Success) ++numOtherUsers;
                         }
                         catch (RegexMatchTimeoutException) { }
                     }
 
-                    if (otherUsers.Count == 0) SetStatusBarText(fileName + ": opened for edit", false);
-                    else SetStatusBarText(string.Format("{0}: also opened by {1} user(s): {2}", fileName, otherUsers.Count, string.Join(", ", otherUsers)), false);
+                    if (numOtherUsers == 0) SetStatusBarTextForRunnerResult(result, commandDescription);
+                    else SetStatusBarTextForRunnerResult(result, string.Format("{0} (+{1})", commandDescription, numOtherUsers));
                 }
-                else SetStatusBarTextForRunnerResult(result);
+                else SetStatusBarTextForRunnerResult(result, commandDescription);
             }
+        }
+
+        /// <summary>
+        /// Wrapper for creating a RunnerResult handler that passes the
+        /// appropriate command description through to
+        /// ShowRunnerResultOutput/SetStatusBarTextForRunnerResult.
+        /// </summary>
+        /// <param name="commandDescription"></param>
+        /// <returns></returns>
+        private Action<Runner.RunnerResult> CreateCommandRunnerResultHandler(string commandDescription)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            return (Runner.RunnerResult result) =>
+            {
+                if (ShowRunnerResultOutput(result, commandDescription)) SetStatusBarTextForRunnerResult(result, commandDescription);
+            };
         }
 
         private void DumpRunnerResult(UInt64 jobId, string prefix, IEnumerable<string> lines)

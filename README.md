@@ -25,7 +25,10 @@ Bind keyboard shortcuts to commands.
 
 ![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/KeyboardShortcuts.jpg "KeyboardShortcuts")
 
-P4 command success/failure is indicated in the status bar. See full output and server response in the new P4EditVS section of the Output Window.
+P4 command success/failure summary is shown in the status bar.
+(When checking out, a `(+N)` suffix indicates that N other people also
+have this file checked out.) Full output and server response is
+available the new P4EditVS section of the Output Window.
 
 ![alt text](https://raw.githubusercontent.com/SimpsonGSD/P4EditVS/master/screenshots/OutputWindow.jpg "OutputWindow")
 
