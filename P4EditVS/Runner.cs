@@ -6,31 +6,30 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.VisualStudio.Shell;
+using System.Collections.ObjectModel;
 
 namespace P4EditVS
 {
     /// <summary>
-    /// Run a process asynchronously, feeding data to its stdin and capturing
-    /// its stdout/stderr. 
+    /// Run a process asynchronously via the command prompt, feeding data to its
+    /// stdin and capturing its stdout/stderr. 
     /// </summary>
     public class Runner
     {
         public class RunnerResult
         {
             public readonly UInt64 JobId = 0;
-            public readonly string Cmd = null;
-            public readonly string Args = null;
-            public readonly string Stdout = null;
-            public readonly string Stderr = null;
+            public readonly string CommandLine = null;
+            public readonly ReadOnlyCollection<string> Stdout = null;
+            public readonly ReadOnlyCollection<string> Stderr = null;
             public readonly int? ExitCode = null;
 
-            public RunnerResult(UInt64 jobId, string cmd, string args, string stdout, string stderr, int? exitCode)
+            public RunnerResult(UInt64 jobId, string commandLine, List<string> stdout, List<string> stderr, int? exitCode)
             {
                 JobId = jobId;
-                Cmd = cmd;
-                Args = args;
-                Stdout = stdout;
-                Stderr = stderr;
+                CommandLine = commandLine;
+                Stdout = stdout.AsReadOnly();
+                Stderr = stderr.AsReadOnly();
                 ExitCode = exitCode;
             }
         }
@@ -46,10 +45,11 @@ namespace P4EditVS
         private string _stdin = null;
         private ProcessStartInfo _processStartInfo = null;
         private Action<RunnerResult> _callback = null;
-        private StringBuilder _stdoutBuilder = new StringBuilder();
-        private StringBuilder _stderrBuilder = new StringBuilder();
+        private List<string> _stdoutLines = new List<string>();
+        private List<string> _stderrLines = new List<string>();
         private UInt64 _jobId = 0;
         private float _timeoutSeconds = 0.0f; // equivalent to infinite
+        private string _commandLine = null;
 
         //########################################################################
         //########################################################################
@@ -62,20 +62,22 @@ namespace P4EditVS
         /// <summary>
         /// Create runner for subprocess.
         /// </summary>
-        /// <param name="cmd">path to exe to run</param>
-        /// <param name="args">args for EXE</param>
+        /// <param name="commandLine">command line to run as if at the command prompt</param>
         /// <param name="workingFolder">working folder to use, or null for whatever the .NET default is</param>
         /// <param name="callback">callback, if any, to invoke on the main thread when subprocess finishes</param>
         /// <param name="env">extra environment variables for the subprocess</param>
         /// <param name="stdin">data to supply to subprocess's redirected stdin, or null if no stdin redirection</param>
         /// <returns>job id, an arbitrary value uniquely identifying this subprocess</returns>
-        public static Runner Create(string cmd, string args, string workingFolder, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin)
+        public static Runner Create(string commandLine, string workingFolder, Action<RunnerResult> callback, Dictionary<string, string> env, string stdin)
         {
             var startInfo = new ProcessStartInfo();
 
-            startInfo.FileName = cmd;
+            startInfo.FileName = "cmd.exe";
 
-            if (args != null) startInfo.Arguments = args;
+            // Note the notes about /C in the cmd /? output. The behaviour is a
+            // bit ugly, but it makes constructing the string a lot easier. No
+            // problems with embedded quotes!..
+            startInfo.Arguments = string.Format("/c \"{0}\"", commandLine);
 
             startInfo.UseShellExecute = false;
             startInfo.CreateNoWindow = true;
@@ -93,7 +95,7 @@ namespace P4EditVS
 
             UInt64 jobId = _nextJobId++;
 
-            var runner = new Runner(startInfo, callback, stdin, jobId);
+            var runner = new Runner(startInfo, callback, stdin, jobId, commandLine);
             return runner;
         }
 
@@ -129,12 +131,13 @@ namespace P4EditVS
         //########################################################################
         //########################################################################
 
-        private Runner(ProcessStartInfo processStartInfo, Action<RunnerResult> callback, string stdin, UInt64 jobId)
+        private Runner(ProcessStartInfo processStartInfo, Action<RunnerResult> callback, string stdin, UInt64 jobId, string commandLine)
         {
             _processStartInfo = processStartInfo;
             _callback = callback;
             _stdin = stdin;
             _jobId = jobId;
+            _commandLine = commandLine;
         }
 
         //########################################################################
@@ -150,7 +153,6 @@ namespace P4EditVS
         {
             bool good = false;
 
-            string stdout, stderr;
             int? exitCode;
 
             using (var process = new Process())
@@ -182,28 +184,25 @@ namespace P4EditVS
                 }
                 catch (System.Exception ex)
                 {
-                    _stderrBuilder.Clear();
-                    _stderrBuilder.Append(ex.ToString());
+                    _stderrLines.Clear();
+                    _stderrLines.Append(ex.ToString());
                 }
 
                 if (good)
                 {
-                    stdout = _stdoutBuilder.ToString();
-                    stderr = _stderrBuilder.ToString();
-
                     exitCode = process.ExitCode;
                 }
                 else
                 {
-                    stdout = null;
-                    stderr = null;
+                    _stdoutLines = null;
+                    _stderrLines = null;
                     exitCode = null;
                 }
             }
 
             if (_callback != null)
             {
-                var result = new RunnerResult(_jobId, _processStartInfo.FileName, _processStartInfo.Arguments, stdout, stderr, exitCode);
+                var result = new RunnerResult(_jobId, _commandLine, _stdoutLines, _stderrLines, exitCode);
                 Action<RunnerResult> callback = _callback;
 
                 // https://stackoverflow.com/questions/58237847/how-to-resolve-vs2019-warning-to-use-joinabletaskfactory-switchtomainthreadasyn
@@ -218,7 +217,7 @@ namespace P4EditVS
 
         //########################################################################
         //########################################################################
-        private void OnDataReceived(DataReceivedEventArgs e, StringBuilder b, string name)
+        private void OnDataReceived(DataReceivedEventArgs e, List<string> lines, string name)
         {
             if (e.Data == null)
             {
@@ -228,10 +227,7 @@ namespace P4EditVS
             {
                 //Debug.WriteLine(name + " OnDataReceived: got: \"" + e.Data + "\"");
 
-                if (b.Length > 0)
-                    b.Append(Environment.NewLine);
-
-                b.Append(e.Data);
+                lines.Add(e.Data);
             }
         }
 
@@ -240,7 +236,7 @@ namespace P4EditVS
 
         private void OnErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            OnDataReceived(e, _stderrBuilder, "STDERR");
+            OnDataReceived(e, _stderrLines, "STDERR");
         }
 
         //########################################################################
@@ -248,7 +244,7 @@ namespace P4EditVS
 
         private void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            OnDataReceived(e, _stdoutBuilder, "STDOUT");
+            OnDataReceived(e, _stdoutLines, "STDOUT");
         }
 
         //########################################################################
