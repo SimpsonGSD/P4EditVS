@@ -1,5 +1,9 @@
 # Change log
 
+## 2.6.1
+**2021-23-11**
+* Merged [PR](https://github.com/SimpsonGSD/P4EditVS/pull/18) to display P4EditVS command results in VS status bar. 
+
 ## 2.6
 **2021-20-08**
 * Fixed issue with .filters file not being checked out with project [(issue #13)](https://github.com/SimpsonGSD/P4EditVS/issues/13).
