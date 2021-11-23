@@ -122,3 +122,14 @@ Contributions are welcomed where they improve the user experience and do not aff
 Thanks to the following contributors for making this extension better.
 * Tom Seddon
 * Eris Koleszar
+
+## FAQ
+
+### How is this extension different to the official P4VS extension?
+
+Unlike P4VS, P4EditVS does not aim to provide complete coverage of all Perforce features from within Visual Studio. Instead it uses p4.exe and p4vc.exe to carry out commands with basic integration into Visual Studio. E.g. context menus and auto-checkout.
+P4EditVS is designed to have zero noticeable overhead and prioritises the users' experience in Visual Studio. This means that some features may not be present in P4EditVS that are in P4VS.
+
+### Why should I use P4EditVS over the official P4VS extension?
+
+If you're experiencing performance issues, have a slow Perforce connection or want a lightweight and simple extension then P4EditVS might be for you.
