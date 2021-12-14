@@ -8,7 +8,7 @@ using System.Threading;
 using Microsoft.VisualStudio.Shell;
 using System.Collections.ObjectModel;
 
-namespace P4EditVS
+namespace SDEditVS
 {
     /// <summary>
     /// Run a process asynchronously via the command prompt, feeding data to its

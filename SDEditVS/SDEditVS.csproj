@@ -19,7 +19,7 @@
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\P4EditVS.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\SDEditVS.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <DelaySign>false</DelaySign>
@@ -33,7 +33,7 @@
     <ProjectGuid>{AD81651E-2CD4-42C7-A603-B98ACBFA46EA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>P4EditVS</RootNamespace>
+    <RootNamespace>SDEditVS</RootNamespace>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
@@ -67,7 +67,7 @@
     <Compile Include="Events.cs" />
     <Compile Include="Misc.cs" />
     <Compile Include="OutputWindowStream.cs" />
-    <Compile Include="P4EditVS.cs" />
+    <Compile Include="SDEditVS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Runner.cs" />
@@ -82,7 +82,7 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="P4EditVSCommands.vsct">
+    <VSCTCompile Include="SDEditVSCommands.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>
@@ -90,7 +90,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\P4EditVS.ico">
+    <Content Include="Resources\SDEditVS.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -113,7 +113,7 @@
   <Choose>
     <When Condition="'$(VsTargetVersion)' == 'VS2022'">
       <PropertyGroup>
-        <AssemblyName>P4EditVS2022</AssemblyName>
+        <AssemblyName>SDEditVS2022</AssemblyName>
       </PropertyGroup>
       <ItemGroup>
         <None Include="..\VS2022\source.extension.vsixmanifest">
@@ -135,7 +135,7 @@
     </When>
     <Otherwise>
       <PropertyGroup>
-        <AssemblyName>P4EditVS</AssemblyName>
+        <AssemblyName>SDEditVS</AssemblyName>
       </PropertyGroup>
       <ItemGroup>
         <None Include="..\VS2019\source.extension.vsixmanifest">

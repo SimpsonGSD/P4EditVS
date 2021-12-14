@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using System.Runtime.InteropServices;
 
 
-namespace P4EditVS
+namespace SDEditVS
 {
     static class Misc
     {

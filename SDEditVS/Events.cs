@@ -13,7 +13,7 @@ using EnvDTE80;
 using Microsoft.VisualStudio;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
-namespace P4EditVS
+namespace SDEditVS
 {
     internal class UpdateSolutionEvents : IVsUpdateSolutionEvents
     {

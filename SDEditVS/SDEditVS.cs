@@ -22,7 +22,7 @@ using System.Collections.Generic;
 // here:
 // https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs
 
-namespace P4EditVS
+namespace SDEditVS
 {
 	/// <summary>
 	/// Values saved to the .suo file.
@@ -66,16 +66,16 @@ namespace P4EditVS
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     //[ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string, PackageAutoLoadFlags.None)]
-    [Guid(P4EditVS.PackageGuidString)]
+    [Guid(SDEditVS.PackageGuidString)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideOptionPage(typeof(OptionPageGrid), "P4EditVS", "Settings", 0, 0, true)]
+    [ProvideOptionPage(typeof(OptionPageGrid), "SDEditVS", "Settings", 0, 0, true)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class P4EditVS : AsyncPackage, IVsPersistSolutionOpts
+    public sealed class SDEditVS : AsyncPackage, IVsPersistSolutionOpts
     {
-        private const string SolutionUserOptionsKey = "P4EditVS";
+        private const string SolutionUserOptionsKey = "SDEditVS";
 
         /// <summary>
-        /// P4EditVS GUID string.
+        /// SDEditVS GUID string.
         /// </summary>
         public const string PackageGuidString = "d6a4db63-698d-4d16-bbc0-944fe52f83db";
 
@@ -340,18 +340,18 @@ namespace P4EditVS
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="P4EditVS"/> class.
+        /// Initializes a new instance of the <see cref="SDEditVS"/> class.
         /// </summary>
-        public P4EditVS()
+        public SDEditVS()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
-            Trace.WriteLine(string.Format("Hello from P4EditVS"));
+            Trace.WriteLine(string.Format("Hello from SDEditVS"));
 
-            // %APPDATA%/Roaming/P4EditVS
-            _saveDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\P4EditVS\\";
+            // %APPDATA%/Roaming/SDEditVS
+            _saveDataDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SDEditVS\\";
             // Ensure save data directory exists
             if (!Directory.Exists(_saveDataDirectory))
             {
@@ -380,10 +380,10 @@ namespace P4EditVS
 #pragma warning restore 618
 
             // Setup output log
-            var outputWindowPaneStream = new OutputWindowStream(_dte, "P4EditVS");
+            var outputWindowPaneStream = new OutputWindowStream(_dte, "SDEditVS");
             OutputWindow = new StreamWriter(outputWindowPaneStream);
             OutputWindow.AutoFlush = true;
-            //OutputWindow.WriteLine("hello from P4EditVS\n");
+            //OutputWindow.WriteLine("hello from SDEditVS\n");
 
             // A solution may have been opened before we are initialised
             if (_dte.Solution != null && _dte.Solution.FullName.Length > 0)
@@ -451,7 +451,7 @@ namespace P4EditVS
             SolutionSettings = null;
         }
 
-        public string GetGlobalP4CmdLineOptions()
+        public string GetGlobalSDCmdLineOptions()
         {
             if (SelectedWorkspace == -1)
             {
@@ -470,7 +470,7 @@ namespace P4EditVS
             {
                 VsShellUtilities.ShowMessageBox(
                 this,
-                "Client name is empty. This must be set under Tools->Options->P4EditVS->Settings",
+                "Client name is empty. This must be set under Tools->Options->SDEditVS->Settings",
                 "Invalid Settings",
                 OLEMSGICON.OLEMSGICON_INFO,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
@@ -493,7 +493,7 @@ namespace P4EditVS
             {
                 VsShellUtilities.ShowMessageBox(
                 this,
-                "User name is empty. This must be set under Tools->Options->P4EditVS->Settings",
+                "User name is empty. This must be set under Tools->Options->SDEditVS->Settings",
                 "Invalid Settings",
                 OLEMSGICON.OLEMSGICON_INFO,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
@@ -506,7 +506,7 @@ namespace P4EditVS
             {
                 VsShellUtilities.ShowMessageBox(
                 this,
-                "Server is empty. This must be set under Tools->Options->P4EditVS->Settings",
+                "Server is empty. This must be set under Tools->Options->SDEditVS->Settings",
                 "Invalid Settings",
                 OLEMSGICON.OLEMSGICON_INFO,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
@@ -560,7 +560,7 @@ namespace P4EditVS
         /* NO LONGER USED, LEFT IN FOR REFERENCE
 		public int SaveUserOptions(IVsSolutionPersistence pPersistence)
         {
-            Trace.WriteLine(String.Format("P4EditVS SaveUserOptions"));
+            Trace.WriteLine(String.Format("SDEditVS SaveUserOptions"));
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -598,7 +598,7 @@ namespace P4EditVS
 		[System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
 		public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
         {
-            Trace.WriteLine(String.Format("P4EditVS LoadUserOptions (grfLoadOpts={0})", grfLoadOpts));
+            Trace.WriteLine(String.Format("SDEditVS LoadUserOptions (grfLoadOpts={0})", grfLoadOpts));
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -635,7 +635,7 @@ namespace P4EditVS
         /* NO LONGER USED, LEFT IN FOR REFERENCE
 		public int WriteUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
-            Trace.WriteLine(String.Format("P4EditVS WriteUserOptions (key=\"{0}\")", pszKey));
+            Trace.WriteLine(String.Format("SDEditVS WriteUserOptions (key=\"{0}\")", pszKey));
 
             // https://github.com/microsoft/VSSDK-Extensibility-Samples/blob/2643adab7d534aee60dd9405901f15d35c136dbd/ArchivedSamples/Source_Code_Control_Provider/C%23/SccProvider.cs#L318
             //
@@ -672,7 +672,7 @@ namespace P4EditVS
         [System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
 		public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
-            Trace.WriteLine(String.Format("P4EditVS ReadUserOptions (key=\"{0}\")", pszKey));
+            Trace.WriteLine(String.Format("SDEditVS ReadUserOptions (key=\"{0}\")", pszKey));
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -713,7 +713,7 @@ namespace P4EditVS
 
         [Category("Options")]
         [DisplayName("Allow Environment")]
-        [Description("Allow use of environment for workspace/connection settings. (See p4v, Connection > Environment Settings...; or see \"p4 set\")")]
+        [Description("Allow use of environment for workspace/connection settings. (See SDv, Connection > Environment Settings...; or see \"SD set\")")]
         public bool AllowEnvironment
         {
             get { return _allowEnvironment; }
@@ -779,7 +779,7 @@ namespace P4EditVS
 
         [Category("Options")]
         [DisplayName("Timeout (seconds)")]
-        [Description("Timeout before P4EditVS stops waiting for the Perforce command to complete. 0.0 <= is equivalent to no timeout.")]
+        [Description("Timeout before SDEditVS stops waiting for the SD command to complete. 0.0 <= is equivalent to no timeout.")]
         public float CommandTimeoutSeconds
         {
             get { return _commandTimeoutSeconds; }
@@ -790,7 +790,7 @@ namespace P4EditVS
 
         [Category("Options")]
         [DisplayName("Use Read-Only File Flag")]
-        [Description("P4EditVS will use the read-only file flag as a fast way to determine if a file is already checked out. Disable this option if you use the Allwrite workspace option or always want the commands enabled regardless of file state. It is not recommended, for performance overhead, to disable this when using auto-checkout as P4EditVS will issue a P4 command for every save file request whether it is checked out or not.")]
+        [Description("SDEditVS will use the read-only file flag as a fast way to determine if a file is already checked out. Disable this option if you use the Allwrite workspace option or always want the commands enabled regardless of file state. It is not recommended, for performance overhead, to disable this when using auto-checkout as SDEditVS will issue a SD command for every save file request whether it is checked out or not.")]
         public bool UseReadOnlyFlag
         {
             get { return _useReadOnlyFlag; }
@@ -802,7 +802,7 @@ namespace P4EditVS
         private string _server = "";
 
         [Category("Workspace 1")]
-        [DisplayName("Perforce User Name")]
+        [DisplayName("SD User Name")]
         [Description("User name")]
         public string UserName
         {
@@ -811,7 +811,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 1")]
-        [DisplayName("Perforce Client Name")]
+        [DisplayName("SD Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName
         {
@@ -820,7 +820,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 1")]
-        [DisplayName("Perforce Server")]
+        [DisplayName("SD Server")]
         [Description("e.g. localhost:1666")]
         public string Server
         {
@@ -833,7 +833,7 @@ namespace P4EditVS
         private string _server2 = "";
 
         [Category("Workspace 2")]
-        [DisplayName("Perforce User Name")]
+        [DisplayName("SD User Name")]
         [Description("User name")]
         public string UserName2
         {
@@ -842,7 +842,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 2")]
-        [DisplayName("Perforce Client Name")]
+        [DisplayName("SD Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName2
         {
@@ -851,7 +851,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 2")]
-        [DisplayName("Perforce Server")]
+        [DisplayName("SD Server")]
         [Description("e.g. localhost:1666")]
         public string Server2
         {
@@ -864,7 +864,7 @@ namespace P4EditVS
         private string _server3 = "";
 
         [Category("Workspace 3")]
-        [DisplayName("Perforce User Name")]
+        [DisplayName("SD User Name")]
         [Description("User name")]
         public string UserName3
         {
@@ -873,7 +873,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 3")]
-        [DisplayName("Perforce Client Name")]
+        [DisplayName("SD Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName3
         {
@@ -882,7 +882,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 3")]
-        [DisplayName("Perforce Server")]
+        [DisplayName("SD Server")]
         [Description("e.g. localhost:1666")]
         public string Server3
         {
@@ -895,7 +895,7 @@ namespace P4EditVS
         private string _server4 = "";
 
         [Category("Workspace 4")]
-        [DisplayName("Perforce User Name")]
+        [DisplayName("SD User Name")]
         [Description("User name")]
         public string UserName4
         {
@@ -904,7 +904,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 4")]
-        [DisplayName("Perforce Client Name")]
+        [DisplayName("SD Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName4
         {
@@ -913,7 +913,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 4")]
-        [DisplayName("Perforce Server")]
+        [DisplayName("SD Server")]
         [Description("e.g. localhost:1666")]
         public string Server4
         {
@@ -926,7 +926,7 @@ namespace P4EditVS
         private string _server5 = "";
 
         [Category("Workspace 5")]
-        [DisplayName("Perforce User Name")]
+        [DisplayName("SD User Name")]
         [Description("User name")]
         public string UserName5
         {
@@ -935,7 +935,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 5")]
-        [DisplayName("Perforce Client Name")]
+        [DisplayName("SD Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName5
         {
@@ -944,7 +944,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 5")]
-        [DisplayName("Perforce Server")]
+        [DisplayName("SD Server")]
         [Description("e.g. localhost:1666")]
         public string Server5
         {
@@ -957,7 +957,7 @@ namespace P4EditVS
         private string _server6 = "";
 
         [Category("Workspace 6")]
-        [DisplayName("Perforce User Name")]
+        [DisplayName("SD User Name")]
         [Description("User name")]
         public string UserName6
         {
@@ -966,7 +966,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 6")]
-        [DisplayName("Perforce Client Name")]
+        [DisplayName("SD Client Name")]
         [Description("Client name, i.e. workspace name")]
         public string ClientName6
         {
@@ -975,7 +975,7 @@ namespace P4EditVS
         }
 
         [Category("Workspace 6")]
-        [DisplayName("Perforce Server")]
+        [DisplayName("SD Server")]
         [Description("e.g. localhost:1666")]
         public string Server6
         {

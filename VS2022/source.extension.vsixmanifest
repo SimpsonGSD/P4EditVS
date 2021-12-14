@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="P4EditVS.26d3cdc1-5d7c-441f-9007-bd135047b5b2" Version="2.6.1" Language="en-US" Publisher="Scott Simpson" />
-        <DisplayName>P4EditVS</DisplayName>
-        <Description xml:space="preserve">Simple, fast extension for Perforce to checkout, revert, diff and more, that aims to never slow down your IDE.</Description>
-        <MoreInfo>https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs</MoreInfo>
+        <Identity Id="SDEditVS.26d3cdc1-5d7c-441f-9007-bd135047b5b2" Version="2.6.1" Language="en-US" Publisher="Scott Simpson" />
+        <DisplayName>SDEditVS</DisplayName>
+        <Description xml:space="preserve">Simple, fast extension for SD to checkout, revert, diff and more, that aims to never slow down your IDE.</Description>
+        <MoreInfo>https://marketplace.visualstudio.com/items?itemName=ScottSimpson.SDeditvs</MoreInfo>
         <License>Resources\LICENSE</License>
-        <ReleaseNotes>https://github.com/SimpsonGSD/P4EditVS/blob/master/CHANGELOG.md</ReleaseNotes>
-        <Icon>Resources\P4EditVS.ico</Icon>
-        <PreviewImage>Resources\P4EditVS.ico</PreviewImage>
-        <Tags>perforce, source control, p4</Tags>
+        <ReleaseNotes>https://github.com/SimpsonGSD/SDEditVS/blob/master/CHANGELOG.md</ReleaseNotes>
+        <Icon>Resources\SDEditVS.ico</Icon>
+        <PreviewImage>Resources\SDEditVS.ico</PreviewImage>
+        <Tags>SD, source control, SD</Tags>
         <Preview>true</Preview>
     </Metadata>
     <Installation>

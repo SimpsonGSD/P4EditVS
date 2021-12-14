@@ -6,7 +6,7 @@ using System.IO;
 using System.Text;
 using Microsoft.VisualStudio.Shell;
 
-namespace P4EditVS
+namespace SDEditVS
 {
     /// <summary>
     /// Expose a Visual Studio output window pane as a Stream.

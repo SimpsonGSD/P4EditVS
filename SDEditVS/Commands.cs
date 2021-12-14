@@ -23,7 +23,7 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Utilities;
 using System.Text;
 
-namespace P4EditVS
+namespace SDEditVS
 {
     /// <summary>
     /// Command handler
@@ -58,14 +58,14 @@ namespace P4EditVS
         public const int CtxtAddCommandId = 0x0117;
         public const int DeleteCommandId = 0x0118;
         public const int CtxtDeleteCommandId = 0x0119;
-        public const int OpenInP4VCommandId = 0x011A;
-        public const int CtxtOpenInP4VCommandId = 0x011B;
+        public const int OpenInSDVCommandId = 0x011A;
+        public const int CtxtOpenInSDVCommandId = 0x011B;
 
-        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId, AddCommandId, DeleteCommandId, OpenInP4VCommandId };
-        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId, CtxtAddCommandId, CtxtDeleteCommandId, CtxtOpenInP4VCommandId };
+        public readonly int[] CommandIds = { CheckoutCommandId, RevertIfUnchangedCommandId, RevertCommandId, DiffCommandId, HistoryCommandId, RevisionGraphCommandId, TimelapseViewCommandId, AddCommandId, DeleteCommandId, OpenInSDVCommandId };
+        public readonly int[] CtxtCommandIds = { CtxtCheckoutCommandId, CtxtRevertIfUnchangedCommandId, CtxtRevertCommandId, CtxtDiffCommandId, CtxtHistoryCommandId, CtxtRevisionGraphCommandId, CtxtTimelapseViewCommandId, CtxtAddCommandId, CtxtDeleteCommandId, CtxtOpenInSDVCommandId };
         public readonly int[] WorkspaceCommandIds = { WorkspaceUseEnvironmentCommandId, Workspace1CommandId, Workspace2CommandId, Workspace3CommandId, Workspace4CommandId, Workspace5CommandId, Workspace6CommandId };
 
-        private static readonly string ADDIN_NAME = "P4EditVS";
+        private static readonly string ADDIN_NAME = "SDEditVS";
         private static readonly string SUCCESS_PREFIX = "(\u2713) ";
         private static readonly string FAILURE_PREFIX = "(Failed) ";
 
@@ -77,7 +77,7 @@ namespace P4EditVS
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly P4EditVS _package;
+        private readonly SDEditVS _package;
 
         /// <summary>
         /// Files selected to apply source control commands to.
@@ -99,7 +99,7 @@ namespace P4EditVS
         private Commands(AsyncPackage package, OleMenuCommandService commandService)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            _package = package as P4EditVS ?? throw new ArgumentNullException(nameof(package));
+            _package = package as SDEditVS ?? throw new ArgumentNullException(nameof(package));
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
             _dte = ServiceProvider.GetService(typeof(DTE)) as EnvDTE80.DTE2 ?? throw new ArgumentNullException(nameof(_dte));
 
@@ -357,9 +357,9 @@ namespace P4EditVS
                 case CtxtDeleteCommandId:
                     return "Mark for Delete";
 
-                case OpenInP4VCommandId:
-                case CtxtOpenInP4VCommandId:
-                    return "Open in P4V";
+                case OpenInSDVCommandId:
+                case CtxtOpenInSDVCommandId:
+                    return "Open in SDV";
             }
 
             // don't return null here or anything - the result of this should
@@ -464,8 +464,8 @@ namespace P4EditVS
                         command.Enabled = useReadOnlyFlag ? isReadOnly : true;
                     }
                     break;
-                case OpenInP4VCommandId:
-                case CtxtOpenInP4VCommandId:
+                case OpenInSDVCommandId:
+                case CtxtOpenInSDVCommandId:
                     {
                         command.Text = GetCommandText(command.CommandID.ID);
                         command.Enabled = true;
@@ -500,7 +500,7 @@ namespace P4EditVS
         }
 
         /// <summary>
-        /// Executes P4 command for supplied command ID
+        /// Executes SD command for supplied command ID
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="commandId"></param>
@@ -523,10 +523,10 @@ namespace P4EditVS
             }
 
             // I've had reports of visual studio dropping file path case which is a problem for
-            // case-sensitive P4 servers. To get around this grab the case-sensitive filepath.
+            // case-sensitive SD servers. To get around this grab the case-sensitive filepath.
             filePath = Misc.GetWindowsPhysicalPath(filePath);
 
-            string globalOptions = _package.GetGlobalP4CmdLineOptions();
+            string globalOptions = _package.GetGlobalSDCmdLineOptions();
             string commandline = "";
 
             Action<Runner.RunnerResult> handler = CreateCommandRunnerResultHandler(GetCommandText(commandId)); ;
@@ -536,7 +536,7 @@ namespace P4EditVS
                 case CheckoutCommandId:
                 case CtxtCheckoutCommandId:
                     {
-                        commandline = string.Format("p4 {0} edit -c default \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SD {0} edit -c default \"{1}\"", globalOptions, filePath);
 
                         string fileName;
                         try
@@ -556,7 +556,7 @@ namespace P4EditVS
                 case RevertIfUnchangedCommandId:
                 case CtxtRevertIfUnchangedCommandId:
                     {
-                        commandline = string.Format("p4 {0} revert -a \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SD {0} revert -a \"{1}\"", globalOptions, filePath);
 
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
@@ -575,7 +575,7 @@ namespace P4EditVS
 
                         if (shouldRevert)
                         {
-                            commandline = string.Format("p4 {0} revert \"{1}\"", globalOptions, filePath);
+                            commandline = string.Format("SD {0} revert \"{1}\"", globalOptions, filePath);
                             handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                         }
                     }
@@ -583,35 +583,35 @@ namespace P4EditVS
                 case DiffCommandId:
                 case CtxtDiffCommandId:
                     {
-                        commandline = string.Format("p4vc {0} diffhave \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SDvc {0} diffhave \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case HistoryCommandId:
                 case CtxtHistoryCommandId:
                     {
-                        commandline = string.Format("p4vc {0} history \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SDvc {0} history \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case TimelapseViewCommandId:
                 case CtxtTimelapseViewCommandId:
                     {
-                        commandline = string.Format("p4vc {0} timelapse \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SDvc {0} timelapse \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case RevisionGraphCommandId:
                 case CtxtRevisionGraphCommandId:
                     {
-                        commandline = string.Format("p4vc {0} revgraph \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SDvc {0} revgraph \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
                 case AddCommandId:
                 case CtxtAddCommandId:
                     {
-                        commandline = string.Format("p4 {0} add \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SD {0} add \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
@@ -629,15 +629,15 @@ namespace P4EditVS
 
                         if (shouldDelete)
                         {
-                            commandline = string.Format("p4 {0} delete \"{1}\"", globalOptions, filePath);
+                            commandline = string.Format("SD {0} delete \"{1}\"", globalOptions, filePath);
                             handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                         }
                     }
                     break;
-                case OpenInP4VCommandId:
-                case CtxtOpenInP4VCommandId:
+                case OpenInSDVCommandId:
+                case CtxtOpenInSDVCommandId:
                     {
-                        commandline = string.Format("p4v {0} -s \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("SDv {0} -s \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
@@ -815,16 +815,16 @@ namespace P4EditVS
         // TODO - presumably it's possible for this message to end up localized.
         // What's a better way of doing this?
         //
-        // There's a p4 -L language option, but the docs are a bit coy about
+        // There's a SD -L language option, but the docs are a bit coy about
         // what exactly it's for or how you use it. ("This feature is reserved
         // for system integrators" - see
-        // https://www.perforce.com/manuals/cmdref/Content/CmdRef/global.options.html)
+        // https://www.SD.com/manuals/cmdref/Content/CmdRef/global.options.html)
         //
-        // You can query the list of other users using ``p4 fstat PATH'' and
-        // scanning for otherXXXN line(s). But now that's two p4 invocations
+        // You can query the list of other users using ``SD fstat PATH'' and
+        // scanning for otherXXXN line(s). But now that's two SD invocations
         // when checking out. Maybe we should just do that.
         //
-        // ``p4 -z tag edit PATH'' doesn't do anything useful. -Mj and -G just
+        // ``SD -z tag edit PATH'' doesn't do anything useful. -Mj and -G just
         // produce the same data, but in a structured format that's not really
         // any easier to parse from C#. (And the -Mj output isn't even valid
         // JSON! It's several mappings, back to back!)
@@ -892,7 +892,7 @@ namespace P4EditVS
         private void OnBeforeQueryStatusWorkspace(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            P4EditVS package = _package as P4EditVS;
+            SDEditVS package = _package as SDEditVS;
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {
@@ -923,7 +923,7 @@ namespace P4EditVS
         private void ExecuteWorkspace(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            P4EditVS package = _package as P4EditVS;
+            SDEditVS package = _package as SDEditVS;
             var myCommand = sender as OleMenuCommand;
             if (null != myCommand)
             {

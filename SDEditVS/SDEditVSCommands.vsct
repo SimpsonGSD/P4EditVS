@@ -7,7 +7,7 @@
   <!--This header contains the command ids for the menus provided by the shell. -->
   <Extern href="vsshlids.h"/>
 
-  <Commands package="guidP4EditVS">
+  <Commands package="guidSDEditVS">
 
     <!-- Inside this section we have different sub-sections: one for the menus, another
     for the menu groups, one for the buttons (the actual commands), one for the combos
@@ -18,32 +18,32 @@
     with command ids defined by other packages. -->
 
     <Menus>
-      <Menu guid="guidP4EditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
+      <Menu guid="guidSDEditVSCmdSet" id="guidTopLevelMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS"/>
         <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
+          <ButtonText>SDEditVS</ButtonText>
+          <CommandName>SDEditVS</CommandName>
         </Strings>
       </Menu>
-      <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
+      <Menu guid="guidSDEditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_PROJECT_EXPLORE"/>
         <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
+          <ButtonText>SDEditVS</ButtonText>
+          <CommandName>SDEditVS</CommandName>
         </Strings>
       </Menu>
-      <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
+      <Menu guid="guidSDEditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_SOLUTION_EXPLORE"/>
         <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
+          <ButtonText>SDEditVS</ButtonText>
+          <CommandName>SDEditVS</CommandName>
         </Strings>
       </Menu>
-      <Menu guid="guidP4EditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
+      <Menu guid="guidSDEditVSCmdSet" id="guidCtxtMenu" priority="0x700" type="Menu">
         <Parent guid="guidSHLMainMenu" id="IDG_VS_CTXT_ITEM_SCC"/>
         <Strings>
-          <ButtonText>P4EditVS</ButtonText>
-          <CommandName>P4EditVS</CommandName>
+          <ButtonText>SDEditVS</ButtonText>
+          <CommandName>SDEditVS</CommandName>
         </Strings>
       </Menu>
     </Menus>
@@ -53,17 +53,17 @@
          group as the part of a menu contained between two lines. The parent of a group
          must be a menu. -->
     <Groups>
-      <Group guid="guidP4EditVSCmdSet" id="guidMenuGroup" priority="0x0600">
-        <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
+      <Group guid="guidSDEditVSCmdSet" id="guidMenuGroup" priority="0x0600">
+        <Parent guid="guidSDEditVSCmdSet" id="guidTopLevelMenu"/>
       </Group>
-      <Group guid="guidP4EditVSCmdSet" id="guidFileTabGroup" priority="0x0600">
+      <Group guid="guidSDEditVSCmdSet" id="guidFileTabGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_EZDOCWINTAB"/>
       </Group>
-      <Group guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" priority="0x0600">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenu"/>
+      <Group guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" priority="0x0600">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenu"/>
       </Group>
-      <Group guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" priority="0x0600">
-        <Parent guid="guidP4EditVSCmdSet" id="guidTopLevelMenu"/>
+      <Group guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" priority="0x0600">
+        <Parent guid="guidSDEditVSCmdSet" id="guidTopLevelMenu"/>
       </Group>
     </Groups>
 
@@ -82,8 +82,8 @@
 
       <!--Top Level Menu Buttons-->
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpCheckout"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
@@ -93,8 +93,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0102" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0102" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -107,8 +107,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevert" priority="0x0103" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidRevert" priority="0x0103" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpRevert"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -120,8 +120,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidDiff" priority="0x0104" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidDiff" priority="0x0104" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpDiff"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -133,8 +133,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidHistory" priority="0x0105" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidHistory" priority="0x0105" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpHistory"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -146,8 +146,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidTimelapseView" priority="0x0106" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidTimelapseView" priority="0x0106" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -158,8 +158,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevisionGraph" priority="0x0107" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidRevisionGraph" priority="0x0107" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -170,8 +170,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidAdd" priority="0x0108" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidAdd" priority="0x0108" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpAdd"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -183,8 +183,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidDelete" priority="0x0109" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidDelete" priority="0x0109" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <Icon guid="guidImages" id="bmpDelete"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -196,22 +196,22 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidOpenInP4V" priority="0x0109" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidOpenInSDV" priority="0x0109" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
         <CommandFlag>DontCache</CommandFlag>
         <Strings>
-          <ButtonText>Open in P4V</ButtonText>
+          <ButtonText>Open in SDV</ButtonText>
         </Strings>
       </Button>
 
        <!-- Workspace selection -->
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspaceUseEnvironment" priority="0x0104" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspaceUseEnvironment" priority="0x0104" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -221,8 +221,8 @@
           <ButtonText>Use Environment</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace1" priority="0x0104" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspace1" priority="0x0104" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -232,8 +232,8 @@
           <ButtonText>Workspace1</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace2" priority="0x0104" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspace2" priority="0x0104" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -243,8 +243,8 @@
           <ButtonText>Workspace2</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace3" priority="0x0105" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspace3" priority="0x0105" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -254,8 +254,8 @@
           <ButtonText>Workspace3</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace4" priority="0x0106" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspace4" priority="0x0106" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -265,8 +265,8 @@
           <ButtonText>Workspace4</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace5" priority="0x0107" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspace5" priority="0x0107" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -276,8 +276,8 @@
           <ButtonText>Workspace5</ButtonText>
         </Strings>
       </Button>
-      <Button guid="guidP4EditVSCmdSet" id="cmdidWorkspace6" priority="0x0108" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidWorkspaceMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidWorkspace6" priority="0x0108" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidWorkspaceMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -290,8 +290,8 @@
 
       <!-- File tab context menu -->
       
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCheckout" priority="0x0101" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpCheckout"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
@@ -301,8 +301,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0102" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidRevertIfUnchanged" priority="0x0102" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -315,8 +315,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevert" priority="0x0103" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidRevert" priority="0x0103" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpRevert"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -328,8 +328,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidDiff" priority="0x0104" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidDiff" priority="0x0104" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpDiff"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -341,8 +341,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidHistory" priority="0x0105" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidHistory" priority="0x0105" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpHistory"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -354,8 +354,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidTimelapseView" priority="0x0106" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidTimelapseView" priority="0x0106" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -366,8 +366,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidRevisionGraph" priority="0x0107" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidRevisionGraph" priority="0x0107" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -378,8 +378,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidAdd" priority="0x0108" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidAdd" priority="0x0108" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpAdd"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -391,8 +391,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidDelete" priority="0x0109" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidDelete" priority="0x0109" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <Icon guid="guidImages" id="bmpDelete"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -404,22 +404,22 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidOpenInP4V" priority="0x0109" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidFileTabGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidOpenInSDV" priority="0x0109" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidFileTabGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
         <CommandFlag>DontCache</CommandFlag>
         <Strings>
-          <ButtonText>Open in P4V</ButtonText>
+          <ButtonText>Open in SDV</ButtonText>
         </Strings>
       </Button>
 
       <!--Context Menu Buttons-->
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtCheckout" priority="0x0100" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpCheckout"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
@@ -429,8 +429,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtRevertIfUnchanged" priority="0x0101" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtRevertIfUnchanged" priority="0x0101" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpRevertIfUnchanged"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -442,8 +442,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtRevert" priority="0x0102" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtRevert" priority="0x0102" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpRevert"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -455,8 +455,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtDiff" priority="0x0103" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtDiff" priority="0x0103" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpDiff"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -468,8 +468,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtHistory" priority="0x0104" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtHistory" priority="0x0104" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpHistory"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -481,8 +481,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtTimelapseView" priority="0x0105" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtTimelapseView" priority="0x0105" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -493,8 +493,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtRevisionGraph" priority="0x0106" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtRevisionGraph" priority="0x0106" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
@@ -505,8 +505,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtAdd" priority="0x0107" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtAdd" priority="0x0107" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpAdd"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -518,8 +518,8 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtDelete" priority="0x0108" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtDelete" priority="0x0108" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <Icon guid="guidImages" id="bmpDelete"/>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
@@ -531,15 +531,15 @@
         </Strings>
       </Button>
 
-      <Button guid="guidP4EditVSCmdSet" id="cmdidCtxtOpenInP4V" priority="0x0109" type="Button">
-        <Parent guid="guidP4EditVSCmdSet" id="guidCtxtMenuGroup" />
+      <Button guid="guidSDEditVSCmdSet" id="cmdidCtxtOpenInSDV" priority="0x0109" type="Button">
+        <Parent guid="guidSDEditVSCmdSet" id="guidCtxtMenuGroup" />
         <CommandFlag>DefaultDisabled</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
         <CommandFlag>DontCache</CommandFlag>
         <Strings>
-          <ButtonText>Open in P4V</ButtonText>
+          <ButtonText>Open in SDV</ButtonText>
         </Strings>
       </Button>
 
@@ -554,10 +554,10 @@
 
   <Symbols>
     <!-- package -->
-    <GuidSymbol name="guidP4EditVS" value="{d6a4db63-698d-4d16-bbc0-944fe52f83db}" />
+    <GuidSymbol name="guidSDEditVS" value="{d6a4db63-698d-4d16-bbc0-944fe52f83db}" />
 
     <!-- top level View menu commands -->
-    <GuidSymbol name="guidP4EditVSCmdSet" value="{bcd15dfb-5150-4bde-a3d0-520343ba88c5}">
+    <GuidSymbol name="guidSDEditVSCmdSet" value="{bcd15dfb-5150-4bde-a3d0-520343ba88c5}">
       <IDSymbol name="guidMenuGroup" value="0x1023" />
       <IDSymbol name="guidTopLevelMenu" value="0x1024"/>
       <IDSymbol name="guidCtxtMenuGroup" value="0x1025" />
@@ -591,8 +591,8 @@
       <IDSymbol name="cmdidCtxtAdd" value="0x0117" />
       <IDSymbol name="cmdidDelete" value="0x0118" />
       <IDSymbol name="cmdidCtxtDelete" value="0x0119" />
-      <IDSymbol name="cmdidOpenInP4V" value="0x011A" />
-      <IDSymbol name="cmdidCtxtOpenInP4V" value="0x011B" />
+      <IDSymbol name="cmdidOpenInSDV" value="0x011A" />
+      <IDSymbol name="cmdidCtxtOpenInSDV" value="0x011B" />
     </GuidSymbol>
 
     <!-- images -->
@@ -606,7 +606,7 @@
       <IDSymbol name="bmpDelete" value="7" />
     </GuidSymbol>
     <GuidSymbol name="guidIcons" value="{CCA21650-7FA4-4AB9-9214-5822BFC66C62}">
-      <IDSymbol name="p4editvs" value="1" />
+      <IDSymbol name="SDeditvs" value="1" />
     </GuidSymbol>
 
   </Symbols>

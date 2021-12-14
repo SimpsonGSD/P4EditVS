@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1022
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P4EditVS", "P4EditVS\P4EditVS.csproj", "{AD81651E-2CD4-42C7-A603-B98ACBFA46EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDEditVS", "SDEditVS\SDEditVS.csproj", "{AD81651E-2CD4-42C7-A603-B98ACBFA46EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

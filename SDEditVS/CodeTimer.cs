@@ -1,7 +1,7 @@
 ﻿
 using System.IO;
 
-namespace P4EditVS
+namespace SDEditVS
 {
     public class CodeTimer
     {

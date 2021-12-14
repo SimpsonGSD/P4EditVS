@@ -19,7 +19,7 @@ using System.IO;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 
-namespace P4EditVS
+namespace SDEditVS
 {
     /// <summary>
     /// Implements a managed Stream object on top of a COM IStream.
