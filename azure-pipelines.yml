@@ -37,7 +37,7 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     clean: true
-    msbuildVersion: '16.0'
+    msbuildVersion: '17.0'
     msbuildArchitecture: 'x86'
     msbuildArguments: '/p:DeployExtension=false'
     
@@ -56,7 +56,7 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/p:DeployExtension=false'
-    msbuildVersion: '16.0'
+    msbuildVersion: '17.0'
     msbuildArchitecture: 'x64'
 
 - task: CopyFiles@2
