@@ -23,14 +23,16 @@ namespace P4EditVS
             public readonly ReadOnlyCollection<string> Stdout = null;
             public readonly ReadOnlyCollection<string> Stderr = null;
             public readonly int? ExitCode = null;
+            public readonly bool HasTimedOut = false;
 
-            public RunnerResult(UInt64 jobId, string commandLine, List<string> stdout, List<string> stderr, int? exitCode)
+            public RunnerResult(UInt64 jobId, string commandLine, List<string> stdout, List<string> stderr, int? exitCode, bool hasTimedOut)
             {
                 JobId = jobId;
                 CommandLine = commandLine;
-                Stdout = stdout.AsReadOnly();
-                Stderr = stderr.AsReadOnly();
+                Stdout = stdout?.AsReadOnly();
+                Stderr = stderr?.AsReadOnly();
                 ExitCode = exitCode;
+                HasTimedOut = hasTimedOut;
             }
         }
 
@@ -50,6 +52,7 @@ namespace P4EditVS
         private UInt64 _jobId = 0;
         private float _timeoutSeconds = 0.0f; // equivalent to infinite
         private string _commandLine = null;
+        private bool _waitForResult = true;
 
         //########################################################################
         //########################################################################
@@ -105,10 +108,12 @@ namespace P4EditVS
         /// <param name="runner">runner instance to run</param>
         /// <param name="async">if false, block until subprocess finishes - note that callback may still be executed asynchronously</param>
         /// <param name="timeoutSeconds">if > 0.0f this is the maxiumum time the runner will take before it is killed</param>
+        /// <param name="waitForResult">whether to wait for the command to finish. If false the commandline will be spawned and the runner will immediately end./param>
         /// <returns>job id, an arbitrary value uniquely identifying this subprocess</returns>
-        public static void Run(Runner runner, bool async, float timeoutSeconds)
+        public static void Run(Runner runner, bool async, float timeoutSeconds, bool waitForResult)
         {
             runner._timeoutSeconds = timeoutSeconds;
+            runner._waitForResult = waitForResult;
             if (async)
             {
                 ThreadPool.QueueUserWorkItem(ThreadProcThunk, runner);
@@ -152,6 +157,7 @@ namespace P4EditVS
         private void ThreadProc()
         {
             bool good = false;
+            bool hasTimedOut = false;
 
             int? exitCode;
 
@@ -167,20 +173,26 @@ namespace P4EditVS
                 {
                     process.Start();
 
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-
-                    if (NeedStdinRedirection(_stdin))
+                    if (_waitForResult)
                     {
-                        process.StandardInput.Write(_stdin);
-                        process.StandardInput.Close();//^Z
-                    }
+                        process.BeginOutputReadLine();
+                        process.BeginErrorReadLine();
 
-                    int timeoutMs = _timeoutSeconds > 0.0f ? (int)(_timeoutSeconds * 1000.0f) : Int32.MaxValue;
-                    if (process.WaitForExit(timeoutMs))
-                        good = true;
-                    else
-                        process.Kill();
+                        if (NeedStdinRedirection(_stdin))
+                        {
+                            process.StandardInput.Write(_stdin);
+                            process.StandardInput.Close();//^Z
+                        }
+
+                        int timeoutMs = _timeoutSeconds > 0.0f ? (int)(_timeoutSeconds * 1000.0f) : Int32.MaxValue;
+                        if (process.WaitForExit(timeoutMs))
+                            good = true;
+                        else
+                        {
+                            process.Kill();
+                            hasTimedOut = true;
+                        }
+                    }
                 }
                 catch (System.Exception ex)
                 {
@@ -194,15 +206,13 @@ namespace P4EditVS
                 }
                 else
                 {
-                    _stdoutLines = null;
-                    _stderrLines = null;
                     exitCode = null;
                 }
             }
 
             if (_callback != null)
             {
-                var result = new RunnerResult(_jobId, _commandLine, _stdoutLines, _stderrLines, exitCode);
+                var result = new RunnerResult(_jobId, _commandLine, _stdoutLines, _stderrLines, exitCode, hasTimedOut);
                 Action<RunnerResult> callback = _callback;
 
                 // https://stackoverflow.com/questions/58237847/how-to-resolve-vs2019-warning-to-use-joinabletaskfactory-switchtomainthreadasyn

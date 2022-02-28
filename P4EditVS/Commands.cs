@@ -528,6 +528,7 @@ namespace P4EditVS
 
             string globalOptions = _package.GetGlobalP4CmdLineOptions();
             string commandline = "";
+            bool waitForResult = true;
 
             Action<Runner.RunnerResult> handler = CreateCommandRunnerResultHandler(GetCommandText(commandId)); ;
 
@@ -639,6 +640,7 @@ namespace P4EditVS
                     {
                         commandline = string.Format("p4v {0} -s \"{1}\"", globalOptions, filePath);
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
+                        waitForResult = false; // We want to spawn the process and leave it running so we never want to wait for it to finish
                     }
                     break;
                 default:
@@ -650,7 +652,7 @@ namespace P4EditVS
                 var runner = Runner.Create(commandline, fileFolder, handler, null, null);
                 OutputWindow.WriteLine("{0}: started at {1}: {2}", runner.JobId, DateTime.Now, commandline);
                 var runAsync = !immediate;
-                Runner.Run(runner, runAsync, _package.GetCommandTimeoutSeconds());
+                Runner.Run(runner, runAsync, _package.GetCommandTimeoutSeconds(), waitForResult);
             }
         }
 
@@ -779,29 +781,27 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            bool completed;
+            if(result.Stdout != null)
+                DumpRunnerResult(result.JobId, "stdout", result.Stdout);
+
+            if(result.Stderr != null)
+                DumpRunnerResult(result.JobId, "stderr", result.Stderr);
 
             DateTime now = DateTime.Now;
-            if (result.ExitCode == null)
+            if (result.HasTimedOut)
             {
                 string message = "Timed out. Check server connection.";
                 OutputWindow.WriteLine("{0}: {1}", result.JobId, message);
                 SetStatusBarText(string.Format("Timed out: {0}", commandDescription), true);
-
-                completed = false;
             }
-            else
+            else if (result.ExitCode != null)
             {
-                DumpRunnerResult(result.JobId, "stdout", result.Stdout);
-                DumpRunnerResult(result.JobId, "stderr", result.Stderr);
                 OutputWindow.WriteLine("{0}: exit code: {1} (0x{1:X})", result.JobId, (int)result.ExitCode, (int)result.ExitCode);
-
-                completed = true;
             }
 
             OutputWindow.WriteLine("{0}: finished at {1}", result.JobId, now);
 
-            return completed;
+            return result.ExitCode != null;
         }
 
         private void SetStatusBarTextForRunnerResult(Runner.RunnerResult result, string commandDescription)
