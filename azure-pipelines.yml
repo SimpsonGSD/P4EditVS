@@ -11,7 +11,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-name: 2.6.1
+name: 2.6.2
 
 steps:
 - checkout: self
