@@ -1,37 +1,41 @@
 # Change log
 
+## 2.6.2
+**2022-03-01**
+* VS crash fix for Open P4V command [issue #21](https://github.com/SimpsonGSD/P4EditVS/issues/21).
+
 ## 2.6.1
-**2021-23-11**
+**2021-11-23**
 * Merged [PR](https://github.com/SimpsonGSD/P4EditVS/pull/18) to display P4EditVS command results in VS status bar. 
 
 ## 2.6
-**2021-20-08**
+**2021-08-20**
 * Fixed issue with .filters file not being checked out with project [(issue #13)](https://github.com/SimpsonGSD/P4EditVS/issues/13).
 * Attempted a fix for case-sensitive Perforce servers not being issues commands with file paths is correct case [(issue #12)](https://github.com/SimpsonGSD/P4EditVS/issues/12). 
 * Merged [pull request](https://github.com/SimpsonGSD/P4EditVS/pull/10) from [Eris Koleszar](https://github.com/bellicapax) to add a checkout prompt filter for specific files.
 
 ## 2.5
-**2021-29-04**
+**2021-04-29**
 * Added option to disable using read-only flag to support [allwrite workspaces](https://github.com/SimpsonGSD/P4EditVS/issues/9).
 
 ## 2.4
-**2021-29-04**
+**2021-04-29**
 * Added configurable command timeout.
 
 ## 2.3
-**2021-08-02**
+**2021-02-08**
 * Added Open in P4V command.
 * Moved saved workspace settings to %appdata%/P4EditVS to avoid issues with .suo files being deleted in temporary workspaces.
 
 ## 2.2
-**2021-14-01**
+**2021-01-14**
 * Added commands to file tab context menu.
 * Set allow environment setting to true by default.
 * Made environment setting the default workspace.
 * Set auto-checkout setting to true by default.
 
 ## 2.1
-**2020-20-12**
+**2020-12-20**
 * VS2019 support.
 
 ## 2.0
