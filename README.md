@@ -7,6 +7,8 @@ Download the latest release from either the [Visual Studio Marketplace](https://
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
+### Note: It is recommended to disable Git as the default source control provider in Visual Studio. Otherwise, this will make read-only files writable which will confuse the plugin and Perforce!
+
 ## Features
 
 Access commands for current file in extension toolbar menu. (Under Extensions in VS2019)
