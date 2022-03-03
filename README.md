@@ -41,7 +41,7 @@ available the new P4EditVS section of the Output Window.
 * Revert If Unchanged
 * History
 * Diff Against Have Revision
-* Time-lapse View
+* Time-lapse View (will highlight current line if invoked from extension toolbar menu or file tab menu)
 * Revision Graph
 * Add
 * Delete
@@ -80,6 +80,7 @@ The selected workspace is saved in the suo file for each solution.
 * The extension does not send or collect any information, settings are only stored locally. 
 * Checkout/revert state is only determined by file read-only flag.
 * For more advanced functionality see the offical P4VS extension.
+* Time-lapse View may not jump to the right line if you already have a window open for that file - a p4v bug
 
 ## Troubleshooting
 
