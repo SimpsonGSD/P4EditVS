@@ -1,5 +1,10 @@
 # Change log
 
+
+## 2.6.3
+**2022-03-04**
+* Merged [pull request](https://github.com/SimpsonGSD/P4EditVS/pull/11) from [Tom Seddon](https://github.com/tom-seddon) that makes the Time-lapse View command open the time-lapse view at the current line.
+
 ## 2.6.2
 **2022-03-01**
 * VS crash fix for Open P4V command [issue #21](https://github.com/SimpsonGSD/P4EditVS/issues/21).
