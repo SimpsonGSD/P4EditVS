@@ -32,12 +32,14 @@ steps:
 
 - task: MSBuild@1
   displayName: 'VS2019 Build'
+  env:
+    VsTargetVersion: 'VS2019'
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     clean: true
-    msbuildVersion: '17.0'
+    msbuildVersion: '16.0'
     msbuildArchitecture: 'x86'
     msbuildArguments: '/p:DeployExtension=false'
     
@@ -56,7 +58,7 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     msbuildArguments: '/p:DeployExtension=false'
-    msbuildVersion: '17.0'
+    msbuildVersion: '16.0'
     msbuildArchitecture: 'x64'
 
 - task: CopyFiles@2
