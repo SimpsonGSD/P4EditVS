@@ -72,7 +72,7 @@ namespace P4EditVS
 			Save(PathAndFileName, _settings);
 		}
 
-		public void SaveAsync()
+		public void SaveNonBlocking()
 		{
 			Settings settings = _settings.Copy();
 			string pathAndFileName = String.Copy(PathAndFileName);

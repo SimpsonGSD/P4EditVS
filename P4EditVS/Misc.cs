@@ -76,6 +76,21 @@ namespace P4EditVS
         //########################################################################
         //########################################################################
 
+        public static string GetPathFileName(string path)
+        {
+            try
+            {
+                return Path.GetFileName(path); 
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        //########################################################################
+        //########################################################################
+
 
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern uint GetLongPathName(string ShortPath, StringBuilder sb, int buffer);
@@ -84,8 +99,8 @@ namespace P4EditVS
         static extern uint GetShortPathName(string longpath, StringBuilder sb, int buffer);
 
         /// <summary>
-        /// Returns case sensitive path of <paramref name="path"/>
-        /// Taken from https://www.generacodice.com/en/articolo/1089798/how-can-i-obtain-the-case-sensitive-path-on-windows
+        /// THIS DOES NOT WORK AS INTENDED. Returns case sensitive path of <paramref name="path"/>
+        /// Taken from https://stackoverflow.com/questions/4763117/how-can-i-obtain-the-case-sensitive-path-on-windows
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
@@ -121,6 +136,61 @@ namespace P4EditVS
             return null;
         }
 
+        //########################################################################
+        //########################################################################
+
+        /// <summary>
+        /// Returns case sensitive path part of <paramref name="path"/>
+        /// Taken from https://stackoverflow.com/questions/4763117/how-can-i-obtain-the-case-sensitive-path-on-windows
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetCaseSensitivePath(string path)
+        {
+            var root = Path.GetPathRoot(path);
+            try
+            {
+                foreach (var name in path.Substring(root.Length).Split(Path.DirectorySeparatorChar))
+                    root = Directory.GetFileSystemEntries(root, name).First();
+            }
+            catch (Exception)
+            {
+                // Log("Path not found: " + path);
+                root += path.Substring(root.Length);
+            }
+            int separator_index = root.LastIndexOf(Path.DirectorySeparatorChar);
+            return root.Substring(0, separator_index);
+        }
+
+        //########################################################################
+        //########################################################################
+
+        /// <summary>
+        /// Returns case sensitive filename part of <paramref name="path"/>
+        /// Taken from https://stackoverflow.com/questions/4763117/how-can-i-obtain-the-case-sensitive-path-on-windows
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetCaseSensitiveFileName(string path)
+        {
+            string fullpath = Directory.GetFiles(Path.GetDirectoryName(path), Path.GetFileName(path)).FirstOrDefault();
+            int separator_index = fullpath.LastIndexOf(Path.DirectorySeparatorChar) + 1;
+            return fullpath.Substring(separator_index, fullpath.Length - separator_index);
+        }
+
+        //########################################################################
+        //########################################################################
+
+        /// <summary>
+        /// Returns case sensitive path of <paramref name="path"/>
+        /// Taken from https://stackoverflow.com/questions/4763117/how-can-i-obtain-the-case-sensitive-path-on-windows
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static string GetCaseSensitiveFilePath(string path)
+        {
+            return GetCaseSensitivePath(path) + "\\" + GetCaseSensitiveFileName(path);
+        }
 
         //########################################################################
         //########################################################################

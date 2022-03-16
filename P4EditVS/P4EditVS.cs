@@ -96,7 +96,7 @@ namespace P4EditVS
                 if (SolutionSettings.SelectedWorkspace != value)
                 {
                     SolutionSettings.SelectedWorkspace = value;
-                    SolutionSettings.SaveAsync();
+                    SolutionSettings.SaveNonBlocking();
                 }
             }
         }
@@ -411,7 +411,7 @@ namespace P4EditVS
             if (SolutionSettings != null)
             {
                 // Save settings to prevent losing data
-                SolutionSettings.SaveAsync();
+                SolutionSettings.SaveNonBlocking();
             }
 
             SolutionSettings = new SolutionSettings(_saveDataDirectory, _dte.Solution.FileName);
@@ -428,7 +428,7 @@ namespace P4EditVS
                 SolutionSettings.SelectedWorkspace = _selectedWorkspace;
 #pragma warning restore 618
 
-                SolutionSettings.SaveAsync();
+                SolutionSettings.SaveNonBlocking();
             }
             else
             {
@@ -442,7 +442,7 @@ namespace P4EditVS
             if (SolutionSettings != null)
             {
                 // Save settings to prevent losing data
-                SolutionSettings.SaveAsync();
+                SolutionSettings.SaveNonBlocking();
             }
         }
 
