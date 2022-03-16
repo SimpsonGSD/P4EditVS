@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="P4EditVS.26d3cdc1-5d7c-441f-9007-bd135047b5b2" Version="2.6.3" Language="en-US" Publisher="Scott Simpson" />
+        <Identity Id="P4EditVS.26d3cdc1-5d7c-441f-9007-bd135047b5b2" Version="2.6.4" Language="en-US" Publisher="Scott Simpson" />
         <DisplayName>P4EditVS</DisplayName>
         <Description xml:space="preserve">Simple, fast extension for Perforce to checkout, revert, diff and more, that aims to never slow down your IDE.</Description>
         <MoreInfo>https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs</MoreInfo>
