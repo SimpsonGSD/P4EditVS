@@ -80,9 +80,27 @@ namespace P4EditVS
         private readonly P4EditVS _package;
 
         /// <summary>
+        /// Selected file to apply a source control command to.
+        /// </summary>
+        class SelectedFile
+        {
+            /// <summary>
+            /// Path to the file.
+            /// </summary>
+            public readonly string Path = "";
+
+            /// <summary>
+            /// Current line in editor. null if unknown or not applicable.
+            /// </summary>
+            public readonly int? Line = null;
+
+            public SelectedFile(string path, int? line = null) { Path = path; Line = line; }
+        }
+
+        /// <summary>
         /// Files selected to apply source control commands to.
         /// </summary>
-        private List<string> _selectedFiles = new List<string>();
+        private List<SelectedFile> _selectedFiles = new List<SelectedFile>();
 
         private EnvDTE80.TextDocumentKeyPressEvents _textDocEvents;
         //private EnvDTE.TextEditorEvents _textEditorEvents;
@@ -210,7 +228,20 @@ namespace P4EditVS
 
                     if (_dte.ActiveDocument != null)
                     {
-                        _selectedFiles.Add(_dte.ActiveDocument.FullName);
+                        string path = _dte.ActiveDocument.FullName;
+
+                        int? line = null;
+                        var textWindow = _dte.ActiveDocument.ActiveWindow.Object as TextWindow;
+                        if (textWindow != null)
+                        {
+                            var activePane = textWindow.ActivePane;
+                            if (activePane != null)
+                            {
+                                line = activePane.Selection.CurrentLine;
+                            }
+                        }
+
+                        _selectedFiles.Add(new SelectedFile(path, line));
 
                         string guiFileName = _dte.ActiveDocument.Name;
                         bool isReadOnly = _dte.ActiveDocument.ReadOnly;
@@ -235,11 +266,11 @@ namespace P4EditVS
         /// <param name="e"></param>
         private void OnBeforeQueryStatusCtxt(object sender, EventArgs e)
         {
-            Action<List<string>, string> AddSelectedFile = (selectedFile, file) =>
+            Action<List<SelectedFile>, string> AddSelectedFile = (selectedFile, file) =>
             {
                 if (File.Exists(file))
                 {
-                    _selectedFiles.Add(file);
+                    _selectedFiles.Add(new SelectedFile(file));
                 }
             };
 
@@ -298,7 +329,7 @@ namespace P4EditVS
 
                     if (_selectedFiles.Count > 0)
                     {
-                        System.IO.FileInfo info = new System.IO.FileInfo(_selectedFiles[0]);
+                        System.IO.FileInfo info = new System.IO.FileInfo(_selectedFiles[0].Path);
                         string displayName = isMultiSelection ? "(multiple files)" : info.Name;
                         // Build menu string based on command ID and whether to enable it based on file type/state
                         ConfigureCmdButton(myCommand, displayName, info.IsReadOnly);
@@ -493,9 +524,9 @@ namespace P4EditVS
             }
 
             var myCommand = sender as OleMenuCommand;
-            foreach (string filePath in _selectedFiles)
+            foreach (SelectedFile selectedFile in _selectedFiles)
             {
-                ExecuteCommand(filePath, myCommand.CommandID.ID, false);
+                ExecuteCommand(selectedFile, myCommand.CommandID.ID, false);
             }
         }
 
@@ -504,7 +535,7 @@ namespace P4EditVS
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="commandId"></param>
-        private void ExecuteCommand(string filePath, int commandId, bool immediate)
+        private void ExecuteCommand(SelectedFile selectedFile, int commandId, bool immediate)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             if (!_package.ValidateUserSettings())
@@ -512,6 +543,7 @@ namespace P4EditVS
                 return;
             }
 
+            string filePath = selectedFile.Path;
             string fileFolder = null;
             try
             {
@@ -598,7 +630,12 @@ namespace P4EditVS
                 case TimelapseViewCommandId:
                 case CtxtTimelapseViewCommandId:
                     {
-                        commandline = string.Format("p4vc {0} timelapse \"{1}\"", globalOptions, filePath);
+                        var builder = new StringBuilder();
+                        builder.AppendFormat("p4vc {0} timelapse ", globalOptions);
+                        if (selectedFile.Line != null) builder.AppendFormat("-l {0} ", selectedFile.Line);
+                        builder.AppendFormat("\"{0}\"", filePath);
+
+                        commandline = builder.ToString();
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                     }
                     break;
@@ -678,7 +715,7 @@ namespace P4EditVS
                     }
                 }
 
-                ExecuteCommand(filePath, CheckoutCommandId, immediate);
+                ExecuteCommand(new SelectedFile(filePath), CheckoutCommandId, immediate);
             }
         }
 

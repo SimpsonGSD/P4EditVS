@@ -7,6 +7,8 @@ Download the latest release from either the [Visual Studio Marketplace](https://
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
+### Note: It is recommended to disable Git as the default source control provider in Visual Studio. Otherwise, this will make read-only files writable which will confuse the plugin and Perforce!
+
 ## Features
 
 Access commands for current file in extension toolbar menu. (Under Extensions in VS2019)
@@ -39,7 +41,7 @@ available the new P4EditVS section of the Output Window.
 * Revert If Unchanged
 * History
 * Diff Against Have Revision
-* Time-lapse View
+* Time-lapse View (will highlight current line if invoked from extension toolbar menu or file tab menu)
 * Revision Graph
 * Add
 * Delete
@@ -78,6 +80,7 @@ The selected workspace is saved in the suo file for each solution.
 * The extension does not send or collect any information, settings are only stored locally. 
 * Checkout/revert state is only determined by file read-only flag.
 * For more advanced functionality see the offical P4VS extension.
+* Time-lapse View may not jump to the right line if you already have a window open for that file - a p4v bug
 
 ## Troubleshooting
 
