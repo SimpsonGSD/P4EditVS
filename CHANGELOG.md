@@ -1,5 +1,8 @@
 # Change log
 
+## 2.6.4
+**2022-03-17**
+* Better support for case-sensitive Perforce servers. See [issue #12](https://github.com/SimpsonGSD/P4EditVS/issues/12) for more details.
 
 ## 2.6.3
 **2022-03-04**
