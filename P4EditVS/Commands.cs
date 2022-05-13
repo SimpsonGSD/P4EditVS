@@ -569,7 +569,7 @@ namespace P4EditVS
                 case CheckoutCommandId:
                 case CtxtCheckoutCommandId:
                     {
-                        commandline = string.Format("p4 {0} edit -c default \"{1}\"", globalOptions, filePath);
+                        commandline = string.Format("p4 {0} edit \"{1}\"", globalOptions, filePath);
 
                         string fileName;
                         try
