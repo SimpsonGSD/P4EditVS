@@ -292,7 +292,8 @@ namespace P4EditVS
                         // Is selected item a project?
                         if (selectedFile.Project != null)
                         {
-                            AddSelectedFile(_selectedFiles, selectedFile.Project.FullName);
+                            string projectFullName = selectedFile.Project.FullName;
+                            AddSelectedFile(_selectedFiles, projectFullName);
 
                             // Get .filter file, usually the first project item
                             foreach (ProjectItem item in selectedFile.Project.ProjectItems)
@@ -302,6 +303,28 @@ namespace P4EditVS
                                 {
                                     AddSelectedFile(_selectedFiles, projectItemFileName);
                                     break;
+                                }
+                            }
+
+                            // Is it a .shproj? Assume there's a .projitems for
+                            // it as well.
+                            //
+                            // (The .projitems file doesn't have a ProjectItem
+                            // in its originating project, only the projects
+                            // that depend on it.)
+                            if (projectFullName.EndsWith(".shproj", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                try
+                                {
+                                    string folder = Path.GetDirectoryName(projectFullName);
+                                    string name = Path.GetFileNameWithoutExtension(projectFullName);
+                                    AddSelectedFile(_selectedFiles, Path.Combine(folder, $"{name}.projitems"));
+                                }
+                                catch (Exception)
+                                {
+                                    // The Path functions throw at the slightest
+                                    // provocation. Any problems are probably an
+                                    // issue with the path, best ignored.
                                 }
                             }
                         }

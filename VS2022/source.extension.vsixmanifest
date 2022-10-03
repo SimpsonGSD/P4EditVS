@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="P4EditVS.4cde5759-49f0-469d-a0a3-02b06da31636" Version="2.6.5" Language="en-US" Publisher="Scott Simpson" />
+        <Identity Id="P4EditVS.4cde5759-49f0-469d-a0a3-02b06da31636" Version="2.6.6" Language="en-US" Publisher="Scott Simpson" />
         <DisplayName>P4EditVS 2022</DisplayName>
         <Description xml:space="preserve">Simple, fast extension for Perforce to checkout, revert, diff and more, that aims to never slow down your IDE.</Description>
         <MoreInfo>https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs</MoreInfo>
