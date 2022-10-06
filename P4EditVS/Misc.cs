@@ -80,7 +80,7 @@ namespace P4EditVS
         {
             try
             {
-                return Path.GetFileName(path); 
+                return Path.GetFileName(path);
             }
             catch (System.Exception)
             {
@@ -357,11 +357,11 @@ namespace P4EditVS
             {
             }
             catch (DirectoryNotFoundException)
-			{
+            {
 
-			}
+            }
             catch (FileNotFoundException)
-			{
+            {
             }
 
             outCreatedDefault = false;
@@ -386,16 +386,16 @@ namespace P4EditVS
         {
             if (fileName == null) return;
 
-			try
-			{
-				DoWriteXml((XmlWriterSettings settings) => XmlWriter.Create(fileName, settings), data);
-			}
-			catch(DirectoryNotFoundException)
-			{
-				Directory.CreateDirectory(GetPathDirectoryName(fileName));
-				DoWriteXml((XmlWriterSettings settings) => XmlWriter.Create(fileName, settings), data);
-			}
-		}
+            try
+            {
+                DoWriteXml((XmlWriterSettings settings) => XmlWriter.Create(fileName, settings), data);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Directory.CreateDirectory(GetPathDirectoryName(fileName));
+                DoWriteXml((XmlWriterSettings settings) => XmlWriter.Create(fileName, settings), data);
+            }
+        }
 
         private static void DoWriteXml<T>(Func<XmlWriterSettings, XmlWriter> createWriter, T data)
         {

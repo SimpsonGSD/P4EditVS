@@ -24,18 +24,18 @@ using System.Collections.Generic;
 
 namespace P4EditVS
 {
-	/// <summary>
-	/// Values saved to the .suo file.
-	/// </summary>
-	/// <remarks>
-	/// Since it's convenient, this stuff is serialized using the XmlSerializer.
-	/// So anything in here needs to be compatible with that.
-	///
-	/// If the suo doesn't contain a SolutionOptions, the default values here
-	/// will be used. 
-	/// </remarks>
-	[System.Obsolete("Use SolutionSettings instead")]
-	public class SolutionOptions
+    /// <summary>
+    /// Values saved to the .suo file.
+    /// </summary>
+    /// <remarks>
+    /// Since it's convenient, this stuff is serialized using the XmlSerializer.
+    /// So anything in here needs to be compatible with that.
+    ///
+    /// If the suo doesn't contain a SolutionOptions, the default values here
+    /// will be used. 
+    /// </remarks>
+    [System.Obsolete("Use SolutionSettings instead")]
+    public class SolutionOptions
     {
         // Index of workspace to use.
         public int WorkspaceIndex = -1;
@@ -189,12 +189,12 @@ namespace P4EditVS
         private HashSet<string> _checkoutPromptAllowlistFilePaths;
         private void EnsureAllowlistsArePopulated()
         {
-            if(_checkoutPromptAllowlistDirectories == null)
+            if (_checkoutPromptAllowlistDirectories == null)
             {
                 _checkoutPromptAllowlistDirectories = new HashSet<string>();
                 _checkoutPromptAllowlistFilePaths = new HashSet<string>();
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                if(string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
+                if (string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
                 {
                     return;
                 }
@@ -230,7 +230,7 @@ namespace P4EditVS
             {
                 return true;
             }
-            if(_checkoutPromptAllowlistDirectories.Count < 1)
+            if (_checkoutPromptAllowlistDirectories.Count < 1)
             {
                 return false;
             }
@@ -248,7 +248,7 @@ namespace P4EditVS
         private HashSet<string> _checkoutPromptBlocklistFilePaths;
         private void EnsureBlocklistsArePopulated()
         {
-            if(_checkoutPromptBlocklistDirectories == null)
+            if (_checkoutPromptBlocklistDirectories == null)
             {
                 _checkoutPromptBlocklistDirectories = new HashSet<string>();
                 _checkoutPromptBlocklistFilePaths = new HashSet<string>();
@@ -285,7 +285,7 @@ namespace P4EditVS
                 return false;
             }
             filePath = filePath.NormalizeFilePath();
-            if(_checkoutPromptBlocklistFilePaths.Contains(filePath))
+            if (_checkoutPromptBlocklistFilePaths.Contains(filePath))
             {
                 return true;
             }
@@ -306,7 +306,7 @@ namespace P4EditVS
         {
             foreach (string path in paths)
             {
-                if(filePathDirectory.IsSubPathOf(path))
+                if (filePathDirectory.IsSubPathOf(path))
                 {
                     return true;
                 }
@@ -539,10 +539,10 @@ namespace P4EditVS
         /// </remarks>
         /// <param name="options"></param>
         [System.Obsolete("Use SolutionSettings instead")]
-		private void SetSolutionOptions(SolutionOptions options)
-		{
-			if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) _selectedWorkspace = options.WorkspaceIndex;
-		}
+        private void SetSolutionOptions(SolutionOptions options)
+        {
+            if (options.WorkspaceIndex >= -1 && options.WorkspaceIndex <= 6) _selectedWorkspace = options.WorkspaceIndex;
+        }
 
         //
         // Summary:
@@ -578,25 +578,25 @@ namespace P4EditVS
         }
         */
 
-		//
-		// Summary:
-		//     Loads user options for a given solution.
-		//
-		// Parameters:
-		//   pPersistence:
-		//     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
-		//     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
-		//     method for each stream name it wants to read from the user options (.opt) file.
-		//
-		//   grfLoadOpts:
-		//     [in] User options whose value is taken from the Microsoft.VisualStudio.Shell.Interop.__VSLOADUSEROPTS
-		//     DWORD.
-		//
-		// Returns:
-		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-		//     it fails, it returns an error code.
-		[System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
-		public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
+        //
+        // Summary:
+        //     Loads user options for a given solution.
+        //
+        // Parameters:
+        //   pPersistence:
+        //     [in] Pointer to the Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence
+        //     interface on which the VSPackage should call its Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.LoadPackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String)
+        //     method for each stream name it wants to read from the user options (.opt) file.
+        //
+        //   grfLoadOpts:
+        //     [in] User options whose value is taken from the Microsoft.VisualStudio.Shell.Interop.__VSLOADUSEROPTS
+        //     DWORD.
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
+        [System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
+        public int LoadUserOptions(IVsSolutionPersistence pPersistence, [ComAliasName("Microsoft.VisualStudio.Shell.Interop.VSLOADUSEROPTS")] uint grfLoadOpts)
         {
             Trace.WriteLine(String.Format("P4EditVS LoadUserOptions (grfLoadOpts={0})", grfLoadOpts));
 
@@ -616,22 +616,22 @@ namespace P4EditVS
             return VSConstants.S_OK;
         }
 
-		//
-		// Summary:
-		//     Writes user options for a given solution.
-		//
-		// Parameters:
-		//   pOptionsStream:
-		//     [in] Pointer to the IStream interface to which the VSPackage should write the
-		//     user-specific options.
-		//
-		//   pszKey:
-		//     [in] Name of the stream, as provided by the VSPackage by means of the method
-		//     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
-		//
-		// Returns:
-		//     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
-		//     it fails, it returns an error code.
+        //
+        // Summary:
+        //     Writes user options for a given solution.
+        //
+        // Parameters:
+        //   pOptionsStream:
+        //     [in] Pointer to the IStream interface to which the VSPackage should write the
+        //     user-specific options.
+        //
+        //   pszKey:
+        //     [in] Name of the stream, as provided by the VSPackage by means of the method
+        //     Microsoft.VisualStudio.Shell.Interop.IVsSolutionPersistence.SavePackageUserOpts(Microsoft.VisualStudio.Shell.Interop.IVsPersistSolutionOpts,System.String).
+        //
+        // Returns:
+        //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
+        //     it fails, it returns an error code.
         /* NO LONGER USED, LEFT IN FOR REFERENCE
 		public int WriteUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
@@ -670,7 +670,7 @@ namespace P4EditVS
         //     If the method succeeds, it returns Microsoft.VisualStudio.VSConstants.S_OK. If
         //     it fails, it returns an error code.
         [System.Obsolete(".suo has been removed, use SolutionSettings instead. This is only used to carry existing settings over to new SolutioSettings.")]
-		public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
+        public int ReadUserOptions(IStream pOptionsStream, [ComAliasName("Microsoft.VisualStudio.OLE.Interop.LPCOLESTR")] string pszKey)
         {
             Trace.WriteLine(String.Format("P4EditVS ReadUserOptions (key=\"{0}\")", pszKey));
 
@@ -694,7 +694,7 @@ namespace P4EditVS
             if (stream.Length > 0) options = Misc.ReadXmlOrCreateDefault<SolutionOptions>(stream, out createdDefault);
 
             // If allow environment is not in use set it to the first workspace so some workspace is selected
-            if(createdDefault)
+            if (createdDefault)
                 options.WorkspaceIndex = GetOptionsPage().AllowEnvironment ? -1 : 0;
 
             SetSolutionOptions(options);
@@ -720,16 +720,16 @@ namespace P4EditVS
             set { _allowEnvironment = value; }
         }
 
-		private bool _autoCheckout = true;
+        private bool _autoCheckout = true;
 
-		[Category("Options")]
-		[DisplayName("Auto-Checkout Enabled")]
-		[Description("Automatically checks out files on save/build. Not recommended for slow networks as this will block Visual Studio.")]
-		public bool AutoCheckout
-		{
-			get { return _autoCheckout; }
-			set { _autoCheckout = value; }
-		}
+        [Category("Options")]
+        [DisplayName("Auto-Checkout Enabled")]
+        [Description("Automatically checks out files on save/build. Not recommended for slow networks as this will block Visual Studio.")]
+        public bool AutoCheckout
+        {
+            get { return _autoCheckout; }
+            set { _autoCheckout = value; }
+        }
 
         private bool _autoCheckoutOnEdit = false;
 
@@ -744,14 +744,14 @@ namespace P4EditVS
 
         private bool _autoCheckoutPrompt = false;
 
-		[Category("Options")]
-		[DisplayName("Prompt Before Auto-Checkout")]
-		[Description("Prompts message to automatically check out files on build and save. Auto-checkout must be enabled.")]
-		public bool AutoCheckoutPrompt
-		{
-			get { return _autoCheckoutPrompt; }
-			set { _autoCheckoutPrompt = value; }
-		}
+        [Category("Options")]
+        [DisplayName("Prompt Before Auto-Checkout")]
+        [Description("Prompts message to automatically check out files on build and save. Auto-checkout must be enabled.")]
+        public bool AutoCheckoutPrompt
+        {
+            get { return _autoCheckoutPrompt; }
+            set { _autoCheckoutPrompt = value; }
+        }
 
         private string _checkoutPromptBlocklist = "";
 
