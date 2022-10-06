@@ -841,10 +841,10 @@ namespace P4EditVS
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            if(result.Stdout != null)
+            if (result.Stdout != null)
                 DumpRunnerResult(result.JobId, "stdout", result.Stdout);
 
-            if(result.Stderr != null)
+            if (result.Stderr != null)
                 DumpRunnerResult(result.JobId, "stderr", result.Stderr);
 
             DateTime now = DateTime.Now;
