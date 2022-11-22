@@ -1,11 +1,11 @@
 # P4EditVS                  
-[![Build Status](https://dev.azure.com/simpsongsd/P4EditVS/_apis/build/status/SimpsonGSD.P4EditVS?branchName=master)](https://dev.azure.com/simpsongsd/P4EditVS/_build/latest?definitionId=2&branchName=master) [![VS Marketplace](https://vsmarketplacebadge.apphb.com/version/ScottSimpson.p4editvs.svg)](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs)
+[![Build Status](https://dev.azure.com/simpsongsd/P4EditVS/_apis/build/status/SimpsonGSD.P4EditVS?branchName=master)](https://dev.azure.com/simpsongsd/P4EditVS/_build/latest?definitionId=2&branchName=master) [![VS Marketplace](https://vsmarketplacebadge.apphb.com/version/ScottSimpson.p4editvs2022.svg)](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs2022)
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
 Download the latest release from either the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs) or [GitHub](https://github.com/SimpsonGSD/P4EditVS/releases).
 
-[Visual Studio 2022 Version](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs2022)
+[Visual Studio 2017/2019 Version](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs)
 
 **Note: It is recommended to disable Git as the default source control provider in Visual Studio. Otherwise, this will make read-only files writable which will confuse the plugin and Perforce!**
 
