@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [ "build", "coding", "source control" ], 
+    "identity": {
+        "internalName": "P4EditVS2022"                         
+                                                        
+    },
+    "overview": "README_VS2022.md",                               
+    "priceCategory": "free",                               
+    "publisher": "ScottSimpson",                           
+    "private": false,                                      
+    "qna": true,                                           
+    "repo": "https://github.com/SimpsonGSD/P4EditVS/"      
+}
