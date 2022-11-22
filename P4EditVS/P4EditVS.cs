@@ -253,7 +253,7 @@ namespace P4EditVS
                 _checkoutPromptBlocklistDirectories = new HashSet<string>();
                 _checkoutPromptBlocklistFilePaths = new HashSet<string>();
                 OptionPageGrid page = (OptionPageGrid)GetDialogPage(typeof(OptionPageGrid));
-                if (string.IsNullOrEmpty(page.CheckoutPromptAllowlist))
+                if (string.IsNullOrEmpty(page.CheckoutPromptBlocklist))
                 {
                     return;
                 }
