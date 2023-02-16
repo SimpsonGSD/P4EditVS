@@ -159,7 +159,14 @@ namespace P4EditVS
                 }
             }
 
+            // Cache current active pane to restore focus
+            OutputWindowPane activePane = _dte2.ToolWindows.OutputWindow.ActivePane;
+
             _pane = _dte2.ToolWindows.OutputWindow.OutputWindowPanes.Add(_paneName);
+
+            // Restore focus on original pane
+            if (activePane != null)
+                activePane.Activate();
         }
 
         //########################################################################
