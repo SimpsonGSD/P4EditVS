@@ -1,5 +1,14 @@
 # Change log
 
+## 2.6.7
+**2023-02-16**
+* Fix VS output window focusing on P4EditVS tab when loading solution settings. Should now no longer take focus. See [issue #34](https://github.com/SimpsonGSD/P4EditVS/issues/34) for more details.
+
+## 2.6.6
+**2022-11-22**
+* Check out .projitems when checking out a .shproj.
+* Fix issue with checkout prompt blocklist if allowlist was empty. See [issue #33](https://github.com/SimpsonGSD/P4EditVS/issues/33) for more details.
+
 ## 2.6.5
 **2022-05-13**
 * Fix issue where files opened for merge/integrate could not be checked out.
