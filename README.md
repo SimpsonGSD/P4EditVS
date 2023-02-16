@@ -1,5 +1,5 @@
 # P4EditVS                  
-[![Build Status](https://dev.azure.com/simpsongsd/P4EditVS/_apis/build/status/SimpsonGSD.P4EditVS?branchName=master)](https://dev.azure.com/simpsongsd/P4EditVS/_build/latest?definitionId=2&branchName=master) [![VS Marketplace](https://vsmarketplacebadge.apphb.com/version/ScottSimpson.p4editvs.svg)](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs)
+[![Build Status](https://dev.azure.com/simpsongsd/P4EditVS/_apis/build/status/SimpsonGSD.P4EditVS?branchName=master)](https://dev.azure.com/simpsongsd/P4EditVS/_build/latest?definitionId=2&branchName=master) [![VS Marketplace](https://vsmarketplacebadges.dev/version/ScottSimpson.p4editvs.svg)](https://marketplace.visualstudio.com/items?itemName=ScottSimpson.p4editvs)
 
 Simple, lightweight Visual Studio extension that allows you to checkout and revert files in Perforce without slowing down or blocking your IDE. 
 
