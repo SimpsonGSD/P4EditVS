@@ -528,6 +528,11 @@ namespace P4EditVS
             return GetOptionsPage().UseReadOnlyFlag;
         }
 
+        public bool GetUseP4V2024_1_OpenInP4V()
+        {
+            return GetOptionsPage().UseP4V2024_1_OpenInP4V;
+        }
+
 
         #region Visual Studio suo interface
 
@@ -795,6 +800,17 @@ namespace P4EditVS
         {
             get { return _useReadOnlyFlag; }
             set { _useReadOnlyFlag = value; }
+        }
+
+        private bool _useP4V2024_1_OpenInP4V = false;
+
+        [Category("Options")]
+        [DisplayName("P4V 2024.1 Open in P4V Support")]
+        [Description("P4V 2024.1 has a breaking change for Open in P4V. If you see a dialog telling you to run p4vc workspace window then enable this option to use the new method.")]
+        public bool UseP4V2024_1_OpenInP4V
+        {
+            get { return _useP4V2024_1_OpenInP4V; }
+            set { _useP4V2024_1_OpenInP4V = value; }
         }
 
         private string _userName = "";

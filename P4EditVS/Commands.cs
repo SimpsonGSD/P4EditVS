@@ -698,7 +698,16 @@ namespace P4EditVS
                 case OpenInP4VCommandId:
                 case CtxtOpenInP4VCommandId:
                     {
-                        commandline = string.Format("p4v {0} -s \"{1}\"", globalOptions, filePath);
+                        if (_package.GetUseP4V2024_1_OpenInP4V())
+                        {
+                            // P4V 2024.1 (2024.1/2573667) (2024/03/18) contains a breaking change (See #119251 (Change #2555854) at https://www.perforce.com/perforce/doc.current/user/p4vnotes.txt)
+                            // that makes p4v -s no longer function. Instead we must call p4vc with workspacewindow. 
+                            commandline = string.Format("p4vc {0} workspacewindow -s \"{1}\"", globalOptions, filePath);
+                        }
+                        else 
+                        {
+                            commandline = string.Format("p4v {0} -s \"{1}\"", globalOptions, filePath);
+                        }
                         handler = CreateCommandRunnerResultHandler(GetBriefCommandDescription(commandId, filePath));
                         waitForResult = false; // We want to spawn the process and leave it running so we never want to wait for it to finish
                     }
