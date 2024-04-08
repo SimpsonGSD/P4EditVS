@@ -140,5 +140,4 @@ If you're experiencing performance issues, have a slow Perforce connection or wa
 ### Why is `Open in P4V` not working?
 
 If you have P4V 2024.1 and above Open in P4V may not work and instead display a dialog box. Unfortunately P4V 2024.1 contains a breaking change that requires a different commandline.
-To fix this please update to `v2.6.8` or above, open the settings for P4EditVS in Visual Studio and enable `P4V 2024.1 Open in P4V Support`.If you have P4V 2024.1 and above Open in P4V may not work and instead display a dialog box. Unfortunately P4V 2024.1 contains a breaking change that requires a different commandline.
-To fix this please open the settings for P4EditVS in Visual Studio and enable `P4V 2024.1 Open in P4V Support`.
+To fix this please update to `v2.6.8` or above, open the settings for P4EditVS in Visual Studio and enable `P4V 2024.1 Open in P4V Support`.
